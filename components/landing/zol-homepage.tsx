@@ -4,21 +4,21 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  CalendarClock,
+  Brain,
   Check,
-  ChevronRight,
+  ChevronDown,
   ClipboardList,
-  Clock3,
+  DatabaseZap,
+  Gauge,
   Headphones,
   History,
-  ListChecks,
-  MessageSquareText,
-  Mic2,
+  LucideIcon,
+  Network,
   Phone,
   Play,
+  Search,
   ShieldCheck,
   Sparkles,
-  UserRoundCheck,
   Wrench,
 } from "lucide-react";
 
@@ -26,131 +26,119 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-const navLinks = ["How It Works", "Features", "Demo", "Why ZOL"];
+const navLinks = ["Platform", "How It Works", "Features", "Demo", "Integrations"];
 
 const trustIndicators = [
-  "Answers calls 24/7",
-  "Built for auto repair shops",
-  "Captures repair issues instantly",
-  "Creates organized AI summaries",
+  "Answers every customer call",
+  "Organizes repair communication",
   "Remembers customer history",
+  "Creates AI repair summaries",
+  "Works with shop management systems",
+  "Built specifically for auto repair shops",
 ];
 
-const problemCards = [
+const chaosCards = [
   {
-    title: "Missed Calls",
-    body: "When technicians are busy and phones keep ringing, repair opportunities disappear.",
+    title: "Missed Calls Become Lost Revenue",
+    body: "Busy bays, ringing phones, and after-hours questions create opportunities that disappear before anyone can act.",
     icon: Phone,
   },
   {
-    title: "Lost Information",
-    body: "Customer issues get written on sticky notes, forgotten, or miscommunicated.",
+    title: "Front Desk Staff Juggle Too Much At Once",
+    body: "Calls, appointments, estimates, technician questions, and customer updates all compete for attention.",
+    icon: Headphones,
+  },
+  {
+    title: "Repair Details Get Lost Between Teams",
+    body: "A customer concern turns into partial notes, verbal handoffs, and unclear next steps for the technician.",
     icon: ClipboardList,
   },
   {
-    title: "After-Hours Gaps",
-    body: "Customers still call after closing time, but most shops stop answering.",
-    icon: Clock3,
-  },
-  {
-    title: "Disconnected Workflow",
-    body: "Front desk conversations rarely turn into organized repair-ready information.",
-    icon: MessageSquareText,
+    title: "Customer History Lives In People's Memory",
+    body: "The best context often sits in a staff member's head instead of a system the whole shop can use.",
+    icon: History,
   },
 ];
 
 const workflowSteps = [
   "Customer Calls",
   "ZOL Answers Instantly",
-  "Captures Vehicle + Repair Issue",
-  "Creates AI Repair Summary",
+  "Captures Vehicle + Repair Details",
+  "Creates Structured Repair Summary",
+  "Updates Customer Memory",
+  "Surfaces Operational Insights",
   "Shop Takes Action",
 ];
 
-const featureCards = [
+const platformCards = [
   {
-    title: "24/7 AI Call Handling",
-    body: "Every customer call gets answered professionally.",
+    title: "AI Call Handling",
+    body: "Every customer interaction gets captured professionally.",
     icon: Headphones,
   },
   {
-    title: "AI Repair Summaries",
-    body: "Clear summaries your technicians can actually use.",
-    icon: ListChecks,
-  },
-  {
     title: "Customer Memory",
-    body: "ZOL remembers previous visits, vehicles, and repair history.",
-    icon: History,
+    body: "ZOL remembers previous repairs, visits, vehicles, and conversations.",
+    icon: Brain,
   },
   {
-    title: "Appointment Requests",
-    body: "Capture customer scheduling requests automatically.",
-    icon: CalendarClock,
-  },
-  {
-    title: "Repair Issue Extraction",
-    body: "Turn conversations into organized repair information.",
+    title: "Repair Workflow Intelligence",
+    body: "Conversations become structured repair-ready information.",
     icon: Wrench,
   },
   {
-    title: "Front Desk Relief",
-    body: "Reduce interruptions and communication overload.",
-    icon: UserRoundCheck,
+    title: "Operational Visibility",
+    body: "Understand appointments, callbacks, pending work, and communication gaps instantly.",
+    icon: Gauge,
+  },
+  {
+    title: "Shop Intelligence Search",
+    body: "Ask questions like: How many pending estimates do we have? Which customers need follow-up?",
+    icon: Search,
+  },
+  {
+    title: "CRM Integration Layer",
+    body: "Works alongside systems like Tekmetric to make shop data easier to use.",
+    icon: Network,
   },
 ];
 
-const whyCards = [
-  {
-    title: "Works After Hours",
-    body: "Capture customer opportunities even when the shop is closed.",
-    icon: Clock3,
-  },
-  {
-    title: "Reduces Front-Desk Chaos",
-    body: "Keep communication organized between customers and technicians.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Feels Like An Additional Employee",
-    body: "ZOL handles repetitive communication work so your team can focus on repairs.",
-    icon: UserRoundCheck,
-  },
+const searchPrompts = [
+  "How many customers are waiting for callbacks?",
+  "Which estimates haven't been approved yet?",
+  "What appointments are scheduled tomorrow?",
+  "Which customers mentioned brake issues this week?",
 ];
 
-const futureCapabilities = [
-  "Appointment coordination",
-  "Customer follow-up",
-  "Repair workflow assistance",
-  "CRM integration",
-  "Shop insights",
-  "Customer communication memory",
-];
+const integrations = ["Tekmetric", "Shopmonkey", "AutoLeap", "Google Calendar", "SMS", "Email"];
 
 const dashboardCards = [
+  ["AI summaries", "Repair-ready notes from calls and customer conversations."],
+  ["Customer timelines", "Previous visits, open issues, and communication history."],
+  ["Repair histories", "Vehicle context available before the car arrives."],
+  ["Appointments", "Requested times, confirmed slots, and pending scheduling work."],
+  ["Action items", "Brake inspection, estimate prep, callback, follow-up."],
+  ["Follow-up reminders", "Customers who need a response before work stalls."],
+  ["Shop insights", "Pending estimates, urgent callbacks, and missed opportunities."],
+  ["Urgent issues", "High-priority repairs surfaced before they get buried."],
+  ["Communication logs", "Calls, notes, SMS, and email context in one operational view."],
+];
+
+const adoptionCards = [
   {
-    title: "AI Summary",
-    body: "Customer reports grinding sound while braking at low speeds. Requested tomorrow morning if available.",
+    title: "No complicated onboarding",
+    body: "ZOL starts with the conversations your shop already has every day.",
+    icon: Check,
   },
   {
-    title: "Vehicle Information",
-    body: "2018 Toyota Camry, front brake concern, repeat customer.",
+    title: "Works with existing workflows",
+    body: "Your team keeps using familiar tools while ZOL organizes the operational layer around them.",
+    icon: Network,
   },
   {
-    title: "Customer History",
-    body: "Last visit: oil change 3 months ago. Prior brake inspection noted.",
-  },
-  {
-    title: "Action Items",
-    body: "Inspect pads, check front rotors, prepare brake estimate.",
-  },
-  {
-    title: "Follow-Up Status",
-    body: "Ready for front desk review.",
-  },
-  {
-    title: "Appointment Requests",
-    body: "Preferred window: tomorrow morning.",
+    title: "Designed for independent repair shops",
+    body: "The product language, memory, and workflows are built around real service operations.",
+    icon: ShieldCheck,
   },
 ];
 
@@ -223,6 +211,21 @@ function SectionHeading({
   );
 }
 
+function LogoMark({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        "relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-[radial-gradient(circle_at_70%_20%,#f3ff83_0%,#22c55e_35%,#064e3b_72%,#020617_100%)] shadow-sm",
+        className,
+      )}
+      aria-hidden="true"
+    >
+      <span className="absolute h-[54%] w-[54%] border-[3px] border-white/90" />
+      <span className="absolute h-[3px] w-[76%] rotate-[-45deg] bg-white/90" />
+    </span>
+  );
+}
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -239,14 +242,12 @@ function Navbar() {
         className={cn(
           "mx-auto flex max-w-7xl items-center justify-between rounded-full border px-4 py-3 transition-all duration-300 sm:px-5",
           scrolled
-            ? "border-zinc-200/80 bg-white/82 shadow-card backdrop-blur-xl"
-            : "border-transparent bg-white/45 backdrop-blur-sm",
+            ? "border-zinc-200/80 bg-white/84 shadow-card backdrop-blur-xl"
+            : "border-transparent bg-white/50 backdrop-blur-sm",
         )}
       >
-        <a href="#" className="flex items-center gap-2" aria-label="ZOL home">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-950 text-sm font-bold text-white">
-            Z
-          </span>
+        <a href="#" className="flex items-center gap-3" aria-label="ZOL home">
+          <LogoMark />
           <span className="text-lg font-bold tracking-tight text-zinc-950">ZOL</span>
         </a>
 
@@ -276,7 +277,7 @@ function Waveform() {
       {Array.from({ length: 18 }).map((_, index) => (
         <motion.span
           key={index}
-          className="w-1 rounded-full bg-orange-500/80"
+          className="w-1 rounded-full bg-orange-500/85"
           animate={{
             height: [8, 24 + (index % 4) * 4, 10],
             opacity: [0.35, 1, 0.45],
@@ -293,7 +294,46 @@ function Waveform() {
   );
 }
 
+function StatusPill({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.span
+      animate={{ opacity: [0.65, 1, 0.65] }}
+      transition={{ duration: 2, repeat: Infinity }}
+      className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300"
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+      {children}
+    </motion.span>
+  );
+}
+
+function MiniPanel({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("rounded-3xl border border-white/10 bg-white/[0.06] p-4", className)}>
+      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+        {title}
+      </p>
+      {children}
+    </div>
+  );
+}
+
 function HeroDashboard() {
+  const intelligence = [
+    ["Tomorrow", "12 appointments"],
+    ["Estimates", "3 pending"],
+    ["Callbacks", "2 urgent"],
+    ["Follow-up", "1 overdue"],
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 28, scale: 0.98 }}
@@ -301,54 +341,43 @@ function HeroDashboard() {
       transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
       className="relative"
     >
-      <div className="absolute -inset-6 rounded-[2.5rem] bg-orange-500/10 blur-3xl" />
-      <div className="dashboard-noise relative overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-premium">
-        <div className="border-b border-zinc-200/80 bg-zinc-950 px-5 py-4 text-white">
-          <div className="flex items-center justify-between">
+      <div className="absolute -inset-8 rounded-[2.5rem] bg-orange-500/10 blur-3xl" />
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950 p-3 text-white shadow-premium sm:p-4">
+        <div className="mb-3 flex items-center justify-between rounded-[1.5rem] border border-white/10 bg-white/[0.06] px-4 py-3">
+          <div className="flex items-center gap-3">
+            <LogoMark className="h-8 w-8" />
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-zinc-400">
-                Incoming Call
-              </p>
-              <h3 className="mt-1 text-xl font-semibold">Sarah Mitchell</h3>
-              <p className="text-sm text-zinc-300">2018 Toyota Camry</p>
-            </div>
-            <div className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
-              Call Active
+              <p className="text-sm font-semibold">ZOL Shop OS</p>
+              <p className="text-xs text-zinc-400">Operational intelligence active</p>
             </div>
           </div>
-          <div className="mt-5 flex items-center justify-between rounded-2xl bg-white/8 px-4 py-3">
-            <Waveform />
-            <Mic2 className="h-5 w-5 text-orange-300" />
-          </div>
+          <StatusPill>Live</StatusPill>
         </div>
 
-        <div className="space-y-4 p-5 sm:p-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <InfoBlock label="Issue" value="Grinding noise while braking" />
-            <InfoBlock label="Urgency" value="High" tone="orange" />
-          </div>
-
-          <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                AI Summary
-              </p>
-              <motion.span
-                animate={{ opacity: [0.65, 1, 0.65] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700"
-              >
-                AI Summary Generated
-              </motion.span>
+        <div className="grid gap-3 lg:grid-cols-[0.9fr_1.2fr_0.95fr]">
+          <MiniPanel title="Live Incoming Call">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-semibold">Sarah Mitchell</h3>
+                <p className="text-sm text-zinc-300">2018 Toyota Camry</p>
+              </div>
+              <div className="rounded-2xl bg-black/25 p-3">
+                <Waveform />
+              </div>
+              <div className="grid gap-3">
+                <Metric label="Issue" value="Grinding noise while braking" />
+                <Metric label="Urgency" value="High" accent />
+                <Metric label="Status" value="AI Capturing Repair Details" />
+              </div>
             </div>
-            <p className="text-sm leading-6 text-zinc-700">
-              Customer reports grinding sound during braking at low speeds. Requests
-              appointment for tomorrow morning.
-            </p>
-          </div>
+          </MiniPanel>
 
-          <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="rounded-3xl border border-zinc-200 bg-white p-5">
+          <MiniPanel title="AI Repair Summary" className="bg-white text-zinc-950">
+            <p className="text-sm leading-6 text-zinc-700">
+              Customer reports grinding noise during braking at low speeds. Requests
+              morning appointment.
+            </p>
+            <div className="mt-5 rounded-2xl bg-zinc-50 p-4">
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
                 Recommended Actions
               </p>
@@ -365,16 +394,51 @@ function HeroDashboard() {
                 )}
               </ul>
             </div>
+            <motion.div
+              className="mt-4 h-1.5 rounded-full bg-zinc-100"
+              initial={{ opacity: 0.5 }}
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.8, repeat: Infinity }}
+            >
+              <div className="h-full w-3/4 rounded-full bg-orange-500" />
+            </motion.div>
+          </MiniPanel>
 
-            <div className="rounded-3xl border border-zinc-200 bg-zinc-50 p-5">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Customer Memory
-              </p>
-              <p className="text-sm font-semibold text-zinc-950">Last visit:</p>
-              <p className="mt-1 text-sm leading-6 text-zinc-700">
-                Oil change - 3 months ago
-              </p>
+          <MiniPanel title="Customer Memory">
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-semibold text-white">Previous Visits</p>
+                <div className="mt-3 space-y-2 text-sm text-zinc-300">
+                  <p>Oil Change - 3 months ago</p>
+                  <p>Brake vibration inspection - 8 months ago</p>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                  Customer Notes
+                </p>
+                <p className="mt-2 text-sm text-zinc-200">Prefers text communication</p>
+              </div>
             </div>
+          </MiniPanel>
+        </div>
+
+        <div className="mt-3 rounded-3xl border border-white/10 bg-white/[0.06] p-4">
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+              Shop Intelligence
+            </p>
+            <span className="rounded-full bg-orange-500/15 px-3 py-1 text-xs font-semibold text-orange-300">
+              Updated now
+            </span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-4">
+            {intelligence.map(([label, value]) => (
+              <div key={label} className="rounded-2xl bg-black/20 p-3">
+                <p className="text-xs text-zinc-500">{label}</p>
+                <p className="mt-1 text-sm font-semibold text-white">{value}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -382,26 +446,21 @@ function HeroDashboard() {
   );
 }
 
-function InfoBlock({
+function Metric({
   label,
   value,
-  tone = "default",
+  accent,
 }: {
   label: string;
   value: string;
-  tone?: "default" | "orange";
+  accent?: boolean;
 }) {
   return (
-    <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+    <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
         {label}
       </p>
-      <p
-        className={cn(
-          "mt-2 text-base font-semibold text-zinc-950",
-          tone === "orange" && "text-orange-700",
-        )}
-      >
+      <p className={cn("mt-1 text-sm font-semibold text-white", accent && "text-orange-300")}>
         {value}
       </p>
     </div>
@@ -411,38 +470,42 @@ function InfoBlock({
 function Hero() {
   return (
     <section className="relative overflow-hidden px-4 pb-20 pt-32 sm:px-6 lg:px-8 lg:pb-28 lg:pt-40">
-      <div className="industrial-grid absolute inset-x-0 top-0 h-[42rem] opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="industrial-grid absolute inset-x-0 top-0 h-[56rem] opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+      <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-14">
         <motion.div
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mx-auto max-w-5xl text-center"
         >
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white/80 px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-orange-500" />
-            Front-desk operations for auto repair shops
+            AI operating system for auto repair shops
           </div>
-          <h1 className="max-w-4xl text-5xl font-semibold tracking-[-0.055em] text-zinc-950 sm:text-6xl lg:text-7xl">
-            Your Shop&apos;s First AI Employee
+          <h1 className="mx-auto max-w-5xl text-5xl font-semibold tracking-[-0.055em] text-zinc-950 sm:text-6xl lg:text-7xl">
+            The AI Operating System For Modern Repair Shops
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 sm:text-xl">
-            ZOL answers every customer call, captures repair issues, remembers
-            customer history, and creates organized repair-ready summaries - so your
-            team can stay focused on the cars.
+          <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-zinc-600 sm:text-xl">
+            ZOL answers calls, remembers customers, and turns repair conversations
+            into organized shop intelligence.
+            <span className="mt-2 block">
+              So your team can reduce front-desk chaos, move faster, and keep every
+              customer interaction connected.
+            </span>
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button size="lg" asChild>
               <a href="#demo">
                 Book Demo <ArrowRight className="h-4 w-4" />
               </a>
             </Button>
             <Button size="lg" variant="secondary" asChild>
-              <a href="#demo-call">
-                <Play className="h-4 w-4" /> Listen to AI Call
+              <a href="#demo">
+                <Play className="h-4 w-4" /> Listen To AI Call
               </a>
             </Button>
           </div>
-          <div className="mt-7 grid gap-3 text-sm font-medium text-zinc-700 sm:grid-cols-2">
+          <div className="mx-auto mt-7 grid max-w-4xl gap-3 text-left text-sm font-medium text-zinc-700 sm:grid-cols-2 lg:grid-cols-3">
             {trustIndicators.map((item) => (
               <div key={item} className="flex items-center gap-2">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-orange-700">
@@ -453,88 +516,36 @@ function Hero() {
             ))}
           </div>
           <p className="mt-5 text-sm font-semibold text-zinc-500">
-            No new hardware. No complicated setup.
+            No complicated setup. Works alongside your existing workflow.
           </p>
         </motion.div>
 
-        <HeroDashboard />
+        <div className="w-full max-w-6xl">
+          <HeroDashboard />
+        </div>
       </div>
     </section>
   );
 }
 
-function SocialProof() {
-  const stats = [
-    {
-      title: "Missed calls",
-      body: "Busy shops cannot answer every ring during peak hours.",
-    },
-    {
-      title: "After-hours inquiries",
-      body: "Customers still ask for help when bays are closed.",
-    },
-    {
-      title: "Front-desk overload",
-      body: "Important repair details get buried in the daily rush.",
-    },
-  ];
-
-  return (
-    <AnimatedSection className="py-16">
-      <div className="rounded-[2rem] border border-zinc-200 bg-zinc-950 p-6 text-white shadow-premium sm:p-8 lg:p-10">
-        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.2fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Repair shops lose revenue when calls go unanswered.
-            </h2>
-            <p className="mt-4 text-base leading-7 text-zinc-300">
-              Between busy front desks, after-hours calls, and incomplete notes,
-              valuable repair opportunities slip through every day.
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {stats.map((stat) => (
-              <div
-                key={stat.title}
-                className="rounded-3xl border border-white/10 bg-white/[0.06] p-5"
-              >
-                <p className="text-lg font-semibold text-white">{stat.title}</p>
-                <p className="mt-3 text-sm leading-6 text-zinc-300">{stat.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function ProblemSection() {
+function ChaosSection() {
   return (
     <AnimatedSection>
       <SectionHeading
-        eyebrow="The daily reality"
-        title="The front desk was never meant to handle everything."
+        eyebrow="The operating problem"
+        title="Repair shops run on conversations - but conversations get lost."
+        description="Phone calls, handwritten notes, missed follow-ups, after-hours inquiries, technician updates, and customer concerns overload shops with fragmented communication."
       />
       <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        {problemCards.map((card, index) => (
-          <motion.div
+        {chaosCards.map((card, index) => (
+          <FeatureCard
             key={card.title}
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ duration: 0.45, delay: index * 0.06 }}
-            whileHover={{ y: -6 }}
-          >
-            <Card className="h-full p-6">
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-950 text-white">
-                <card.icon className="h-5 w-5" />
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-950">{card.title}</h3>
-              <p className="mt-4 text-sm leading-7 text-zinc-600">{card.body}</p>
-            </Card>
-          </motion.div>
+            title={card.title}
+            body={card.body}
+            icon={card.icon}
+            index={index}
+            darkIcon
+          />
         ))}
       </div>
     </AnimatedSection>
@@ -547,61 +558,88 @@ function WorkflowSection() {
       <div className="rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-premium sm:p-8 lg:p-12">
         <SectionHeading
           eyebrow="How it works"
-          title="ZOL works like another employee - without changing your workflow."
-          description="No complicated setup. No retraining your team."
+          title="ZOL connects conversations, workflows, and shop intelligence."
+          description="Easy to adopt because it starts with the communication your shop already handles every day."
         />
-        <div className="mt-14 grid gap-4 lg:grid-cols-5">
+        <div className="mt-14 grid gap-4 lg:grid-cols-7">
           {workflowSteps.map((step, index) => (
             <div key={step} className="relative">
-              <div className="h-full rounded-3xl border border-zinc-200 bg-zinc-50 p-5">
+              <div className="h-full rounded-3xl border border-zinc-200 bg-zinc-50 p-4">
                 <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-white">
                   {index + 1}
                 </div>
-                <p className="text-base font-semibold leading-6 text-zinc-950">
-                  {step}
-                </p>
+                <p className="text-sm font-semibold leading-6 text-zinc-950">{step}</p>
               </div>
               {index < workflowSteps.length - 1 ? (
-                <ChevronRight className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 rounded-full bg-white text-zinc-300 lg:block" />
+                <ChevronDown className="absolute -bottom-3 left-1/2 h-6 w-6 -translate-x-1/2 rounded-full bg-white text-zinc-300 lg:-right-3 lg:left-auto lg:top-1/2 lg:-translate-y-1/2 lg:rotate-[-90deg]" />
               ) : null}
             </div>
           ))}
         </div>
         <p className="mx-auto mt-10 max-w-3xl text-center text-lg leading-8 text-zinc-600">
-          ZOL helps your team stay focused on repairs while every customer interaction
-          stays organized.
+          ZOL transforms fragmented communication into organized operational
+          intelligence.
         </p>
       </div>
     </AnimatedSection>
   );
 }
 
-function FeaturesSection() {
+function FeatureCard({
+  title,
+  body,
+  icon: Icon,
+  index,
+  darkIcon = false,
+}: {
+  title: string;
+  body: string;
+  icon: LucideIcon;
+  index: number;
+  darkIcon?: boolean;
+}) {
   return (
-    <AnimatedSection id="features">
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      transition={{ duration: 0.45, delay: index * 0.05 }}
+      whileHover={{ y: -6 }}
+    >
+      <Card className="h-full p-6">
+        <div
+          className={cn(
+            "mb-6 flex h-12 w-12 items-center justify-center rounded-2xl",
+            darkIcon ? "bg-zinc-950 text-white" : "bg-orange-50 text-orange-700",
+          )}
+        >
+          <Icon className="h-5 w-5" />
+        </div>
+        <h3 className="text-xl font-semibold text-zinc-950">{title}</h3>
+        <p className="mt-4 text-sm leading-7 text-zinc-600">{body}</p>
+      </Card>
+    </motion.div>
+  );
+}
+
+function PlatformSection() {
+  return (
+    <AnimatedSection id="platform">
       <SectionHeading
-        eyebrow="Core features"
-        title="Built specifically for auto repair shops."
+        eyebrow="Platform"
+        title="More than call handling."
+        description="ZOL acts like an operational intelligence layer across your entire shop."
       />
       <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {featureCards.map((feature, index) => (
-          <motion.div
+        {platformCards.map((feature, index) => (
+          <FeatureCard
             key={feature.title}
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ duration: 0.45, delay: index * 0.05 }}
-            whileHover={{ y: -6 }}
-          >
-            <Card className="h-full p-6">
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-700">
-                <feature.icon className="h-5 w-5" />
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-950">{feature.title}</h3>
-              <p className="mt-4 text-sm leading-7 text-zinc-600">{feature.body}</p>
-            </Card>
-          </motion.div>
+            title={feature.title}
+            body={feature.body}
+            icon={feature.icon}
+            index={index}
+          />
         ))}
       </div>
     </AnimatedSection>
@@ -609,52 +647,66 @@ function FeaturesSection() {
 }
 
 function MemorySection() {
+  const examples = [
+    {
+      customer: "My brakes are making noise again.",
+      zol: "I see your Honda Accord previously came in for brake vibration issues three months ago. Has the issue gotten worse recently?",
+    },
+    {
+      customer: "I think I spoke with someone last week.",
+      zol: "Yes - you called about an oil leak inspection for your Ford F-150. Would you like me to continue helping with that appointment request?",
+    },
+  ];
+
   return (
     <AnimatedSection className="py-24">
-      <div className="grid items-center gap-10 lg:grid-cols-[0.86fr_1.14fr]">
+      <div className="grid items-center gap-10 lg:grid-cols-[0.82fr_1.18fr]">
         <SectionHeading
           align="left"
-          eyebrow="Shop memory"
-          title="ZOL remembers every customer."
-          description="Every conversation becomes organized shop memory."
+          eyebrow="Core moat"
+          title="ZOL remembers every customer, vehicle, and conversation."
+          description="Every interaction strengthens your shop's operational memory."
         />
         <Card className="overflow-hidden p-0">
           <div className="border-b border-zinc-200 bg-zinc-950 px-6 py-4 text-white">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold">Customer conversation</p>
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm font-semibold">Operational memory examples</p>
               <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-zinc-300">
                 Memory active
               </span>
             </div>
           </div>
-          <div className="space-y-5 p-6 sm:p-8">
-            <div className="max-w-[82%] rounded-3xl rounded-tl-md bg-zinc-100 p-5">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Customer
-              </p>
-              <p className="text-lg font-medium text-zinc-950">
-                &quot;My brakes are making noise again.&quot;
-              </p>
-            </div>
-            <motion.div
-              initial={{ opacity: 0, x: 18 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: 0.2 }}
-              className="ml-auto max-w-[88%] rounded-3xl rounded-tr-md bg-orange-500 p-5 text-white"
-            >
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-orange-100">
-                ZOL
-              </p>
-              <p className="text-lg font-medium leading-8">
-                &quot;I see your Honda Accord previously came in for brake vibration
-                issues three months ago. Is this related to the same problem?&quot;
-              </p>
-            </motion.div>
+          <div className="space-y-6 p-6 sm:p-8">
+            {examples.map((example, index) => (
+              <div key={example.customer} className="space-y-4">
+                <div className="max-w-[86%] rounded-3xl rounded-tl-md bg-zinc-100 p-5">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                    Customer
+                  </p>
+                  <p className="text-base font-medium text-zinc-950">
+                    &quot;{example.customer}&quot;
+                  </p>
+                </div>
+                <motion.div
+                  initial={{ opacity: 0, x: 18 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.55, delay: index * 0.14 }}
+                  className="ml-auto max-w-[90%] rounded-3xl rounded-tr-md bg-orange-500 p-5 text-white"
+                >
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-orange-100">
+                    ZOL
+                  </p>
+                  <p className="text-base font-medium leading-7">
+                    &quot;{example.zol}&quot;
+                  </p>
+                </motion.div>
+              </div>
+            ))}
             <div className="rounded-3xl border border-zinc-200 bg-zinc-50 p-5">
               <p className="text-sm leading-7 text-zinc-600">
-                ZOL helps create a more personal customer experience while keeping
-                repair history organized.
+                ZOL helps your shop feel more personal while keeping communication
+                organized.
               </p>
             </div>
           </div>
@@ -664,42 +716,163 @@ function MemorySection() {
   );
 }
 
-function DemoCallSection() {
-  const conversation = [
-    ["Customer", "My car makes a grinding noise when I brake."],
-    ["ZOL", "I can help with that. What's the vehicle year, make, and model?"],
-    ["Customer", "2018 Toyota Camry."],
-    ["ZOL", "Got it. I'll capture this for the shop and help request an appointment."],
+function ShopIntelligenceSection() {
+  return (
+    <AnimatedSection className="py-24">
+      <div className="rounded-[2rem] border border-zinc-200 bg-zinc-950 p-6 text-white shadow-premium sm:p-8 lg:p-12">
+        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <SectionHeading
+            align="left"
+            eyebrow="Shop intelligence"
+            title="Your shop becomes searchable."
+            description="ZOL helps owners and staff access operational information instantly."
+          />
+          <div className="space-y-3">
+            {searchPrompts.map((prompt, index) => (
+              <motion.div
+                key={prompt}
+                initial={{ opacity: 0, x: 18 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                className="flex items-center gap-3 rounded-3xl border border-white/10 bg-white/[0.06] p-4"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-orange-500 text-white">
+                  <Search className="h-5 w-5" />
+                </span>
+                <p className="text-sm font-medium text-zinc-100">&quot;{prompt}&quot;</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function IntegrationsSection() {
+  return (
+    <AnimatedSection id="integrations">
+      <SectionHeading
+        eyebrow="Integrations"
+        title="Built to work alongside your existing systems."
+        description="ZOL enhances your workflow instead of replacing it."
+      />
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {integrations.map((integration) => (
+          <Card
+            key={integration}
+            className="flex items-center justify-between p-6 transition-transform hover:-translate-y-1"
+          >
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-950 text-white">
+                <DatabaseZap className="h-5 w-5" />
+              </span>
+              <p className="text-lg font-semibold text-zinc-950">{integration}</p>
+            </div>
+            <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-600">
+              Layer
+            </span>
+          </Card>
+        ))}
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function DashboardPreviewSection() {
+  return (
+    <AnimatedSection className="py-24">
+      <SectionHeading
+        eyebrow="Operational center"
+        title="Everything stays organized automatically."
+        description="A single operating view for summaries, timelines, repair context, appointments, follow-ups, and urgent work."
+      />
+      <div className="mt-12 rounded-[2rem] border border-zinc-200 bg-zinc-950 p-4 shadow-premium sm:p-6 lg:p-8">
+        <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-white">Shop operations dashboard</p>
+            <p className="mt-1 text-sm text-zinc-400">
+              Communication, memory, and workflow intelligence in one place
+            </p>
+          </div>
+          <span className="w-fit rounded-full bg-orange-500/15 px-3 py-1 text-xs font-semibold text-orange-300">
+            Live shop context
+          </span>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {dashboardCards.map(([title, body]) => (
+            <div key={title} className="rounded-3xl bg-white p-5">
+              <p className="text-sm font-semibold text-zinc-950">{title}</p>
+              <p className="mt-3 text-sm leading-6 text-zinc-600">{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function AdoptionSection() {
+  return (
+    <AnimatedSection>
+      <SectionHeading
+        eyebrow="Adoption"
+        title="Easy for shops to adopt."
+        description="Your team keeps working normally - ZOL simply adds operational intelligence on top."
+      />
+      <div className="mt-12 grid gap-5 lg:grid-cols-3">
+        {adoptionCards.map((card, index) => (
+          <FeatureCard
+            key={card.title}
+            title={card.title}
+            body={card.body}
+            icon={card.icon}
+            index={index}
+            darkIcon
+          />
+        ))}
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function DemoSection() {
+  const previews = [
+    ["AI call preview", "Customer concern captured with vehicle and urgency."],
+    ["Dashboard preview", "Repair-ready summary and action items created."],
+    ["Memory preview", "Previous visits and open context surfaced instantly."],
+    ["Operational insights", "Callbacks, estimates, and tomorrow's load made visible."],
   ];
 
   return (
-    <AnimatedSection id="demo-call" className="py-24">
-      <div className="mx-auto max-w-5xl">
+    <AnimatedSection id="demo" className="py-24">
+      <div className="mx-auto max-w-6xl">
         <SectionHeading
-          eyebrow="Demo call"
-          title="Listen to how ZOL handles a real repair call."
+          eyebrow="Demo"
+          title="See how ZOL operates inside a real shop."
+          description="Follow a customer call as it becomes memory, repair context, and operational intelligence."
         />
         <Card className="mt-12 overflow-hidden">
-          <div className="grid gap-0 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="grid gap-0 lg:grid-cols-[0.75fr_1.25fr]">
             <div className="bg-zinc-950 p-8 text-white">
               <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-full bg-orange-500">
                 <Play className="h-7 w-7 fill-white" />
               </div>
-              <h3 className="text-2xl font-semibold">Brake concern intake</h3>
+              <h3 className="text-2xl font-semibold">Product walkthrough</h3>
               <p className="mt-3 text-sm leading-7 text-zinc-300">
-                A simple call becomes a clean repair summary your team can act on.
+                Watch ZOL answer, structure, remember, and surface the work your shop
+                needs to act on.
               </p>
               <Button className="mt-8" variant="accent">
-                <Play className="h-4 w-4 fill-white" /> Play Demo Call
+                <Play className="h-4 w-4 fill-white" /> Watch Product Demo
               </Button>
             </div>
-            <div className="space-y-4 p-6 sm:p-8">
-              {conversation.map(([speaker, line]) => (
-                <div key={line} className="rounded-3xl border border-zinc-200 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                    {speaker}
-                  </p>
-                  <p className="mt-2 text-base leading-7 text-zinc-800">{line}</p>
+            <div className="grid gap-4 p-6 sm:p-8 md:grid-cols-2">
+              {previews.map(([title, body]) => (
+                <div key={title} className="rounded-3xl border border-zinc-200 p-5">
+                  <p className="text-sm font-semibold text-zinc-950">{title}</p>
+                  <p className="mt-3 text-sm leading-6 text-zinc-600">{body}</p>
                 </div>
               ))}
             </div>
@@ -710,101 +883,26 @@ function DemoCallSection() {
   );
 }
 
-function DashboardPreviewSection() {
-  return (
-    <AnimatedSection className="py-24">
-      <SectionHeading
-        eyebrow="Organized automatically"
-        title="Everything stays organized automatically."
-      />
-      <div className="mt-12 rounded-[2rem] border border-zinc-200 bg-zinc-950 p-4 shadow-premium sm:p-6 lg:p-8">
-        <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-white">Repair intake dashboard</p>
-            <p className="mt-1 text-sm text-zinc-400">Sarah Mitchell - 2018 Toyota Camry</p>
-          </div>
-          <span className="w-fit rounded-full bg-orange-500/15 px-3 py-1 text-xs font-semibold text-orange-300">
-            Ready for shop review
-          </span>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {dashboardCards.map((card) => (
-            <div key={card.title} className="rounded-3xl bg-white p-5">
-              <p className="text-sm font-semibold text-zinc-950">{card.title}</p>
-              <p className="mt-3 text-sm leading-6 text-zinc-600">{card.body}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function WhyZolSection() {
-  return (
-    <AnimatedSection id="why-zol">
-      <SectionHeading eyebrow="Why ZOL" title="Why shops choose ZOL." />
-      <div className="mt-12 grid gap-5 lg:grid-cols-3">
-        {whyCards.map((card) => (
-          <Card key={card.title} className="p-7">
-            <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-950 text-white">
-              <card.icon className="h-6 w-6" />
-            </div>
-            <h3 className="text-2xl font-semibold tracking-tight text-zinc-950">
-              {card.title}
-            </h3>
-            <p className="mt-4 text-base leading-7 text-zinc-600">{card.body}</p>
-          </Card>
-        ))}
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function FutureVisionSection() {
-  return (
-    <AnimatedSection>
-      <div className="rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-card sm:p-8 lg:p-12">
-        <SectionHeading
-          eyebrow="Future vision"
-          title="More than call answering."
-          description="ZOL is becoming the operational intelligence layer for modern repair shops."
-        />
-        <div className="mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-3">
-          {futureCapabilities.map((capability) => (
-            <span
-              key={capability}
-              className="rounded-full border border-zinc-200 bg-zinc-50 px-4 py-2 text-sm font-semibold text-zinc-700"
-            >
-              {capability}
-            </span>
-          ))}
-        </div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
 function FinalCta() {
   return (
-    <AnimatedSection id="demo" className="pb-24">
+    <AnimatedSection className="pb-24">
       <div className="relative overflow-hidden rounded-[2rem] bg-zinc-950 px-6 py-16 text-center shadow-premium sm:px-10 lg:py-20">
         <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-orange-500/20 blur-3xl" />
-        <div className="relative mx-auto max-w-3xl">
+        <div className="relative mx-auto max-w-4xl">
           <Sparkles className="mx-auto mb-5 h-7 w-7 text-orange-300" />
           <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-            Ready to bring an AI employee into your shop?
+            The next generation of repair shops will run on operational intelligence.
           </h2>
-          <p className="mt-5 text-lg leading-8 text-zinc-300">
-            Start organizing calls, repair conversations, and customer communication
-            with ZOL.
+          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-zinc-300">
+            ZOL helps shops organize communication, reduce chaos, and operate with
+            real-time intelligence.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button size="lg" variant="accent">
               Book Demo <ArrowRight className="h-4 w-4" />
             </Button>
             <Button size="lg" variant="secondary" asChild>
-              <a href="#how-it-works">See How It Works</a>
+              <a href="#platform">See Platform</a>
             </Button>
           </div>
         </div>
@@ -817,9 +915,14 @@ function Footer() {
   return (
     <footer className="border-t border-zinc-200 bg-white px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-lg font-bold tracking-tight text-zinc-950">ZOL</p>
-          <p className="mt-2 text-sm text-zinc-500">AI employee for auto repair shops</p>
+        <div className="flex items-center gap-3">
+          <LogoMark />
+          <div>
+            <p className="text-lg font-bold tracking-tight text-zinc-950">ZOL</p>
+            <p className="mt-1 text-sm text-zinc-500">
+              AI operating system for repair shops
+            </p>
+          </div>
         </div>
         <div className="flex flex-wrap gap-5 text-sm font-medium text-zinc-600">
           <a href="#" className="hover:text-zinc-950">
@@ -843,15 +946,15 @@ export function ZolHomepage() {
     <main className="min-h-screen overflow-hidden">
       <Navbar />
       <Hero />
-      <SocialProof />
-      <ProblemSection />
+      <ChaosSection />
       <WorkflowSection />
-      <FeaturesSection />
+      <PlatformSection />
       <MemorySection />
-      <DemoCallSection />
+      <ShopIntelligenceSection />
+      <IntegrationsSection />
       <DashboardPreviewSection />
-      <WhyZolSection />
-      <FutureVisionSection />
+      <AdoptionSection />
+      <DemoSection />
       <FinalCta />
       <Footer />
     </main>

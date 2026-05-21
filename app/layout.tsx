@@ -10,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ZOL | AI Employee for Auto Repair Shops",
+  title: "ZOL | AI Operating System for Repair Shops",
   description:
-    "ZOL answers calls, remembers customers, captures repair issues, and creates organized repair-ready summaries for auto repair shops.",
+    "ZOL answers calls, remembers customers, organizes workflows, and surfaces operational intelligence for modern repair shops.",
 };
 
 export default function RootLayout({
