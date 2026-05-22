@@ -1,2 +1,6 @@
-// Public auth feature exports will live here when authentication is added.
-export {};
+export { SignInPage } from "./components/sign-in-page";
+export { SignUpPage } from "./components/sign-up-page";
+export {
+  protectPlatformRoute,
+  redirectAuthenticatedUser,
+} from "./utils/route-protection";

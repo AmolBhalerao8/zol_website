@@ -1,5 +1,5 @@
 import { ZolHomepage } from "@/features/landing";
 
-export default function Home() {
+export default function MarketingPage() {
   return <ZolHomepage />;
 }

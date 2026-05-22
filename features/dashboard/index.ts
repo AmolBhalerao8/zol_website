@@ -1,2 +1,2 @@
-// Public dashboard feature exports will live here when dashboard routes are added.
-export {};
+export { DashboardOverview } from "./components/dashboard-overview";
+export { DashboardShell } from "./layouts/dashboard-shell";

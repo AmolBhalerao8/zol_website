@@ -1,8 +1,10 @@
 "use client";
 
+import { UserButton, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowRight,
   Brain,
@@ -264,6 +266,7 @@ function LogoMark({ className }: { className?: string }) {
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { isLoaded, isSignedIn } = useUser();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -299,9 +302,25 @@ function Navbar() {
           ))}
         </div>
 
-        <Button size="sm" asChild>
-          <a href="#demo">Book Demo</a>
-        </Button>
+        <div className="flex items-center gap-2">
+          {isLoaded && isSignedIn ? (
+            <>
+              <Button size="sm" asChild>
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+              <UserButton />
+            </>
+          ) : (
+            <>
+              <Button size="sm" variant="ghost" asChild>
+                <Link href="/sign-in">Sign In</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/sign-up">Get Started</Link>
+              </Button>
+            </>
+          )}
+        </div>
       </nav>
     </header>
   );
