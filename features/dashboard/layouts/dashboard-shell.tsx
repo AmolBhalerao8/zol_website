@@ -26,7 +26,18 @@ const sidebarItems = [
   { label: "Settings", href: "#", icon: Settings },
 ];
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+type DashboardShellProps = {
+  children: ReactNode;
+  workspaceName: string;
+};
+
+function SidebarContent({
+  workspaceName,
+  onNavigate,
+}: {
+  workspaceName: string;
+  onNavigate?: () => void;
+}) {
   return (
     <div className="flex h-full flex-col">
       <Link href="/" className="flex items-center gap-3 px-3" onClick={onNavigate}>
@@ -40,7 +51,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         />
         <div>
           <p className="text-lg font-bold tracking-tight text-white">ZOL</p>
-          <p className="text-xs text-zinc-500">Operations OS</p>
+          <p className="truncate text-xs text-zinc-500">{workspaceName}</p>
         </div>
       </Link>
 
@@ -71,13 +82,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function DashboardShell({ children }: { children: ReactNode }) {
+export function DashboardShell({ children, workspaceName }: DashboardShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-[#f7f4ee] text-zinc-950">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-white/10 bg-zinc-950 p-5 md:block">
-        <SidebarContent />
+        <SidebarContent workspaceName={workspaceName} />
       </aside>
 
       {mobileOpen ? (
@@ -97,7 +108,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             >
               <X className="h-4 w-4" />
             </button>
-            <SidebarContent onNavigate={() => setMobileOpen(false)} />
+            <SidebarContent
+              workspaceName={workspaceName}
+              onNavigate={() => setMobileOpen(false)}
+            />
           </aside>
         </div>
       ) : null}
@@ -115,10 +129,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                 <Menu className="h-4 w-4" />
               </button>
               <div>
-                <p className="text-sm font-medium text-zinc-500">Workspace</p>
-                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-                  Dashboard
-                </h1>
+                <p className="text-sm font-medium text-zinc-500">{workspaceName}</p>
+                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Dashboard</h1>
               </div>
             </div>
 

@@ -22,7 +22,7 @@ export function SignInPage() {
         path="/sign-in"
         routing="path"
         signUpUrl="/sign-up"
-        forceRedirectUrl="/dashboard"
+        forceRedirectUrl="/onboarding"
         appearance={{
           elements: {
             rootBox: "mx-auto w-full",
@@ -34,6 +34,7 @@ export function SignInPage() {
               "bg-zinc-950 text-white hover:bg-zinc-800 rounded-full shadow-card",
             footerActionLink: "text-emerald-700 hover:text-emerald-800",
             formFieldInput: "rounded-2xl border-zinc-200 focus:border-emerald-500",
+            footer: "hidden",
           },
         }}
       />

@@ -1,5 +1,12 @@
 import { DashboardOverview } from "@/features/dashboard";
+import { getCurrentWorkspace } from "@/features/workspace";
 
-export default function DashboardPage() {
-  return <DashboardOverview />;
+export default async function DashboardPage() {
+  const currentWorkspace = await getCurrentWorkspace();
+
+  if (!currentWorkspace) {
+    return null;
+  }
+
+  return <DashboardOverview workspace={currentWorkspace.workspace} />;
 }

@@ -1,9 +1,5 @@
-import { SignUpPage, redirectAuthenticatedUser } from "@/features/auth";
+import { SignUpPage } from "@/features/auth";
 
-export const dynamic = "force-dynamic";
-
-export default async function Page() {
-  await redirectAuthenticatedUser();
-
+export default function Page() {
   return <SignUpPage />;
 }
