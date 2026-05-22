@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ZOL | AI Employees for Operational Businesses",
+  title: "ZOL | AI Employee for Operational Businesses",
   description:
     "ZOL answers calls, remembers customers, organizes workflows, and surfaces operational intelligence for customer-facing businesses.",
 };

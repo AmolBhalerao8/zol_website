@@ -251,6 +251,8 @@ function LogoMark({ className }: { className?: string }) {
       alt=""
       width={80}
       height={80}
+      priority
+      sizes="40px"
       className={cn(
         "h-10 w-10 rounded-full object-cover shadow-sm ring-1 ring-black/5",
         className,
@@ -505,20 +507,20 @@ function Metric({
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden px-4 pb-20 pt-32 sm:px-6 lg:px-8 lg:pb-28 lg:pt-40">
+    <section className="relative overflow-hidden px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8 lg:pb-28 lg:pt-40">
       <div className="industrial-grid absolute inset-x-0 top-0 h-[56rem] opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
-      <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-14">
+      <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-10 sm:gap-14">
         <motion.div
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="mx-auto max-w-5xl text-center"
         >
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700 shadow-sm backdrop-blur">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          <div className="mx-auto mb-5 inline-flex max-w-[92vw] items-center justify-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-[10px] font-semibold uppercase leading-5 tracking-[0.12em] text-emerald-700 shadow-sm backdrop-blur sm:mb-6 sm:text-xs sm:tracking-[0.18em]">
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 sm:h-2 sm:w-2" />
             Operational Intelligence For Customer-Facing Businesses
           </div>
-          <h1 className="mx-auto max-w-5xl text-5xl font-semibold tracking-[-0.055em] text-zinc-950 sm:text-6xl lg:text-7xl">
+          <h1 className="mx-auto max-w-4xl text-[clamp(2.5rem,7vw,4rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-zinc-950">
             Your Business&apos;s First AI Employee
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8">
