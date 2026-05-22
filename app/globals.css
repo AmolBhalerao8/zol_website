@@ -9,12 +9,12 @@
   --card-foreground: 240 10% 4%;
   --border: 240 6% 90%;
   --input: 240 6% 90%;
-  --ring: 24 95% 53%;
+  --ring: 158 64% 38%;
   --primary: 240 10% 4%;
   --primary-foreground: 0 0% 98%;
   --muted: 36 20% 93%;
   --muted-foreground: 240 4% 46%;
-  --accent: 24 95% 53%;
+  --accent: 158 64% 38%;
   --accent-foreground: 0 0% 100%;
 }
 
@@ -28,13 +28,14 @@ html {
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(249, 115, 22, 0.09), transparent 34rem),
+    radial-gradient(circle at top left, rgba(16, 185, 129, 0.1), transparent 34rem),
+    radial-gradient(circle at top right, rgba(217, 249, 157, 0.16), transparent 28rem),
     linear-gradient(180deg, #fbfaf7 0%, #f5f2ec 42%, #ffffff 100%);
   color: hsl(var(--foreground));
 }
 
 ::selection {
-  background: rgba(249, 115, 22, 0.2);
+  background: rgba(16, 185, 129, 0.2);
 }
 
 .industrial-grid {
@@ -46,6 +47,6 @@ body {
 
 .dashboard-noise {
   background-image:
-    radial-gradient(circle at 20% 20%, rgba(249, 115, 22, 0.12), transparent 24rem),
+    radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.12), transparent 24rem),
     linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(250, 250, 250, 0.74));
 }

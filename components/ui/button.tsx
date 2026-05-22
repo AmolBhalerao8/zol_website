@@ -14,7 +14,7 @@ const buttonVariants = cva(
         secondary:
           "border border-zinc-200 bg-white text-zinc-950 shadow-sm hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-zinc-50",
         accent:
-          "bg-orange-500 text-white shadow-card hover:-translate-y-0.5 hover:bg-orange-600",
+          "bg-emerald-600 text-white shadow-card hover:-translate-y-0.5 hover:bg-emerald-700",
         ghost: "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950",
       },
       size: {

@@ -1,4 +1,4 @@
-import { ZolHomepage } from "@/components/landing/zol-homepage";
+import { ZolHomepage } from "@/features/landing";
 
 export default function Home() {
   return <ZolHomepage />;
