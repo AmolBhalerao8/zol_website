@@ -32,6 +32,7 @@ model Workspace {
 
   members            WorkspaceMember[]
   aiEmployeeSettings AIEmployeeSettings?
+  communicationChannel CommunicationChannel?
 }
 
 enum WorkspaceRole {
@@ -77,6 +78,34 @@ model AIEmployeeSettings {
   enabledCapabilities Json
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+enum CommunicationProvider {
+  VAPI
+}
+
+enum CommunicationChannelStatus {
+  PENDING
+  ACTIVE
+  FAILED
+}
+
+model CommunicationChannel {
+  id                 String                     @id @default(cuid())
+  workspaceId        String                     @unique
+  provider           CommunicationProvider
+  phoneNumber        String?
+  phoneAreaCode      String?
+  vapiAssistantId    String?
+  vapiPhoneNumberId  String?
+  voiceId            String
+  voiceName          String
+  voiceProvider      String                     @default("vapi")
+  status             CommunicationChannelStatus
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }

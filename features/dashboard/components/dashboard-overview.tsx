@@ -8,7 +8,7 @@ import {
   Network,
   Sparkles,
 } from "lucide-react";
-import type { AIEmployeeSettings, Workspace } from "@prisma/client";
+import type { AIEmployeeSettings, CommunicationChannel, Workspace } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,47 +16,21 @@ import {
   COMMUNICATION_TONE_LABELS,
   parseEnabledCapabilitiesJson,
 } from "@/features/ai-employee/schemas/ai-employee-settings-schema";
-
-const overviewCards = [
-  {
-    title: "Conversations",
-    value: "Ready",
-    body: "Customer calls and messages will appear here once your communication channel is connected.",
-    icon: MessageSquareText,
-  },
-  {
-    title: "Customer Memory",
-    value: "Empty",
-    body: "ZOL will build reusable context from conversations, visits, orders, and service history.",
-    icon: Brain,
-  },
-  {
-    title: "Action Items",
-    value: "0 open",
-    body: "Quotes, follow-ups, appointments, and handoffs will be organized here.",
-    icon: ClipboardList,
-  },
-  {
-    title: "Integrations",
-    value: "Not connected",
-    body: "Connect calendars, CRMs, commerce tools, and phone systems in a later setup step.",
-    icon: Network,
-  },
-  {
-    title: "Operational Insights",
-    value: "Preparing",
-    body: "Signals about missed opportunities, urgent requests, and follow-up will live here.",
-    icon: Sparkles,
-  },
-];
+import { CommunicationChannelStatus } from "@/features/voice-channel/components/communication-channel-status";
 
 type DashboardOverviewProps = {
   workspace: Workspace;
   aiSettings: AIEmployeeSettings | null;
+  communicationChannel: CommunicationChannel | null;
 };
 
-export function DashboardOverview({ workspace, aiSettings }: DashboardOverviewProps) {
+export function DashboardOverview({
+  workspace,
+  aiSettings,
+  communicationChannel,
+}: DashboardOverviewProps) {
   const isAIConfigured = Boolean(aiSettings);
+  const isVoiceChannelActive = communicationChannel?.status === "ACTIVE";
   const capabilitiesCount = aiSettings
     ? parseEnabledCapabilitiesJson(aiSettings.enabledCapabilities).length
     : 0;
@@ -66,8 +40,43 @@ export function DashboardOverview({ workspace, aiSettings }: DashboardOverviewPr
     { label: "Account created", complete: true },
     { label: "Workspace created", complete: true },
     { label: "AI employee configured", complete: isAIConfigured },
-    { label: "Communication channel pending", complete: false },
+    { label: "Voice channel active", complete: isVoiceChannelActive },
     { label: "Integrations pending", complete: false },
+  ];
+
+  const overviewCards = [
+    {
+      title: "Conversations",
+      value: isVoiceChannelActive ? "Channel active" : "Pending",
+      body: isVoiceChannelActive
+        ? "Your communication channel is active. Live conversations will appear here in a future step."
+        : "Customer calls and messages will appear here once your communication channel is connected.",
+      icon: MessageSquareText,
+    },
+    {
+      title: "Customer Memory",
+      value: "Empty",
+      body: "ZOL will build reusable context from conversations, visits, orders, and service history.",
+      icon: Brain,
+    },
+    {
+      title: "Action Items",
+      value: "0 open",
+      body: "Quotes, follow-ups, appointments, and handoffs will be organized here.",
+      icon: ClipboardList,
+    },
+    {
+      title: "Integrations",
+      value: "Not connected",
+      body: "Connect calendars, CRMs, commerce tools, and phone systems in a later setup step.",
+      icon: Network,
+    },
+    {
+      title: "Operational Insights",
+      value: "Preparing",
+      body: "Signals about missed opportunities, urgent requests, and follow-up will live here.",
+      icon: Sparkles,
+    },
   ];
 
   return (
@@ -94,12 +103,18 @@ export function DashboardOverview({ workspace, aiSettings }: DashboardOverviewPr
                 Setup progress
               </div>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                {isAIConfigured ? "Your AI employee is ready" : "Teach ZOL about your business"}
+                {isVoiceChannelActive
+                  ? "Your AI employee is active"
+                  : isAIConfigured
+                    ? "Activate your AI employee"
+                    : "Teach ZOL about your business"}
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-300">
-                {isAIConfigured
-                  ? "Next, connect your communication channels to activate autonomous customer communication."
-                  : "Share business context so ZOL can handle customer communication and workflow organization intelligently."}
+                {isVoiceChannelActive
+                  ? "Your communication channel is live. ZOL is ready to handle customer communication with operational intelligence."
+                  : isAIConfigured
+                    ? "Choose a voice and activate your business communication channel to bring your AI employee online."
+                    : "Share business context so ZOL can handle customer communication and workflow organization intelligently."}
               </p>
 
               {isAIConfigured && aiSettings ? (
@@ -126,6 +141,24 @@ export function DashboardOverview({ workspace, aiSettings }: DashboardOverviewPr
                       {hasBusinessContext ? "Added" : "Missing"}
                     </dd>
                   </div>
+                  {isVoiceChannelActive && communicationChannel ? (
+                    <>
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                        <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">
+                          Communication number
+                        </dt>
+                        <dd className="mt-1 text-sm font-semibold text-white">
+                          {communicationChannel.phoneNumber ?? "Assigned"}
+                        </dd>
+                      </div>
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                        <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">Voice</dt>
+                        <dd className="mt-1 text-sm font-semibold text-white">
+                          {communicationChannel.voiceName}
+                        </dd>
+                      </div>
+                    </>
+                  ) : null}
                 </dl>
               ) : null}
             </div>
@@ -150,14 +183,20 @@ export function DashboardOverview({ workspace, aiSettings }: DashboardOverviewPr
                 ))}
               </ul>
               <Button variant="accent" size="lg" className="mt-6 w-full" asChild>
-                <Link href="/setup/ai-employee">
-                  {isAIConfigured ? "Edit AI Employee" : "Set Up AI Employee"}
+                <Link href={isAIConfigured ? "/setup/voice-channel" : "/setup/ai-employee"}>
+                  {isVoiceChannelActive
+                    ? "Manage Voice Channel"
+                    : isAIConfigured
+                      ? "Activate AI Employee"
+                      : "Set Up AI Employee"}
                 </Link>
               </Button>
             </Card>
           </div>
         </div>
       </section>
+
+      <CommunicationChannelStatus channel={communicationChannel} isAIConfigured={isAIConfigured} />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {overviewCards.map((card) => (

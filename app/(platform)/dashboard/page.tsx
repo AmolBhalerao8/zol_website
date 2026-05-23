@@ -1,5 +1,6 @@
 import { getAIEmployeeSettings } from "@/features/ai-employee/queries/get-ai-employee-settings";
 import { DashboardOverview } from "@/features/dashboard";
+import { getCommunicationChannel } from "@/features/voice-channel/queries/get-communication-channel";
 import { getCurrentWorkspace } from "@/features/workspace";
 
 export default async function DashboardPage() {
@@ -9,9 +10,16 @@ export default async function DashboardPage() {
     return null;
   }
 
-  const aiSettings = await getAIEmployeeSettings(currentWorkspace.workspace.id);
+  const [aiSettings, communicationChannel] = await Promise.all([
+    getAIEmployeeSettings(currentWorkspace.workspace.id),
+    getCommunicationChannel(currentWorkspace.workspace.id),
+  ]);
 
   return (
-    <DashboardOverview workspace={currentWorkspace.workspace} aiSettings={aiSettings} />
+    <DashboardOverview
+      workspace={currentWorkspace.workspace}
+      aiSettings={aiSettings}
+      communicationChannel={communicationChannel}
+    />
   );
 }
