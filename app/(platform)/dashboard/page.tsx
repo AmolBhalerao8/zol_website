@@ -1,3 +1,4 @@
+import { getAIEmployeeSettings } from "@/features/ai-employee/queries/get-ai-employee-settings";
 import { DashboardOverview } from "@/features/dashboard";
 import { getCurrentWorkspace } from "@/features/workspace";
 
@@ -8,5 +9,9 @@ export default async function DashboardPage() {
     return null;
   }
 
-  return <DashboardOverview workspace={currentWorkspace.workspace} />;
+  const aiSettings = await getAIEmployeeSettings(currentWorkspace.workspace.id);
+
+  return (
+    <DashboardOverview workspace={currentWorkspace.workspace} aiSettings={aiSettings} />
+  );
 }

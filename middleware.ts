@@ -5,6 +5,7 @@ const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
   "/onboarding",
   "/auth/continue",
+  "/setup/ai-employee",
 ]);
 
 const hasClerkKeys =
@@ -26,6 +27,7 @@ export const config = {
     "/dashboard(.*)",
     "/onboarding",
     "/auth/continue",
+    "/setup/ai-employee",
     "/(api|trpc)(.*)",
   ],
 };

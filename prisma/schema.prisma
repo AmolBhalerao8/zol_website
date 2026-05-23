@@ -30,7 +30,8 @@ model Workspace {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  members WorkspaceMember[]
+  members            WorkspaceMember[]
+  aiEmployeeSettings AIEmployeeSettings?
 }
 
 enum WorkspaceRole {
@@ -53,4 +54,29 @@ model WorkspaceMember {
   @@unique([userId, workspaceId])
   @@index([userId])
   @@index([workspaceId])
+}
+
+enum CommunicationTone {
+  PROFESSIONAL
+  FRIENDLY
+  CASUAL
+  CONCISE
+}
+
+model AIEmployeeSettings {
+  id                String            @id @default(cuid())
+  workspaceId       String            @unique
+  displayName       String
+  greetingMessage   String
+  communicationTone CommunicationTone
+  businessContext   String?
+  commonScenarios   Json?
+  businessHours     Json
+  escalationPhone   String?
+  escalationEmail   String?
+  enabledCapabilities Json
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }

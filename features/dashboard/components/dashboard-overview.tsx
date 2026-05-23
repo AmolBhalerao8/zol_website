@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Brain,
   Check,
@@ -7,16 +8,20 @@ import {
   Network,
   Sparkles,
 } from "lucide-react";
-import type { Workspace } from "@prisma/client";
+import type { AIEmployeeSettings, Workspace } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  COMMUNICATION_TONE_LABELS,
+  parseEnabledCapabilitiesJson,
+} from "@/features/ai-employee/schemas/ai-employee-settings-schema";
 
 const overviewCards = [
   {
     title: "Conversations",
     value: "Ready",
-    body: "Customer calls and messages will appear here once your workspace is connected.",
+    body: "Customer calls and messages will appear here once your communication channel is connected.",
     icon: MessageSquareText,
   },
   {
@@ -28,7 +33,7 @@ const overviewCards = [
   {
     title: "Action Items",
     value: "0 open",
-    body: "Quotes, callbacks, appointments, and handoffs will be organized here.",
+    body: "Quotes, follow-ups, appointments, and handoffs will be organized here.",
     icon: ClipboardList,
   },
   {
@@ -45,18 +50,26 @@ const overviewCards = [
   },
 ];
 
-const setupChecklist = [
-  { label: "Account created", complete: true },
-  { label: "Workspace created", complete: true },
-  { label: "AI employee setup pending", complete: false },
-  { label: "Integrations pending", complete: false },
-];
-
 type DashboardOverviewProps = {
   workspace: Workspace;
+  aiSettings: AIEmployeeSettings | null;
 };
 
-export function DashboardOverview({ workspace }: DashboardOverviewProps) {
+export function DashboardOverview({ workspace, aiSettings }: DashboardOverviewProps) {
+  const isAIConfigured = Boolean(aiSettings);
+  const capabilitiesCount = aiSettings
+    ? parseEnabledCapabilitiesJson(aiSettings.enabledCapabilities).length
+    : 0;
+  const hasBusinessContext = Boolean(aiSettings?.businessContext?.trim());
+
+  const setupChecklist = [
+    { label: "Account created", complete: true },
+    { label: "Workspace created", complete: true },
+    { label: "AI employee configured", complete: isAIConfigured },
+    { label: "Communication channel pending", complete: false },
+    { label: "Integrations pending", complete: false },
+  ];
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <section className="overflow-hidden rounded-[2rem] border border-zinc-200 bg-white shadow-card">
@@ -66,7 +79,8 @@ export function DashboardOverview({ workspace }: DashboardOverviewProps) {
             Your operational workspace is live
           </h2>
           <p className="mt-2 text-sm text-zinc-600">
-            Business Type: <span className="font-medium text-zinc-950">{workspace.businessType}</span>
+            Business Type:{" "}
+            <span className="font-medium text-zinc-950">{workspace.businessType}</span>
           </p>
         </div>
       </section>
@@ -80,11 +94,40 @@ export function DashboardOverview({ workspace }: DashboardOverviewProps) {
                 Setup progress
               </div>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Your workspace is ready
+                {isAIConfigured ? "Your AI employee is ready" : "Teach ZOL about your business"}
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-300">
-                Next, connect your communication channels and configure your AI employee.
+                {isAIConfigured
+                  ? "Next, connect your communication channels to activate autonomous customer communication."
+                  : "Share business context so ZOL can handle customer communication and workflow organization intelligently."}
               </p>
+
+              {isAIConfigured && aiSettings ? (
+                <dl className="mt-6 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">AI Employee</dt>
+                    <dd className="mt-1 text-sm font-semibold text-white">{aiSettings.displayName}</dd>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">Tone</dt>
+                    <dd className="mt-1 text-sm font-semibold text-white">
+                      {COMMUNICATION_TONE_LABELS[aiSettings.communicationTone]}
+                    </dd>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">Capabilities</dt>
+                    <dd className="mt-1 text-sm font-semibold text-white">
+                      {capabilitiesCount} enabled
+                    </dd>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">Business Context</dt>
+                    <dd className="mt-1 text-sm font-semibold text-white">
+                      {hasBusinessContext ? "Added" : "Missing"}
+                    </dd>
+                  </div>
+                </dl>
+              ) : null}
             </div>
 
             <Card className="border-white/10 bg-white/[0.06] p-6 text-white shadow-none">
@@ -107,7 +150,9 @@ export function DashboardOverview({ workspace }: DashboardOverviewProps) {
                 ))}
               </ul>
               <Button variant="accent" size="lg" className="mt-6 w-full" asChild>
-                <a href="#">Continue Setup</a>
+                <Link href="/setup/ai-employee">
+                  {isAIConfigured ? "Edit AI Employee" : "Set Up AI Employee"}
+                </Link>
               </Button>
             </Card>
           </div>
