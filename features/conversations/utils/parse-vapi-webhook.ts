@@ -1,4 +1,5 @@
 import { isCompletedCallEvent } from "./map-vapi-event";
+import { normalizeCustomerPhone } from "./normalize-customer-phone";
 
 export type ParsedVapiWebhook = {
   eventType: string;
@@ -92,17 +93,25 @@ function extractRecordingUrl(payload: Record<string, unknown>): string | null {
 }
 
 function extractCustomer(payload: Record<string, unknown>) {
+  const message = asRecord(payload.message);
+  const call = asRecord(payload.call) ?? asRecord(message?.call);
+
   const customer =
     asRecord(payload.customer) ??
-    asRecord(asRecord(payload.call)?.customer) ??
-    asRecord(asRecord(payload.message)?.customer);
+    asRecord(call?.customer) ??
+    asRecord(message?.customer);
 
-  const customerPhone =
+  const customerPhone = normalizeCustomerPhone(
     readString(customer?.number) ??
-    readString(customer?.phone) ??
-    readString(customer?.phoneNumber) ??
-    readString(asRecord(payload.call)?.customerPhoneNumber) ??
-    readString(payload.customerPhone);
+      readString(customer?.phone) ??
+      readString(customer?.phoneNumber) ??
+      readString(customer?.numberE164) ??
+      readString(call?.customerPhoneNumber) ??
+      readString(call?.customerNumber) ??
+      readString(message?.customerPhoneNumber) ??
+      readString(payload.customerPhoneNumber) ??
+      readString(payload.customerPhone),
+  );
 
   const customerName =
     readString(customer?.name) ??

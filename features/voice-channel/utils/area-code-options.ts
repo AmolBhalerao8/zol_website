@@ -9,24 +9,18 @@ export function isUsAreaCodeFormat(value: string): boolean {
 }
 
 export function getDefaultAreaCode(workspacePhone?: string | null): string {
-  if (workspacePhone) {
-    const digits = workspacePhone.replace(/\D/g, "");
-
-    if (digits.length === 11 && digits.startsWith("1")) {
-      return digits.slice(1, 4);
-    }
-
-    if (digits.length === 10) {
-      return digits.slice(0, 3);
-    }
+  if (!workspacePhone) {
+    return "";
   }
 
-  const configured =
-    process.env.VAPI_DEFAULT_AREA_CODE?.trim() ||
-    process.env.NEXT_PUBLIC_DEFAULT_AREA_CODE?.trim();
+  const digits = workspacePhone.replace(/\D/g, "");
 
-  if (configured && isUsAreaCodeFormat(configured)) {
-    return configured;
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return digits.slice(1, 4);
+  }
+
+  if (digits.length === 10) {
+    return digits.slice(0, 3);
   }
 
   return "";

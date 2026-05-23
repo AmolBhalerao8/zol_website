@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import { VoiceChannelSetupForm } from "@/features/voice-channel/components/voice-channel-setup-form";
 import { getCommunicationChannel } from "@/features/voice-channel/queries/get-communication-channel";
+import { syncActiveVoiceChannelAssistant } from "@/features/voice-channel/services/sync-active-assistant";
 import { canManageVoiceChannel } from "@/features/voice-channel/utils/can-manage-voice-channel";
 import { requireAIEmployeeSettings } from "@/features/voice-channel/utils/require-ai-employee";
 import { getDefaultAreaCode } from "@/features/voice-channel/utils/area-code-options";
@@ -12,6 +13,10 @@ export async function VoiceChannelSetupPage() {
   const currentWorkspace = await requireAIEmployeeSettings();
   const channel = await getCommunicationChannel(currentWorkspace.workspace.id);
   const canManage = canManageVoiceChannel(currentWorkspace.role);
+
+  if (channel?.status === "ACTIVE" && channel.vapiAssistantId && canManage) {
+    await syncActiveVoiceChannelAssistant(currentWorkspace.workspace.id);
+  }
 
   return (
     <main className="min-h-screen bg-[#f7f4ee] text-zinc-950">

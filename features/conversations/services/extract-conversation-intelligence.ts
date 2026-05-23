@@ -59,7 +59,6 @@ function buildExtractionPrompt(input: {
 Return ONLY valid JSON with this exact shape:
 {
   "customerName": string | null,
-  "customerPhone": string | null,
   "summary": string,
   "urgency": "LOW" | "MEDIUM" | "HIGH" | "URGENT" | "UNKNOWN",
   "keyDetails": string[],
@@ -78,6 +77,7 @@ Rules:
 - recommendedActions should be concrete follow-ups, not generic advice.
 - Use urgency based on customer tone, deadlines, safety, or revenue impact.
 - If information is missing, use null or UNKNOWN rather than guessing.
+- Do not extract phone numbers; caller phone is captured separately from the telephony provider.
 - Do not mention AI, providers, or internal systems.`;
 
   const user = `Business name: ${input.workspace.name}
@@ -136,7 +136,7 @@ function buildFallbackIntelligence(
 
   return {
     customerName: null,
-    customerPhone,
+    customerPhone: customerPhone?.trim() || null,
     summary: preview || "Customer call completed. Review the transcript for details.",
     urgency: "UNKNOWN",
     keyDetails: preview ? [preview] : [],
@@ -215,10 +215,7 @@ export async function extractConversationIntelligence(input: {
     return {
       customerName:
         typeof parsed.customerName === "string" ? parsed.customerName.trim() || null : null,
-      customerPhone:
-        typeof parsed.customerPhone === "string"
-          ? parsed.customerPhone.trim() || input.fallbackCustomerPhone || null
-          : input.fallbackCustomerPhone ?? null,
+      customerPhone: input.fallbackCustomerPhone ?? null,
       summary:
         typeof parsed.summary === "string" && parsed.summary.trim()
           ? parsed.summary.trim()

@@ -3,6 +3,8 @@ import type { Prisma } from "@prisma/client";
 import { getAIEmployeeSettings } from "@/features/ai-employee/queries/get-ai-employee-settings";
 import { extractConversationIntelligence } from "@/features/conversations/services/extract-conversation-intelligence";
 import type { ParsedVapiWebhook } from "@/features/conversations/utils/parse-vapi-webhook";
+import { normalizeCustomerPhone } from "@/features/conversations/utils/normalize-customer-phone";
+import { fetchVapiCall, hasVapiConfigured } from "@/features/voice-channel/services/vapi";
 import { prisma } from "@/lib/prisma";
 
 export type ProcessVapiWebhookResult =
@@ -35,6 +37,29 @@ export async function findCommunicationChannelForWebhook(input: {
   });
 }
 
+async function resolveCustomerPhone(parsed: ParsedVapiWebhook): Promise<string | null> {
+  const fromWebhook = normalizeCustomerPhone(parsed.customerPhone);
+
+  if (fromWebhook) {
+    return fromWebhook;
+  }
+
+  if (!parsed.callId || !hasVapiConfigured()) {
+    return null;
+  }
+
+  try {
+    const call = await fetchVapiCall(parsed.callId);
+
+    return normalizeCustomerPhone(
+      call.customer?.number ?? call.customer?.phone ?? call.customer?.phoneNumber ?? null,
+    );
+  } catch (error) {
+    console.error("Failed to fetch Vapi call for customer phone:", error);
+    return null;
+  }
+}
+
 export async function processVapiWebhookEvent(
   parsed: ParsedVapiWebhook,
   rawPayload: Prisma.InputJsonValue,
@@ -56,6 +81,8 @@ export async function processVapiWebhookEvent(
     return { status: "not_found", reason: "No matching communication channel" };
   }
 
+  const customerPhone = await resolveCustomerPhone(parsed);
+
   const existingConversation = await prisma.conversation.findUnique({
     where: { vapiCallId: parsed.callId },
     include: { actionItems: true },
@@ -66,7 +93,7 @@ export async function processVapiWebhookEvent(
         where: { id: existingConversation.id },
         data: {
           customerName: parsed.customerName ?? existingConversation.customerName,
-          customerPhone: parsed.customerPhone ?? existingConversation.customerPhone,
+          customerPhone: customerPhone ?? existingConversation.customerPhone,
           transcript: parsed.transcript ?? existingConversation.transcript,
           transcriptUrl: parsed.transcriptUrl ?? existingConversation.transcriptUrl,
           recordingUrl: parsed.recordingUrl ?? existingConversation.recordingUrl,
@@ -83,7 +110,7 @@ export async function processVapiWebhookEvent(
           communicationChannelId: channel.id,
           vapiCallId: parsed.callId,
           customerName: parsed.customerName,
-          customerPhone: parsed.customerPhone,
+          customerPhone,
           transcript: parsed.transcript,
           transcriptUrl: parsed.transcriptUrl,
           recordingUrl: parsed.recordingUrl,
@@ -109,7 +136,7 @@ export async function processVapiWebhookEvent(
       transcript: parsed.transcript,
       workspace: channel.workspace,
       aiSettings,
-      fallbackCustomerPhone: parsed.customerPhone,
+      fallbackCustomerPhone: customerPhone,
     });
 
     await prisma.$transaction(async (tx) => {
@@ -117,7 +144,10 @@ export async function processVapiWebhookEvent(
         where: { id: conversation.id },
         data: {
           customerName: intelligence.customerName ?? parsed.customerName,
-          customerPhone: intelligence.customerPhone ?? parsed.customerPhone,
+          customerPhone:
+            customerPhone ??
+            normalizeCustomerPhone(intelligence.customerPhone) ??
+            conversation.customerPhone,
           summary: intelligence.summary,
           urgency: intelligence.urgency,
           status: "COMPLETED",

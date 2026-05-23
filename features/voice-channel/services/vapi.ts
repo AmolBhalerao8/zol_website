@@ -171,3 +171,19 @@ export async function deleteVapiPhoneNumber(phoneNumberId: string): Promise<void
     method: "DELETE",
   });
 }
+
+export type VapiCall = {
+  id: string;
+  customer?: {
+    number?: string;
+    phone?: string;
+    phoneNumber?: string;
+    name?: string;
+  };
+};
+
+export async function fetchVapiCall(callId: string): Promise<VapiCall> {
+  return vapiRequest<VapiCall>(`/call/${callId}`, {
+    method: "GET",
+  });
+}
