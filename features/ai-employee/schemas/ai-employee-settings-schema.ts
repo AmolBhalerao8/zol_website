@@ -129,9 +129,7 @@ const businessHoursSchema = z.object({
 export const aiEmployeeSettingsSchema = z.object({
   displayName: z.string().trim().min(1, "AI employee name is required").max(80),
   greetingMessage: z.string().trim().min(1, "Greeting message is required").max(2000),
-  communicationTone: z.enum(COMMUNICATION_TONES, {
-    message: "Select a communication tone",
-  }),
+  communicationTone: z.enum(COMMUNICATION_TONES).optional().default("PROFESSIONAL"),
   businessContext: z
     .string()
     .trim()

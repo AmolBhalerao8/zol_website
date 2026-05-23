@@ -15,9 +15,6 @@ import {
 import { BusinessHoursEditor } from "@/features/ai-employee/components/business-hours-editor";
 import { EnabledCapabilitiesSelector } from "@/features/ai-employee/components/enabled-capabilities-selector";
 import {
-  COMMUNICATION_TONE_DESCRIPTIONS,
-  COMMUNICATION_TONE_LABELS,
-  COMMUNICATION_TONES,
   DEFAULT_COMMON_SCENARIOS_PLACEHOLDER,
   type BusinessHours,
 } from "@/features/ai-employee/schemas/ai-employee-settings-schema";
@@ -87,35 +84,6 @@ export function AIEmployeeSetupForm({ settings, canManage }: AIEmployeeSetupForm
               required
             />
             <FieldError message={state.fieldErrors?.greetingMessage?.[0]} />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Communication Style</CardTitle>
-          <p className="text-sm leading-6 text-zinc-600">
-            How ZOL should sound when managing customer communication.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Label htmlFor="communicationTone">Communication tone</Label>
-            <select
-              id="communicationTone"
-              name="communicationTone"
-              defaultValue={defaults.communicationTone}
-              disabled={!canManage}
-              required
-              className="flex h-11 w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-950 shadow-sm focus-visible:border-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/20 disabled:opacity-60"
-            >
-              {COMMUNICATION_TONES.map((tone) => (
-                <option key={tone} value={tone}>
-                  {COMMUNICATION_TONE_LABELS[tone]} — {COMMUNICATION_TONE_DESCRIPTIONS[tone]}
-                </option>
-              ))}
-            </select>
-            <FieldError message={state.fieldErrors?.communicationTone?.[0]} />
           </div>
         </CardContent>
       </Card>

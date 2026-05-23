@@ -83,7 +83,6 @@ Rules:
   const user = `Business name: ${input.workspace.name}
 Business type: ${input.workspace.businessType}
 Business context: ${businessContext}
-${input.aiSettings ? `AI employee tone: ${input.aiSettings.communicationTone}` : ""}
 
 Extraction guidance:
 ${buildBusinessTypeGuidance(input.workspace.businessType)}

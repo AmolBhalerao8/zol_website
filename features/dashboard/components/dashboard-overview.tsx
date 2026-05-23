@@ -13,7 +13,6 @@ import type { AIEmployeeSettings, CommunicationChannel, Workspace } from "@prism
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  COMMUNICATION_TONE_LABELS,
   parseEnabledCapabilitiesJson,
 } from "@/features/ai-employee/schemas/ai-employee-settings-schema";
 import { AIEmployeeConfigCard } from "@/features/dashboard/components/ai-employee-config-card";
@@ -167,12 +166,6 @@ export function DashboardOverview({
                     label="AI Employee"
                     value={aiSettings.displayName}
                     hint="Edit identity and greeting"
-                  />
-                  <SetupInsightTile
-                    href="/setup/ai-employee"
-                    label="Tone"
-                    value={COMMUNICATION_TONE_LABELS[aiSettings.communicationTone]}
-                    hint="Update communication style"
                   />
                   <SetupInsightTile
                     href="/setup/ai-employee"

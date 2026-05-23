@@ -30,7 +30,6 @@ function parseFormData(formData: FormData) {
   return {
     displayName: formData.get("displayName"),
     greetingMessage: formData.get("greetingMessage"),
-    communicationTone: formData.get("communicationTone"),
     businessContext: formData.get("businessContext") || undefined,
     commonScenarios: formData.get("commonScenarios") || undefined,
     businessHours,
@@ -72,10 +71,15 @@ export async function saveAIEmployeeSettings(
 
   const commonScenariosJson = commonScenariosToJson(parsed.data.commonScenarios);
 
+  const existingSettings = await prisma.aIEmployeeSettings.findUnique({
+    where: { workspaceId: currentWorkspace.workspace.id },
+    select: { communicationTone: true },
+  });
+
   const data = {
     displayName: parsed.data.displayName,
     greetingMessage: parsed.data.greetingMessage,
-    communicationTone: parsed.data.communicationTone,
+    communicationTone: existingSettings?.communicationTone ?? parsed.data.communicationTone,
     businessContext: parsed.data.businessContext ?? null,
     commonScenarios: commonScenariosJson ?? Prisma.DbNull,
     businessHours: parsed.data.businessHours as Prisma.InputJsonValue,

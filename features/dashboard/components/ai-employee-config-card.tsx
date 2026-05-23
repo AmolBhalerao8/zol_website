@@ -7,7 +7,6 @@ import type { AIEmployeeSettings } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  COMMUNICATION_TONE_LABELS,
   parseEnabledCapabilitiesJson,
 } from "@/features/ai-employee/schemas/ai-employee-settings-schema";
 
@@ -33,8 +32,8 @@ export function AIEmployeeConfigCard({
             {settings.displayName}
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600">
-            Update business context, communication style, hours, and capabilities. Changes apply to
-            how ZOL handles customer communication.
+            Update business context, hours, and capabilities. Changes apply to how ZOL handles
+            customer communication.
           </p>
         </div>
         <Button variant="secondary" size="lg" asChild className="shrink-0">
@@ -65,13 +64,7 @@ export function AIEmployeeConfigCard({
         </div>
       ) : null}
 
-      <dl className="grid gap-3 p-6 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
-        <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-          <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Tone</dt>
-          <dd className="mt-1 text-sm font-semibold text-zinc-950">
-            {COMMUNICATION_TONE_LABELS[settings.communicationTone]}
-          </dd>
-        </div>
+      <dl className="grid gap-3 p-6 sm:grid-cols-2 sm:px-8 lg:grid-cols-3">
         <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
           <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Capabilities</dt>
           <dd className="mt-1 text-sm font-semibold text-zinc-950">{capabilitiesCount} enabled</dd>

@@ -1,7 +1,6 @@
 import type { AIEmployeeSettings, Workspace } from "@prisma/client";
 
 import {
-  COMMUNICATION_TONE_LABELS,
   ENABLED_CAPABILITY_OPTIONS,
   parseBusinessHoursJson,
   parseCommonScenariosJson,
@@ -62,7 +61,6 @@ export function buildAssistantSystemPrompt({
   workspace,
   aiSettings,
 }: BuildAssistantSystemPromptInput): string {
-  const tone = COMMUNICATION_TONE_LABELS[aiSettings.communicationTone];
   const businessContext =
     aiSettings.businessContext?.trim() ||
     `${workspace.name} is a ${workspace.businessType} business. Use the workspace details and customer context to respond intelligently.`;
@@ -95,7 +93,6 @@ ${workspace.website ? `- Website: ${workspace.website}` : ""}
 ${businessContext}
 
 ## Communication style
-- Tone: ${tone}
 - Speak naturally, confidently, and with operational awareness.
 - Keep responses focused, helpful, and action-oriented.
 - Ask clarifying questions when needed to move work forward.
