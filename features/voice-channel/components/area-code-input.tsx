@@ -114,7 +114,7 @@ export function AreaCodeInput({
           </Button>
         </div>
         <p className="text-sm text-zinc-500">
-          Enter a 3-digit US area code, then verify availability with Vapi before activating.
+          Enter a 3-digit US area code, then verify availability before activating.
         </p>
       </div>
 

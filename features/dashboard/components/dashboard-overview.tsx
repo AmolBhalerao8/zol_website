@@ -16,18 +16,39 @@ import {
   COMMUNICATION_TONE_LABELS,
   parseEnabledCapabilitiesJson,
 } from "@/features/ai-employee/schemas/ai-employee-settings-schema";
+import { AIEmployeeConfigCard } from "@/features/dashboard/components/ai-employee-config-card";
+import { DashboardUpdateBanner } from "@/features/dashboard/components/dashboard-update-banner";
+import { SetupInsightTile } from "@/features/dashboard/components/setup-insight-tile";
 import { CommunicationChannelStatus } from "@/features/voice-channel/components/communication-channel-status";
+import { RecentConversationsCard } from "@/features/conversations/components/recent-conversations-card";
+import type { Conversation } from "@prisma/client";
 
 type DashboardOverviewProps = {
   workspace: Workspace;
   aiSettings: AIEmployeeSettings | null;
   communicationChannel: CommunicationChannel | null;
+  recentConversations: Array<
+    Conversation & {
+      _count: { actionItems: number };
+    }
+  >;
+  conversationStats: {
+    conversationCount: number;
+    openActionItemsCount: number;
+    urgentItemsCount: number;
+  };
+  aiEmployeeUpdated?: boolean;
+  assistantSync?: string;
 };
 
 export function DashboardOverview({
   workspace,
   aiSettings,
   communicationChannel,
+  recentConversations,
+  conversationStats,
+  aiEmployeeUpdated = false,
+  assistantSync,
 }: DashboardOverviewProps) {
   const isAIConfigured = Boolean(aiSettings);
   const isVoiceChannelActive = communicationChannel?.status === "ACTIVE";
@@ -44,13 +65,29 @@ export function DashboardOverview({
     { label: "Integrations pending", complete: false },
   ];
 
+  const primaryCtaHref = !isAIConfigured
+    ? "/setup/ai-employee"
+    : !isVoiceChannelActive
+      ? "/setup/voice-channel"
+      : "/setup/voice-channel";
+
+  const primaryCtaLabel = !isAIConfigured
+    ? "Set Up AI Employee"
+    : !isVoiceChannelActive
+      ? "Activate AI Employee"
+      : "Manage Voice Channel";
+
   const overviewCards = [
     {
       title: "Conversations",
-      value: isVoiceChannelActive ? "Channel active" : "Pending",
-      body: isVoiceChannelActive
-        ? "Your communication channel is active. Live conversations will appear here in a future step."
-        : "Customer calls and messages will appear here once your communication channel is connected.",
+      value:
+        conversationStats.conversationCount > 0
+          ? `${conversationStats.conversationCount} captured`
+          : "Pending",
+      body:
+        conversationStats.conversationCount > 0
+          ? "Customer calls are being captured and organized into summaries and action items."
+          : "Customer calls and messages will appear here once your communication channel is connected.",
       icon: MessageSquareText,
     },
     {
@@ -61,8 +98,8 @@ export function DashboardOverview({
     },
     {
       title: "Action Items",
-      value: "0 open",
-      body: "Quotes, follow-ups, appointments, and handoffs will be organized here.",
+      value: `${conversationStats.openActionItemsCount} open`,
+      body: "Quotes, follow-ups, appointments, and handoffs extracted from customer conversations.",
       icon: ClipboardList,
     },
     {
@@ -81,6 +118,8 @@ export function DashboardOverview({
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
+      {aiEmployeeUpdated ? <DashboardUpdateBanner assistantSync={assistantSync} /> : null}
+
       <section className="overflow-hidden rounded-[2rem] border border-zinc-200 bg-white shadow-card">
         <div className="border-b border-zinc-200 px-6 py-5 sm:px-8">
           <p className="text-sm font-medium text-zinc-500">Welcome to {workspace.name}</p>
@@ -106,57 +145,66 @@ export function DashboardOverview({
                 {isVoiceChannelActive
                   ? "Your AI employee is active"
                   : isAIConfigured
-                    ? "Activate your AI employee"
+                    ? hasBusinessContext
+                      ? "Activate your AI employee"
+                      : "Complete your AI employee setup"
                     : "Teach ZOL about your business"}
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-300">
                 {isVoiceChannelActive
-                  ? "Your communication channel is live. ZOL is ready to handle customer communication with operational intelligence."
+                  ? "Your communication channel is live. Keep business context current so ZOL stays aligned with how you operate."
                   : isAIConfigured
-                    ? "Choose a voice and activate your business communication channel to bring your AI employee online."
+                    ? hasBusinessContext
+                      ? "Choose a voice and activate your business communication channel to bring your AI employee online."
+                      : "Add business context first, then activate your communication channel when you are ready."
                     : "Share business context so ZOL can handle customer communication and workflow organization intelligently."}
               </p>
 
               {isAIConfigured && aiSettings ? (
                 <dl className="mt-6 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                    <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">AI Employee</dt>
-                    <dd className="mt-1 text-sm font-semibold text-white">{aiSettings.displayName}</dd>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                    <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">Tone</dt>
-                    <dd className="mt-1 text-sm font-semibold text-white">
-                      {COMMUNICATION_TONE_LABELS[aiSettings.communicationTone]}
-                    </dd>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                    <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">Capabilities</dt>
-                    <dd className="mt-1 text-sm font-semibold text-white">
-                      {capabilitiesCount} enabled
-                    </dd>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                    <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">Business Context</dt>
-                    <dd className="mt-1 text-sm font-semibold text-white">
-                      {hasBusinessContext ? "Added" : "Missing"}
-                    </dd>
-                  </div>
+                  <SetupInsightTile
+                    href="/setup/ai-employee"
+                    label="AI Employee"
+                    value={aiSettings.displayName}
+                    hint="Edit identity and greeting"
+                  />
+                  <SetupInsightTile
+                    href="/setup/ai-employee"
+                    label="Tone"
+                    value={COMMUNICATION_TONE_LABELS[aiSettings.communicationTone]}
+                    hint="Update communication style"
+                  />
+                  <SetupInsightTile
+                    href="/setup/ai-employee"
+                    label="Capabilities"
+                    value={`${capabilitiesCount} enabled`}
+                    hint="Adjust what ZOL can handle"
+                  />
+                  <SetupInsightTile
+                    href="/setup/ai-employee"
+                    label="Business Context"
+                    value={hasBusinessContext ? "Added" : "Missing"}
+                    hint={
+                      hasBusinessContext
+                        ? "Review or expand context"
+                        : "Add context to improve responses"
+                    }
+                    variant={hasBusinessContext ? "default" : "attention"}
+                  />
                   {isVoiceChannelActive && communicationChannel ? (
                     <>
-                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                        <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">
-                          Communication number
-                        </dt>
-                        <dd className="mt-1 text-sm font-semibold text-white">
-                          {communicationChannel.phoneNumber ?? "Assigned"}
-                        </dd>
-                      </div>
-                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                        <dt className="text-xs uppercase tracking-[0.16em] text-zinc-400">Voice</dt>
-                        <dd className="mt-1 text-sm font-semibold text-white">
-                          {communicationChannel.voiceName}
-                        </dd>
-                      </div>
+                      <SetupInsightTile
+                        href="/setup/voice-channel"
+                        label="Communication number"
+                        value={communicationChannel.phoneNumber ?? "Assigned"}
+                        hint="Manage voice channel"
+                      />
+                      <SetupInsightTile
+                        href="/setup/voice-channel"
+                        label="Voice"
+                        value={communicationChannel.voiceName}
+                        hint="Change how ZOL sounds"
+                      />
                     </>
                   ) : null}
                 </dl>
@@ -182,21 +230,37 @@ export function DashboardOverview({
                   </li>
                 ))}
               </ul>
-              <Button variant="accent" size="lg" className="mt-6 w-full" asChild>
-                <Link href={isAIConfigured ? "/setup/voice-channel" : "/setup/ai-employee"}>
-                  {isVoiceChannelActive
-                    ? "Manage Voice Channel"
-                    : isAIConfigured
-                      ? "Activate AI Employee"
-                      : "Set Up AI Employee"}
-                </Link>
-              </Button>
+              <div className="mt-6 space-y-3">
+                <Button variant="accent" size="lg" className="w-full" asChild>
+                  <Link href={primaryCtaHref}>{primaryCtaLabel}</Link>
+                </Button>
+                {isAIConfigured ? (
+                  <Button variant="secondary" size="lg" className="w-full" asChild>
+                    <Link href="/setup/ai-employee">Edit AI Employee</Link>
+                  </Button>
+                ) : null}
+              </div>
             </Card>
           </div>
         </div>
       </section>
 
+      {isAIConfigured && aiSettings ? (
+        <AIEmployeeConfigCard
+          settings={aiSettings}
+          hasBusinessContext={hasBusinessContext}
+          isVoiceChannelActive={isVoiceChannelActive}
+        />
+      ) : null}
+
       <CommunicationChannelStatus channel={communicationChannel} isAIConfigured={isAIConfigured} />
+
+      <RecentConversationsCard
+        conversations={recentConversations}
+        conversationCount={conversationStats.conversationCount}
+        openActionItemsCount={conversationStats.openActionItemsCount}
+        urgentItemsCount={conversationStats.urgentItemsCount}
+      />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {overviewCards.map((card) => (

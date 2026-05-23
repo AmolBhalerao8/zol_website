@@ -33,6 +33,8 @@ model Workspace {
   members            WorkspaceMember[]
   aiEmployeeSettings AIEmployeeSettings?
   communicationChannel CommunicationChannel?
+  conversations      Conversation[]
+  actionItems        ActionItem[]
 }
 
 enum WorkspaceRole {
@@ -107,5 +109,84 @@ model CommunicationChannel {
   createdAt          DateTime                   @default(now())
   updatedAt          DateTime                   @updatedAt
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+
+  @@index([vapiAssistantId])
+  @@index([vapiPhoneNumberId])
+}
+
+enum ConversationStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum Urgency {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+  UNKNOWN
+}
+
+enum ActionItemPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ActionItemStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  DISMISSED
+}
+
+model Conversation {
+  id                     String             @id @default(cuid())
+  workspaceId            String
+  communicationChannelId String
+  vapiCallId             String             @unique
+  customerName           String?
+  customerPhone          String?
+  transcript             String?
+  transcriptUrl          String?
+  recordingUrl           String?
+  summary                String?
+  urgency                Urgency            @default(UNKNOWN)
+  status                 ConversationStatus @default(PROCESSING)
+  startedAt              DateTime?
+  endedAt                DateTime?
+  durationSeconds        Int?
+  rawProviderPayload     Json?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  workspace            Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  communicationChannel CommunicationChannel @relation(fields: [communicationChannelId], references: [id], onDelete: Cascade)
+  actionItems          ActionItem[]
+
+  @@index([workspaceId, createdAt(sort: Desc)])
+  @@index([communicationChannelId])
+}
+
+model ActionItem {
+  id             String             @id @default(cuid())
+  workspaceId    String
+  conversationId String
+  title          String
+  description    String?
+  priority       ActionItemPriority @default(MEDIUM)
+  status         ActionItemStatus   @default(OPEN)
+  dueAt          DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+  @@index([conversationId])
 }

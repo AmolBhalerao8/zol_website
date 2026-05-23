@@ -3,6 +3,7 @@
 import { UserButton } from "@clerk/nextjs";
 import {
   Brain,
+  Bot,
   LayoutDashboard,
   Menu,
   MessageSquareText,
@@ -13,13 +14,15 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
 const sidebarItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Conversations", href: "#", icon: MessageSquareText },
+  { label: "AI Employee", href: "/setup/ai-employee", icon: Bot },
+  { label: "Conversations", href: "/conversations", icon: MessageSquareText, showCount: true },
   { label: "Customers", href: "#", icon: UsersRound },
   { label: "Memory", href: "#", icon: Brain },
   { label: "Integrations", href: "#", icon: Network },
@@ -29,15 +32,20 @@ const sidebarItems = [
 type DashboardShellProps = {
   children: ReactNode;
   workspaceName: string;
+  conversationCount?: number;
 };
 
 function SidebarContent({
   workspaceName,
+  conversationCount = 0,
   onNavigate,
 }: {
   workspaceName: string;
+  conversationCount?: number;
   onNavigate?: () => void;
 }) {
+  const pathname = usePathname();
+
   return (
     <div className="flex h-full flex-col">
       <Link href="/" className="flex items-center gap-3 px-3" onClick={onNavigate}>
@@ -56,20 +64,31 @@ function SidebarContent({
       </Link>
 
       <nav className="mt-10 space-y-1">
-        {sidebarItems.map((item) => (
+        {sidebarItems.map((item) => {
+          const isActive =
+            item.href !== "#" &&
+            (pathname === item.href || pathname.startsWith(`${item.href}/`));
+
+          return (
           <Link
             key={item.label}
             href={item.href}
             onClick={onNavigate}
             className={cn(
               "flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white",
-              item.label === "Dashboard" && "bg-white/[0.08] text-white",
+              isActive && "bg-white/[0.08] text-white",
             )}
           >
             <item.icon className="h-4 w-4" />
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {"showCount" in item && item.showCount && conversationCount > 0 ? (
+              <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-200">
+                {conversationCount}
+              </span>
+            ) : null}
           </Link>
-        ))}
+          );
+        })}
       </nav>
 
       <div className="mt-auto rounded-3xl border border-white/10 bg-white/[0.04] p-4">
@@ -82,13 +101,17 @@ function SidebarContent({
   );
 }
 
-export function DashboardShell({ children, workspaceName }: DashboardShellProps) {
+export function DashboardShell({
+  children,
+  workspaceName,
+  conversationCount = 0,
+}: DashboardShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-[#f7f4ee] text-zinc-950">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-white/10 bg-zinc-950 p-5 md:block">
-        <SidebarContent workspaceName={workspaceName} />
+        <SidebarContent workspaceName={workspaceName} conversationCount={conversationCount} />
       </aside>
 
       {mobileOpen ? (
@@ -110,6 +133,7 @@ export function DashboardShell({ children, workspaceName }: DashboardShellProps)
             </button>
             <SidebarContent
               workspaceName={workspaceName}
+              conversationCount={conversationCount}
               onNavigate={() => setMobileOpen(false)}
             />
           </aside>

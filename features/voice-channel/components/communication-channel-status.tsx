@@ -42,6 +42,15 @@ export function CommunicationChannelStatus({
           <Button variant="accent" size="lg" asChild className="shrink-0">
             <Link href="/setup/voice-channel">Activate AI Employee</Link>
           </Button>
+        ) : isActive ? (
+          <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+            <Button variant="secondary" size="lg" asChild>
+              <Link href="/setup/ai-employee">Edit AI Employee</Link>
+            </Button>
+            <Button variant="accent" size="lg" asChild>
+              <Link href="/setup/voice-channel">Manage Voice Channel</Link>
+            </Button>
+          </div>
         ) : null}
       </div>
 
@@ -66,10 +75,6 @@ export function CommunicationChannelStatus({
             <dd className="mt-1 text-sm font-semibold text-zinc-950">
               {channel.phoneAreaCode ? formatAreaCodeLabel(channel.phoneAreaCode) : "Assigned"}
             </dd>
-          </div>
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Provider</dt>
-            <dd className="mt-1 text-sm font-semibold text-zinc-950">Vapi</dd>
           </div>
           <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 sm:col-span-2 xl:col-span-4">
             <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Setup timestamp</dt>

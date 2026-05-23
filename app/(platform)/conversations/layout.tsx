@@ -7,7 +7,7 @@ import { requireWorkspace } from "@/features/workspace";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardLayout({ children }: { children: ReactNode }) {
+export default async function ConversationsLayout({ children }: { children: ReactNode }) {
   await protectPlatformRoute();
   const currentWorkspace = await requireWorkspace();
   const stats = await getConversationStats(currentWorkspace.workspace.id);

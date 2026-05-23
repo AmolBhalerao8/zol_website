@@ -103,6 +103,22 @@ function buildAssistantPayload(input: CreateVapiAssistantInput | UpdateVapiAssis
     payload.voice = input.voice;
   }
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+
+  if (appUrl) {
+    const server: Record<string, string> = {
+      url: `${appUrl.replace(/\/$/, "")}/api/webhooks/vapi`,
+    };
+
+    const webhookSecret = process.env.VAPI_WEBHOOK_SECRET?.trim();
+
+    if (webhookSecret) {
+      server.secret = webhookSecret;
+    }
+
+    payload.server = server;
+  }
+
   return payload;
 }
 

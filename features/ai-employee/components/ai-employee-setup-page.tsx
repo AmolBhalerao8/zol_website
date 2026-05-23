@@ -10,6 +10,7 @@ export async function AIEmployeeSetupPage() {
   const currentWorkspace = await requireWorkspace();
   const settings = await getAIEmployeeSettings(currentWorkspace.workspace.id);
   const canManage = canManageAIEmployee(currentWorkspace.role);
+  const isEditing = Boolean(settings);
 
   return (
     <main className="min-h-screen bg-[#f7f4ee] text-zinc-950">
@@ -40,11 +41,12 @@ export async function AIEmployeeSetupPage() {
             AI employee setup
           </div>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Teach ZOL about your business
+            {isEditing ? "Update your AI employee" : "Teach ZOL about your business"}
           </h1>
           <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-            Share business context so ZOL can communicate with customers, organize workflows, and
-            support your operations as an autonomous AI employee.
+            {isEditing
+              ? "Refine business context, communication style, and capabilities. Changes save to your workspace and refresh your live communication channel when active."
+              : "Share business context so ZOL can communicate with customers, organize workflows, and support your operations as an autonomous AI employee."}
           </p>
         </div>
 

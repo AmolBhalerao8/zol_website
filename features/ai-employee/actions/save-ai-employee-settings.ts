@@ -7,6 +7,7 @@ import {
   commonScenariosToJson,
 } from "@/features/ai-employee/schemas/ai-employee-settings-schema";
 import { canManageAIEmployee } from "@/features/ai-employee/utils/can-manage-ai-employee";
+import { syncActiveVoiceChannelAssistant } from "@/features/voice-channel/services/sync-active-assistant";
 import { getCurrentWorkspace } from "@/features/workspace/queries/get-current-workspace";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
@@ -97,5 +98,15 @@ export async function saveAIEmployeeSettings(
     return { error: "Unable to save AI employee settings. Please try again." };
   }
 
-  redirect("/dashboard");
+  let assistantSync = "skipped";
+
+  try {
+    const syncResult = await syncActiveVoiceChannelAssistant(currentWorkspace.workspace.id);
+    assistantSync = syncResult.synced ? "synced" : "skipped";
+  } catch (error) {
+    console.error("Failed to sync active voice channel assistant:", error);
+    assistantSync = "failed";
+  }
+
+  redirect(`/dashboard?aiEmployeeUpdated=1&assistantSync=${assistantSync}`);
 }

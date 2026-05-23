@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -242,11 +243,15 @@ export function AIEmployeeSetupForm({ settings, canManage }: AIEmployeeSetupForm
 
       {canManage ? (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-zinc-500">
-            Teach ZOL about your business so it can handle operations with intelligence.
-          </p>
-          <Button type="submit" size="lg" disabled={pending}>
-            {pending ? "Saving configuration..." : "Save AI Employee"}
+          <Button variant="secondary" asChild>
+            <Link href="/dashboard">Back to dashboard</Link>
+          </Button>
+          <Button type="submit" size="lg" disabled={pending} className="sm:min-w-48">
+            {pending
+              ? "Saving configuration..."
+              : settings
+                ? "Save changes"
+                : "Save AI Employee"}
           </Button>
         </div>
       ) : null}

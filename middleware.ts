@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
+  "/conversations(.*)",
   "/onboarding",
   "/auth/continue",
   "/setup/ai-employee",
@@ -26,6 +27,7 @@ export default hasClerkKeys ? clerkMiddleware() : localAuthFallback;
 export const config = {
   matcher: [
     "/dashboard(.*)",
+    "/conversations(.*)",
     "/onboarding",
     "/auth/continue",
     "/setup/ai-employee",
