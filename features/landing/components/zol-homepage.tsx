@@ -313,7 +313,7 @@ function Navbar() {
           </Show>
           <Show when="signed-in">
             <Button size="sm" asChild>
-              <Link href="/auth/continue">Dashboard</Link>
+              <Link href="/auth/continue">Profile</Link>
             </Button>
             <ZolProfileMenu />
           </Show>
