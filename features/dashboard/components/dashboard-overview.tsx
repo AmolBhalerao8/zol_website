@@ -5,7 +5,6 @@ import {
   Circle,
   ClipboardList,
   MessageSquareText,
-  Network,
   Phone,
   Sparkles,
 } from "lucide-react";
@@ -18,6 +17,11 @@ import { DashboardUpdateBanner } from "@/features/dashboard/components/dashboard
 import { SetupInsightTile } from "@/features/dashboard/components/setup-insight-tile";
 import { CommunicationChannelStatus } from "@/features/voice-channel/components/communication-channel-status";
 import { RecentConversationsCard } from "@/features/conversations/components/recent-conversations-card";
+import type { SafeIntegration } from "@/features/integrations/queries/get-integrations";
+import {
+  getIntegrationStatusLabel,
+  getTekmetricShopName,
+} from "@/features/integrations/utils/integration-credentials";
 import type { Conversation } from "@prisma/client";
 
 type DashboardOverviewProps = {
@@ -58,7 +62,6 @@ export function DashboardOverview({
     { label: "Workspace created", complete: true },
     { label: "AI employee configured", complete: isAIConfigured },
     { label: "Voice channel active", complete: isVoiceChannelActive },
-    { label: "Integrations pending", complete: false },
   ];
 
   const primaryCtaHref = !isAIConfigured
@@ -100,12 +103,6 @@ export function DashboardOverview({
       value: `${conversationStats.openActionItemsCount} open`,
       body: "Follow-ups, appointments, and handoffs pulled from customer conversations.",
       icon: ClipboardList,
-    },
-    {
-      title: "Integrations",
-      value: "Not connected",
-      body: "Connect calendars, CRMs, commerce tools, and phone systems in a later setup step.",
-      icon: Network,
     },
     {
       title: "Operational Insights",

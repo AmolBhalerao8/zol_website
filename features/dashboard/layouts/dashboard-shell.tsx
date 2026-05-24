@@ -24,7 +24,7 @@ const sidebarItems = [
   { label: "AI Employee", href: "/setup/ai-employee", icon: Bot },
   { label: "Conversations", href: "/conversations", icon: MessageSquareText, showCount: true },
   { label: "Customers", href: "/customers", icon: UsersRound, showCustomerCount: true },
-  { label: "Integrations", href: "#", icon: Network },
+  { label: "Integrations", href: "/integrations", icon: Network },
   { label: "Settings", href: "#", icon: Settings },
 ];
 

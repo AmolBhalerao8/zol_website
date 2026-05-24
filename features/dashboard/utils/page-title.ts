@@ -3,6 +3,7 @@ const PAGE_TITLES: Array<{ prefix: string; title: string }> = [
   { prefix: "/customers/", title: "Customer" },
   { prefix: "/conversations", title: "Conversations" },
   { prefix: "/customers", title: "Customers" },
+  { prefix: "/integrations", title: "Integrations" },
   { prefix: "/dashboard", title: "Dashboard" },
 ];
 
