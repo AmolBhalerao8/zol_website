@@ -19,7 +19,6 @@ import {
   LucideIcon,
   Network,
   Phone,
-  Play,
   Search,
   ShieldCheck,
   ShoppingBag,
@@ -30,6 +29,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { BookDemoForm } from "@/features/landing/components/book-demo-form";
 import { cn } from "@/lib/utils";
 
 const navLinks = ["Platform", "Use Cases", "How It Works", "Demo", "Integrations"];
@@ -552,11 +552,6 @@ function Hero() {
                 Book Demo <ArrowRight className="h-4 w-4" />
               </a>
             </Button>
-            <Button size="lg" variant="secondary" asChild>
-              <a href="#demo">
-                <Play className="h-4 w-4" /> Listen To AI Call
-              </a>
-            </Button>
           </div>
           <div className="mx-auto mt-7 grid max-w-4xl gap-3 text-left text-sm font-medium text-zinc-700 sm:grid-cols-2 lg:grid-cols-3">
             {trustIndicators.map((item) => (
@@ -917,45 +912,16 @@ function AdoptionSection() {
 }
 
 function DemoSection() {
-  const previews = [
-    ["AI call preview", "Customer concern captured with account, order, vehicle, or service context."],
-    ["Dashboard preview", "Next steps created for the right team."],
-    ["Memory preview", "Previous visits, orders, and open context surfaced instantly."],
-    ["Follow-up preview", "Callbacks, approvals, appointments, and customer updates continue automatically."],
-  ];
-
   return (
     <AnimatedSection id="demo" className="py-24">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-3xl">
         <SectionHeading
           eyebrow="Demo"
-          title="See how ZOL operates inside a real business."
-          description="Follow a customer call as it becomes context, next steps, calendar activity, and follow-up."
+          title="Book a demo with ZOL."
+          description="Tell us about your business and we will reach out to schedule a walkthrough."
         />
-        <Card className="mt-12 overflow-hidden">
-          <div className="grid gap-0 lg:grid-cols-[0.75fr_1.25fr]">
-            <div className="bg-zinc-950 p-8 text-white">
-              <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-600">
-                <Play className="h-7 w-7 fill-white" />
-              </div>
-              <h3 className="text-2xl font-semibold">Product walkthrough</h3>
-              <p className="mt-3 text-sm leading-7 text-zinc-300">
-                Watch ZOL answer, structure, remember, and surface the work your team
-                needs to act on.
-              </p>
-              <Button className="mt-8" variant="accent">
-                <Play className="h-4 w-4 fill-white" /> Watch Product Demo
-              </Button>
-            </div>
-            <div className="grid gap-4 p-6 sm:p-8 md:grid-cols-2">
-              {previews.map(([title, body]) => (
-                <div key={title} className="rounded-3xl border border-zinc-200 p-5">
-                  <p className="text-sm font-semibold text-zinc-950">{title}</p>
-                  <p className="mt-3 text-sm leading-6 text-zinc-600">{body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+        <Card className="mt-12 p-6 sm:p-8">
+          <BookDemoForm />
         </Card>
       </div>
     </AnimatedSection>
@@ -977,11 +943,10 @@ function FinalCta() {
             operate with real-time intelligence.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button size="lg" variant="accent">
-              Book Demo <ArrowRight className="h-4 w-4" />
-            </Button>
-            <Button size="lg" variant="secondary" asChild>
-              <a href="#platform">See Platform</a>
+            <Button size="lg" variant="accent" asChild>
+              <a href="#demo">
+                Book Demo <ArrowRight className="h-4 w-4" />
+              </a>
             </Button>
           </div>
         </div>

@@ -462,3 +462,14 @@ model IntelligenceMessage {
 
   @@index([sessionId, createdAt(sort: Asc)])
 }
+
+model DemoRequest {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  business  String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+}
