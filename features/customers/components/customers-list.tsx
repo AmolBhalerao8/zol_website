@@ -4,21 +4,8 @@ import type { Customer } from "@prisma/client";
 import { Card } from "@/components/ui/card";
 import { CustomerCard } from "@/features/customers/components/customer-card";
 
-type CustomerListItem = Customer & {
-  _count: {
-    conversationLinks: number;
-    memories: number;
-  };
-  conversationLinks: Array<{
-    conversation: {
-      createdAt: Date;
-      summary: string | null;
-    };
-  }>;
-};
-
 type CustomersListProps = {
-  customers: CustomerListItem[];
+  customers: Customer[];
 };
 
 export function CustomersList({ customers }: CustomersListProps) {

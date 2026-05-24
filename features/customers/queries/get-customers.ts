@@ -20,26 +20,6 @@ export async function getCustomers(
         : {}),
     },
     orderBy: { updatedAt: "desc" },
-    include: {
-      _count: {
-        select: {
-          conversationLinks: true,
-          memories: true,
-        },
-      },
-      conversationLinks: {
-        orderBy: { createdAt: "desc" },
-        take: 1,
-        include: {
-          conversation: {
-            select: {
-              createdAt: true,
-              summary: true,
-            },
-          },
-        },
-      },
-    },
   });
 }
 
