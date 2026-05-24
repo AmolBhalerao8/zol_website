@@ -5,7 +5,6 @@ import { Store, Wrench } from "lucide-react";
 export type IntegrationProviderDefinition = {
   id: IntegrationProvider;
   name: string;
-  description: string;
   icon: LucideIcon;
   accentClassName: string;
 };
@@ -14,14 +13,12 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
   {
     id: "TEKMETRIC",
     name: "Tekmetric",
-    description: "Connect customer, vehicle, repair order, and appointment data.",
     icon: Wrench,
     accentClassName: "bg-zinc-950 text-white",
   },
   {
     id: "SHOPMONKEY",
     name: "Shopmonkey",
-    description: "Connect work orders, customers, vehicles, and shop operations.",
     icon: Store,
     accentClassName: "bg-orange-500 text-white",
   },

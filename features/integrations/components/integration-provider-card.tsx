@@ -40,14 +40,12 @@ export function IntegrationProviderCard({
         <IntegrationStatusBadge status={status} />
       </div>
 
-      <div className="mt-5">
+      <div className="mt-4 flex items-end justify-between gap-3">
         <h3 className="text-lg font-semibold tracking-tight text-zinc-950">{provider.name}</h3>
-        <p className="mt-2 text-sm leading-6 text-zinc-600">{provider.description}</p>
+        <p className="text-sm font-semibold text-emerald-700">
+          {selected ? "Selected" : "Connect →"}
+        </p>
       </div>
-
-      <p className="mt-5 text-sm font-semibold text-emerald-700">
-        {selected ? "Selected" : "Connect →"}
-      </p>
     </button>
   );
 }
