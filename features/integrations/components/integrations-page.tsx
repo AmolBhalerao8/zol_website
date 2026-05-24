@@ -1,15 +1,15 @@
-import { IntegrationCard } from "@/features/integrations/components/integration-card";
-import { getTekmetricIntegration } from "@/features/integrations/queries/get-integrations";
+import { IntegrationsWorkspace } from "@/features/integrations/components/integrations-workspace";
+import { getIntegrationsByProvider } from "@/features/integrations/queries/get-integrations";
 import { canManageIntegrations } from "@/features/integrations/utils/can-manage-integrations";
 import { requireWorkspace } from "@/features/workspace";
 
 export async function IntegrationsPage() {
   const currentWorkspace = await requireWorkspace();
-  const tekmetricIntegration = await getTekmetricIntegration(currentWorkspace.workspace.id);
+  const integrations = await getIntegrationsByProvider(currentWorkspace.workspace.id);
   const canManage = canManageIntegrations(currentWorkspace.role);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <section>
         <div className="mb-3 inline-flex rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-700">
           Connected systems
@@ -23,7 +23,7 @@ export async function IntegrationsPage() {
         </p>
       </section>
 
-      <IntegrationCard integration={tekmetricIntegration} canManage={canManage} />
+      <IntegrationsWorkspace integrations={integrations} canManage={canManage} />
     </div>
   );
 }

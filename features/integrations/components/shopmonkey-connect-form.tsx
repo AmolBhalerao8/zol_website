@@ -7,15 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  connectTekmetric,
-  testTekmetricConnectionAction,
-} from "@/features/integrations/actions/connect-tekmetric";
-import { getDefaultTekmetricApiBaseUrl } from "@/features/integrations/schemas/tekmetric-connect-schema";
+  connectShopmonkey,
+  testShopmonkeyConnectionAction,
+} from "@/features/integrations/actions/connect-shopmonkey";
+import { getDefaultShopmonkeyApiBaseUrl } from "@/features/integrations/schemas/shopmonkey-connect-schema";
 import type { IntegrationActionState } from "@/features/integrations/types/action-state";
 
-type TekmetricConnectFormProps = {
+type ShopmonkeyConnectFormProps = {
   status: IntegrationStatus;
-  shopId?: string;
+  locationId?: string;
   onConnected?: () => void;
   onCancel?: () => void;
 };
@@ -30,15 +30,15 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1.5 text-sm text-red-600">{message}</p>;
 }
 
-export function TekmetricConnectForm({
+export function ShopmonkeyConnectForm({
   status,
-  shopId = "",
+  locationId = "",
   onConnected,
   onCancel,
-}: TekmetricConnectFormProps) {
-  const [connectState, connectAction, connectPending] = useActionState(connectTekmetric, initialState);
+}: ShopmonkeyConnectFormProps) {
+  const [connectState, connectAction, connectPending] = useActionState(connectShopmonkey, initialState);
   const [testState, testAction, testPending] = useActionState(
-    testTekmetricConnectionAction,
+    testShopmonkeyConnectionAction,
     initialState,
   );
 
@@ -53,32 +53,13 @@ export function TekmetricConnectForm({
 
   return (
     <form action={connectAction} className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="clientId">Client ID</Label>
-          <Input id="clientId" name="clientId" placeholder="From Tekmetric API access" required />
-          <FieldError message={connectState.fieldErrors?.clientId?.[0]} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="shopId">Shop ID</Label>
-          <Input
-            id="shopId"
-            name="shopId"
-            defaultValue={shopId}
-            placeholder="Your Tekmetric shop ID"
-            required
-          />
-          <FieldError message={connectState.fieldErrors?.shopId?.[0]} />
-        </div>
-      </div>
-
       <div className="space-y-2">
-        <Label htmlFor="apiKey">API key</Label>
+        <Label htmlFor="shopmonkey-apiKey">API key</Label>
         <Input
-          id="apiKey"
+          id="shopmonkey-apiKey"
           name="apiKey"
           type="password"
-          placeholder={status === "CONNECTED" ? "••••••••••••••" : "Your Tekmetric API key"}
+          placeholder={status === "CONNECTED" ? "••••••••••••••" : "From Shopmonkey Settings → Integration → API Keys"}
           required
           autoComplete="off"
         />
@@ -86,8 +67,23 @@ export function TekmetricConnectForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="apiBaseUrl">API URL (optional)</Label>
-        <Input id="apiBaseUrl" name="apiBaseUrl" placeholder={getDefaultTekmetricApiBaseUrl()} />
+        <Label htmlFor="shopmonkey-locationId">Location ID (optional)</Label>
+        <Input
+          id="shopmonkey-locationId"
+          name="locationId"
+          defaultValue={locationId}
+          placeholder="Only needed for multi-location shops"
+        />
+        <FieldError message={connectState.fieldErrors?.locationId?.[0]} />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="shopmonkey-apiBaseUrl">API URL (optional)</Label>
+        <Input
+          id="shopmonkey-apiBaseUrl"
+          name="apiBaseUrl"
+          placeholder={getDefaultShopmonkeyApiBaseUrl()}
+        />
         <FieldError message={connectState.fieldErrors?.apiBaseUrl?.[0]} />
       </div>
 

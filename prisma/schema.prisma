@@ -264,6 +264,7 @@ model ActionItem {
 
 enum IntegrationProvider {
   TEKMETRIC
+  SHOPMONKEY
 }
 
 enum IntegrationStatus {

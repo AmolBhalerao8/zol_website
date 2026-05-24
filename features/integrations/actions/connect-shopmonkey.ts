@@ -1,46 +1,41 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 
 import {
-  tekmetricConnectSchema,
-  tekmetricTestSchema,
-} from "@/features/integrations/schemas/tekmetric-connect-schema";
-import { testTekmetricConnection } from "@/features/integrations/services/tekmetric/test-connection";
-import type { TekmetricCredentials } from "@/features/integrations/services/tekmetric/types";
+  shopmonkeyConnectSchema,
+  shopmonkeyTestSchema,
+} from "@/features/integrations/schemas/shopmonkey-connect-schema";
+import { testShopmonkeyConnection } from "@/features/integrations/services/shopmonkey/test-connection";
+import type { ShopmonkeyCredentials } from "@/features/integrations/services/shopmonkey/types";
 import type { IntegrationActionState } from "@/features/integrations/types/action-state";
-import { encryptTekmetricCredentials } from "@/features/integrations/utils/integration-credentials";
+import { encryptShopmonkeyCredentials } from "@/features/integrations/utils/integration-credentials";
 import { requireManageAccess } from "@/features/integrations/utils/require-manage-access";
 import { hasEncryptionConfigured } from "@/lib/encryption";
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
 
-export type { IntegrationActionState } from "@/features/integrations/types/action-state";
-
-function parseTekmetricFormData(formData: FormData) {
+function parseShopmonkeyFormData(formData: FormData) {
   return {
-    clientId: formData.get("clientId"),
     apiKey: formData.get("apiKey"),
-    shopId: formData.get("shopId"),
+    locationId: formData.get("locationId") || undefined,
     apiBaseUrl: formData.get("apiBaseUrl") || undefined,
   };
 }
 
 function toCredentials(input: {
-  clientId: string;
   apiKey: string;
-  shopId: string;
+  locationId?: string;
   apiBaseUrl?: string;
-}): TekmetricCredentials {
+}): ShopmonkeyCredentials {
   return {
-    clientId: input.clientId,
     apiKey: input.apiKey,
-    shopId: input.shopId,
+    locationId: input.locationId,
     apiBaseUrl: input.apiBaseUrl,
   };
 }
 
-export async function testTekmetricConnectionAction(
+export async function testShopmonkeyConnectionAction(
   _prevState: IntegrationActionState,
   formData: FormData,
 ): Promise<IntegrationActionState> {
@@ -52,7 +47,7 @@ export async function testTekmetricConnectionAction(
     };
   }
 
-  const parsed = tekmetricTestSchema.safeParse(parseTekmetricFormData(formData));
+  const parsed = shopmonkeyTestSchema.safeParse(parseShopmonkeyFormData(formData));
 
   if (!parsed.success) {
     return {
@@ -60,7 +55,7 @@ export async function testTekmetricConnectionAction(
     };
   }
 
-  const result = await testTekmetricConnection(toCredentials(parsed.data));
+  const result = await testShopmonkeyConnection(toCredentials(parsed.data));
 
   if (!result.success) {
     return {
@@ -70,14 +65,14 @@ export async function testTekmetricConnectionAction(
 
   return {
     success: true,
-    message: result.shopName
-      ? `Connected to ${result.shopName}.`
-      : "Tekmetric connection verified.",
-    shopName: result.shopName,
+    message: result.locationName
+      ? `Connected to ${result.locationName}.`
+      : "Shopmonkey connection verified.",
+    locationName: result.locationName,
   };
 }
 
-export async function connectTekmetric(
+export async function connectShopmonkey(
   _prevState: IntegrationActionState,
   formData: FormData,
 ): Promise<IntegrationActionState> {
@@ -98,7 +93,7 @@ export async function connectTekmetric(
     };
   }
 
-  const parsed = tekmetricConnectSchema.safeParse(parseTekmetricFormData(formData));
+  const parsed = shopmonkeyConnectSchema.safeParse(parseShopmonkeyFormData(formData));
 
   if (!parsed.success) {
     return {
@@ -112,12 +107,12 @@ export async function connectTekmetric(
     where: {
       workspaceId_provider: {
         workspaceId,
-        provider: "TEKMETRIC",
+        provider: "SHOPMONKEY",
       },
     },
     create: {
       workspaceId,
-      provider: "TEKMETRIC",
+      provider: "SHOPMONKEY",
       status: "CONNECTING",
     },
     update: {
@@ -125,11 +120,11 @@ export async function connectTekmetric(
     },
   });
 
-  const testResult = await testTekmetricConnection(credentials);
+  const testResult = await testShopmonkeyConnection(credentials);
 
   const metadata: Prisma.InputJsonValue = {
-    shopId: credentials.shopId,
-    shopName: testResult.success ? testResult.shopName ?? null : null,
+    locationId: testResult.success ? testResult.locationId ?? credentials.locationId ?? null : credentials.locationId ?? null,
+    locationName: testResult.success ? testResult.locationName ?? null : null,
     apiBaseUrl: testResult.success ? testResult.apiBaseUrl : credentials.apiBaseUrl ?? null,
     connectedAt: testResult.success ? new Date().toISOString() : null,
   };
@@ -139,7 +134,7 @@ export async function connectTekmetric(
       where: {
         workspaceId_provider: {
           workspaceId,
-          provider: "TEKMETRIC",
+          provider: "SHOPMONKEY",
         },
       },
       data: {
@@ -157,12 +152,12 @@ export async function connectTekmetric(
     where: {
       workspaceId_provider: {
         workspaceId,
-        provider: "TEKMETRIC",
+        provider: "SHOPMONKEY",
       },
     },
     data: {
       status: "CONNECTED",
-      credentialsEncrypted: encryptTekmetricCredentials(credentials),
+      credentialsEncrypted: encryptShopmonkeyCredentials(credentials),
       metadata,
       lastConnectedAt: new Date(),
     },
@@ -172,14 +167,14 @@ export async function connectTekmetric(
 
   return {
     success: true,
-    message: testResult.shopName
-      ? `Tekmetric connected to ${testResult.shopName}.`
-      : "Tekmetric connected successfully.",
-    shopName: testResult.shopName,
+    message: testResult.locationName
+      ? `Shopmonkey connected to ${testResult.locationName}.`
+      : "Shopmonkey connected successfully.",
+    locationName: testResult.locationName,
   };
 }
 
-export async function disconnectTekmetric(): Promise<void> {
+export async function disconnectShopmonkey(): Promise<void> {
   let workspaceId: string;
 
   try {
@@ -192,7 +187,7 @@ export async function disconnectTekmetric(): Promise<void> {
   await prisma.integration.updateMany({
     where: {
       workspaceId,
-      provider: "TEKMETRIC",
+      provider: "SHOPMONKEY",
     },
     data: {
       status: "NOT_CONNECTED",

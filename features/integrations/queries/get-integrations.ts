@@ -49,3 +49,21 @@ export async function getIntegrationByProvider(
 export async function getTekmetricIntegration(workspaceId: string): Promise<SafeIntegration | null> {
   return getIntegrationByProvider(workspaceId, "TEKMETRIC");
 }
+
+export async function getShopmonkeyIntegration(workspaceId: string): Promise<SafeIntegration | null> {
+  return getIntegrationByProvider(workspaceId, "SHOPMONKEY");
+}
+
+export async function getIntegrationsByProvider(
+  workspaceId: string,
+): Promise<Partial<Record<IntegrationProvider, SafeIntegration | null>>> {
+  const integrations = await getIntegrations(workspaceId);
+
+  return integrations.reduce<Partial<Record<IntegrationProvider, SafeIntegration | null>>>(
+    (acc, integration) => {
+      acc[integration.provider] = integration;
+      return acc;
+    },
+    {},
+  );
+}
