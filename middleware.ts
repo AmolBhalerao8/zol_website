@@ -24,7 +24,13 @@ function localAuthFallback(request: NextRequest) {
   return NextResponse.next();
 }
 
-export default hasClerkKeys ? clerkMiddleware() : localAuthFallback;
+export default hasClerkKeys
+  ? clerkMiddleware(async (auth, request) => {
+      if (isProtectedRoute(request)) {
+        await auth.protect();
+      }
+    })
+  : localAuthFallback;
 
 export const config = {
   matcher: [

@@ -17,11 +17,6 @@ import { DashboardUpdateBanner } from "@/features/dashboard/components/dashboard
 import { SetupInsightTile } from "@/features/dashboard/components/setup-insight-tile";
 import { CommunicationChannelStatus } from "@/features/voice-channel/components/communication-channel-status";
 import { RecentConversationsCard } from "@/features/conversations/components/recent-conversations-card";
-import type { SafeIntegration } from "@/features/integrations/queries/get-integrations";
-import {
-  getIntegrationStatusLabel,
-  getTekmetricShopName,
-} from "@/features/integrations/utils/integration-credentials";
 import type { Conversation } from "@prisma/client";
 
 type DashboardOverviewProps = {

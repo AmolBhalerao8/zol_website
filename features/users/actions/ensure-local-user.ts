@@ -20,24 +20,17 @@ export async function ensureLocalUser(): Promise<User> {
     return existingUser;
   }
 
-  const clerkUser = await currentUser();
-
-  if (!clerkUser) {
-    throw new Error("Unauthorized");
-  }
+  const clerkUser = await currentUser().catch(() => null);
 
   const email =
-    clerkUser.primaryEmailAddress?.emailAddress ??
-    clerkUser.emailAddresses[0]?.emailAddress;
-
-  if (!email) {
-    throw new Error("Clerk user is missing an email address");
-  }
+    clerkUser?.primaryEmailAddress?.emailAddress ??
+    clerkUser?.emailAddresses[0]?.emailAddress ??
+    `user-${userId}@users.zol.app`;
 
   const userData = {
     email,
-    name: clerkUser.fullName || clerkUser.firstName || null,
-    imageUrl: clerkUser.imageUrl || null,
+    name: clerkUser?.fullName || clerkUser?.firstName || null,
+    imageUrl: clerkUser?.imageUrl || null,
   };
 
   try {

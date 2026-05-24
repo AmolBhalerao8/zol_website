@@ -312,7 +312,7 @@ function Navbar() {
           </Show>
           <Show when="signed-in">
             <Button size="sm" asChild>
-              <Link href="/dashboard">Profile</Link>
+              <Link href="/auth/continue">Profile</Link>
             </Button>
             <UserButton />
           </Show>
