@@ -28,6 +28,17 @@ export async function getConversationById(workspaceId: string, conversationId: s
           voiceName: true,
         },
       },
+      customerLink: {
+        select: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              primaryPhone: true,
+            },
+          },
+        },
+      },
     },
   });
 }

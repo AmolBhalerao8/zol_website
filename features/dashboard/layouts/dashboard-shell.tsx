@@ -23,8 +23,8 @@ const sidebarItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "AI Employee", href: "/setup/ai-employee", icon: Bot },
   { label: "Conversations", href: "/conversations", icon: MessageSquareText, showCount: true },
-  { label: "Customers", href: "#", icon: UsersRound },
-  { label: "Memory", href: "#", icon: Brain },
+  { label: "Customers", href: "/customers", icon: UsersRound, showCustomerCount: true },
+  { label: "Memory", href: "/customers", icon: Brain },
   { label: "Integrations", href: "#", icon: Network },
   { label: "Settings", href: "#", icon: Settings },
 ];
@@ -33,15 +33,18 @@ type DashboardShellProps = {
   children: ReactNode;
   workspaceName: string;
   conversationCount?: number;
+  customerCount?: number;
 };
 
 function SidebarContent({
   workspaceName,
   conversationCount = 0,
+  customerCount = 0,
   onNavigate,
 }: {
   workspaceName: string;
   conversationCount?: number;
+  customerCount?: number;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -86,6 +89,11 @@ function SidebarContent({
                 {conversationCount}
               </span>
             ) : null}
+            {"showCustomerCount" in item && item.showCustomerCount && customerCount > 0 ? (
+              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs font-semibold text-emerald-200">
+                {customerCount}
+              </span>
+            ) : null}
           </Link>
           );
         })}
@@ -105,13 +113,14 @@ export function DashboardShell({
   children,
   workspaceName,
   conversationCount = 0,
+  customerCount = 0,
 }: DashboardShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-[#f7f4ee] text-zinc-950">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-white/10 bg-zinc-950 p-5 md:block">
-        <SidebarContent workspaceName={workspaceName} conversationCount={conversationCount} />
+        <SidebarContent workspaceName={workspaceName} conversationCount={conversationCount} customerCount={customerCount} />
       </aside>
 
       {mobileOpen ? (
@@ -134,6 +143,7 @@ export function DashboardShell({
             <SidebarContent
               workspaceName={workspaceName}
               conversationCount={conversationCount}
+              customerCount={customerCount}
               onNavigate={() => setMobileOpen(false)}
             />
           </aside>

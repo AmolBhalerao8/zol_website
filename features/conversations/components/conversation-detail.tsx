@@ -20,6 +20,13 @@ type ConversationDetailProps = {
       phoneNumber: string | null;
       voiceName: string;
     };
+    customerLink: {
+      customer: {
+        id: string;
+        name: string | null;
+        primaryPhone: string | null;
+      };
+    } | null;
   };
 };
 
@@ -76,6 +83,20 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
               {conversation.communicationChannel.voiceName}
             </dd>
           </div>
+          {conversation.customerLink ? (
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 sm:col-span-2">
+              <dt className="text-xs uppercase tracking-[0.16em] text-emerald-700">Customer profile</dt>
+              <dd className="mt-1">
+                <Link
+                  href={`/customers/${conversation.customerLink.customer.id}`}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-800 hover:text-emerald-900"
+                >
+                  View customer memory
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+              </dd>
+            </div>
+          ) : null}
           {conversation.customerPhone ? (
             <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 sm:col-span-2">
               <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Customer phone</dt>

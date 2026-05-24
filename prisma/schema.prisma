@@ -35,6 +35,8 @@ model Workspace {
   communicationChannel CommunicationChannel?
   conversations      Conversation[]
   actionItems        ActionItem[]
+  customers          Customer[]
+  customerMemories   CustomerMemory[]
 }
 
 enum WorkspaceRole {
@@ -167,9 +169,77 @@ model Conversation {
   workspace            Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   communicationChannel CommunicationChannel @relation(fields: [communicationChannelId], references: [id], onDelete: Cascade)
   actionItems          ActionItem[]
+  customerLink         ConversationCustomerLink?
+  customerMemories     CustomerMemory[]
 
   @@index([workspaceId, createdAt(sort: Desc)])
   @@index([communicationChannelId])
+}
+
+enum MemoryCategory {
+  PREFERENCE
+  ISSUE
+  ORDER_HISTORY
+  SERVICE_HISTORY
+  COMMUNICATION_STYLE
+  BUSINESS_CONTEXT
+  FOLLOW_UP
+  GENERAL
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  name         String?
+  primaryPhone String?
+  primaryEmail String?
+  notes        String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workspace         Workspace                  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  memories          CustomerMemory[]
+  conversationLinks ConversationCustomerLink[]
+
+  @@index([workspaceId, createdAt(sort: Desc)])
+  @@index([workspaceId, primaryPhone])
+  @@index([workspaceId, primaryEmail])
+}
+
+model ConversationCustomerLink {
+  id              String   @id @default(cuid())
+  conversationId  String   @unique
+  customerId      String
+  confidenceScore Float?
+  matchedBy       String?
+  createdAt       DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  customer     Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+}
+
+model CustomerMemory {
+  id              String         @id @default(cuid())
+  workspaceId     String
+  customerId      String
+  conversationId  String?
+  content         String
+  category        MemoryCategory
+  importanceScore Float?
+  embedding       Unsupported("vector(1536)")?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, customerId, createdAt(sort: Desc)])
+  @@index([customerId, category])
+  @@index([conversationId])
 }
 
 model ActionItem {

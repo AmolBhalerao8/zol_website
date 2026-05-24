@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 
 import { getAIEmployeeSettings } from "@/features/ai-employee/queries/get-ai-employee-settings";
+import { processConversationCustomerMemory } from "@/features/customers/services/process-conversation-customer";
 import { extractConversationIntelligence } from "@/features/conversations/services/extract-conversation-intelligence";
 import type { ParsedVapiWebhook } from "@/features/conversations/utils/parse-vapi-webhook";
 import { normalizeCustomerPhone } from "@/features/conversations/utils/normalize-customer-phone";
@@ -123,6 +124,17 @@ export async function processVapiWebhookEvent(
       });
 
   if (existingConversation?.status === "COMPLETED" && existingConversation.summary) {
+    try {
+      await processConversationCustomerMemory({
+        workspaceId: channel.workspaceId,
+        conversationId: conversation.id,
+        customerName: conversation.customerName,
+        customerPhone: conversation.customerPhone,
+      });
+    } catch (error) {
+      console.error("Customer memory processing failed:", error);
+    }
+
     return {
       status: "processed",
       conversationId: conversation.id,
@@ -171,6 +183,20 @@ export async function processVapiWebhookEvent(
         });
       }
     });
+
+    try {
+      await processConversationCustomerMemory({
+        workspaceId: channel.workspaceId,
+        conversationId: conversation.id,
+        customerName: intelligence.customerName ?? parsed.customerName,
+        customerPhone:
+          customerPhone ??
+          normalizeCustomerPhone(intelligence.customerPhone) ??
+          conversation.customerPhone,
+      });
+    } catch (error) {
+      console.error("Customer memory processing failed:", error);
+    }
   } catch (error) {
     console.error("Conversation intelligence processing failed:", error);
 
