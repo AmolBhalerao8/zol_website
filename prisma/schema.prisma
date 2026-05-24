@@ -44,6 +44,7 @@ model Workspace {
   tekmetricAppointments   TekmetricAppointment[]
   tekmetricRepairOrders   TekmetricRepairOrder[]
   intelligenceQueries     IntelligenceQuery[]
+  intelligenceSessions    IntelligenceSession[]
 }
 
 enum WorkspaceRole {
@@ -431,4 +432,33 @@ model IntelligenceQuery {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, createdAt(sort: Desc)])
+}
+
+enum IntelligenceMessageRole {
+  USER
+  ASSISTANT
+}
+
+model IntelligenceSession {
+  id          String   @id @default(cuid())
+  workspaceId String
+  createdAt   DateTime @default(now())
+
+  workspace Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  messages  IntelligenceMessage[]
+
+  @@index([workspaceId, createdAt(sort: Desc)])
+}
+
+model IntelligenceMessage {
+  id        String                  @id @default(cuid())
+  sessionId String
+  role      IntelligenceMessageRole
+  content   String
+  payload   Json?
+  createdAt DateTime                @default(now())
+
+  session IntelligenceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt(sort: Asc)])
 }

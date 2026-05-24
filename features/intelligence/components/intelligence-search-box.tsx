@@ -3,39 +3,41 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type IntelligenceSearchBoxProps = {
-  defaultQuery?: string;
+  value: string;
+  onChange: (value: string) => void;
   isPending?: boolean;
 };
 
 export function IntelligenceSearchBox({
-  defaultQuery = "",
+  value,
+  onChange,
   isPending = false,
 }: IntelligenceSearchBoxProps) {
   return (
-    <div className="overflow-hidden rounded-[2rem] border border-zinc-200 bg-white shadow-card">
-      <div className="border-b border-zinc-200 px-6 py-5 sm:px-8">
-        <label htmlFor="intelligence-query" className="text-sm font-medium text-zinc-600">
-          Ask ZOL about your business operations
-        </label>
-      </div>
-      <div className="space-y-4 p-6 sm:p-8">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400" />
+    <div className="overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-white shadow-card">
+      <div className="flex items-end gap-3 p-4 sm:p-5">
+        <div className="relative min-w-0 flex-1">
+          <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-zinc-400" />
           <textarea
             id="intelligence-query"
             name="query"
-            rows={3}
-            defaultValue={defaultQuery}
+            rows={2}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                event.currentTarget.form?.requestSubmit();
+              }
+            }}
             placeholder="Ask ZOL about your business..."
-            className="min-h-28 w-full resize-y rounded-[1.25rem] border border-zinc-200 bg-zinc-50 px-12 py-4 text-base text-zinc-950 outline-none ring-emerald-500/30 transition focus:border-emerald-300 focus:bg-white focus:ring-4"
+            className="min-h-[3.5rem] w-full resize-none rounded-[1rem] border border-zinc-200 bg-zinc-50 px-10 py-3 text-base text-zinc-950 outline-none ring-emerald-500/30 transition focus:border-emerald-300 focus:bg-white focus:ring-4"
             required
           />
         </div>
-        <div className="flex justify-end">
-          <Button type="submit" size="lg" disabled={isPending}>
-            {isPending ? "Searching..." : "Search"}
-          </Button>
-        </div>
+        <Button type="submit" size="lg" disabled={isPending || !value.trim()} className="shrink-0">
+          {isPending ? "..." : "Ask"}
+        </Button>
       </div>
     </div>
   );

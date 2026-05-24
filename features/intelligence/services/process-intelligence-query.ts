@@ -9,13 +9,11 @@ import {
 } from "@/features/intelligence/services/retrieval/retrieve-operational-trends";
 import { retrieveRepairOrders } from "@/features/intelligence/services/retrieval/retrieve-repair-orders";
 import type { IntelligenceQueryResult } from "@/features/intelligence/types/intelligence-types";
-import { prisma } from "@/lib/prisma";
 
 type ProcessIntelligenceQueryInput = {
   workspaceId: string;
   workspaceName: string;
   query: string;
-  saveHistory?: boolean;
 };
 
 async function retrieveForQuery(
@@ -43,7 +41,6 @@ export async function processIntelligenceQuery({
   workspaceId,
   workspaceName,
   query,
-  saveHistory = true,
 }: ProcessIntelligenceQueryInput): Promise<IntelligenceQueryResult> {
   const trimmedQuery = query.trim();
 
@@ -67,15 +64,6 @@ export async function processIntelligenceQuery({
     retrieval,
     workspaceName,
   });
-
-  if (saveHistory) {
-    await prisma.intelligenceQuery.create({
-      data: {
-        workspaceId,
-        query: trimmedQuery,
-      },
-    });
-  }
 
   return result;
 }
