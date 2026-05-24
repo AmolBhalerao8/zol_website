@@ -1,6 +1,6 @@
 "use client";
 
-import { Show, UserButton } from "@clerk/nextjs";
+import { Show } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -30,6 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BookDemoForm } from "@/features/landing/components/book-demo-form";
+import { ZolProfileMenu } from "@/features/auth/components/zol-profile-menu";
 import { cn } from "@/lib/utils";
 
 const navLinks = ["Platform", "Use Cases", "How It Works", "Demo", "Integrations"];
@@ -312,9 +313,9 @@ function Navbar() {
           </Show>
           <Show when="signed-in">
             <Button size="sm" asChild>
-              <Link href="/auth/continue">Profile</Link>
+              <Link href="/auth/continue">Dashboard</Link>
             </Button>
-            <UserButton />
+            <ZolProfileMenu />
           </Show>
         </div>
       </nav>

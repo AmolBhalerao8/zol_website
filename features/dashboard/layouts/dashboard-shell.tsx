@@ -1,6 +1,6 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
+import { ZolProfileMenu } from "@/features/auth/components/zol-profile-menu";
 import {
   Bot,
   LayoutDashboard,
@@ -193,7 +193,7 @@ export function DashboardShell({
                   Live on your business line
                 </div>
               ) : null}
-              <UserButton />
+              <ZolProfileMenu />
             </div>
           </div>
         </header>
