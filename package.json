@@ -11,6 +11,7 @@
     "db:push": "node --env-file=.env.local node_modules/prisma/build/index.js db push",
     "db:migrate": "node --env-file=.env.local node_modules/prisma/build/index.js migrate dev",
     "db:migrate:deploy": "node --env-file=.env.local node_modules/prisma/build/index.js migrate deploy",
+    "smoke:db": "node --env-file=.env.local scripts/smoke-test-db.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

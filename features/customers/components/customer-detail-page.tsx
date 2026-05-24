@@ -5,6 +5,7 @@ import { getCustomerById } from "@/features/customers/queries/get-customers";
 import { getCustomerDisplayName } from "@/features/customers/utils/normalize-customer-identity";
 import { generateOperationalSummary } from "@/features/memory/services/build-customer-context";
 import { requireWorkspace } from "@/features/workspace";
+import { withDbRetry } from "@/lib/db-retry";
 
 type CustomerDetailPageProps = {
   customerId: string;
@@ -12,7 +13,9 @@ type CustomerDetailPageProps = {
 
 export async function CustomerDetailPage({ customerId }: CustomerDetailPageProps) {
   const currentWorkspace = await requireWorkspace();
-  const customer = await getCustomerById(currentWorkspace.workspace.id, customerId);
+  const customer = await withDbRetry(() =>
+    getCustomerById(currentWorkspace.workspace.id, customerId),
+  );
 
   if (!customer) {
     notFound();

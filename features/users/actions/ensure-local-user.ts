@@ -2,6 +2,7 @@
 
 import { auth, currentUser } from "@clerk/nextjs/server";
 
+import { withDbRetry } from "@/lib/db-retry";
 import { prisma } from "@/lib/prisma";
 import type { User } from "@prisma/client";
 
@@ -12,9 +13,11 @@ export async function ensureLocalUser(): Promise<User> {
     throw new Error("Unauthorized");
   }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-  });
+  const existingUser = await withDbRetry(() =>
+    prisma.user.findUnique({
+      where: { clerkUserId: userId },
+    }),
+  );
 
   if (existingUser) {
     return existingUser;
@@ -34,21 +37,25 @@ export async function ensureLocalUser(): Promise<User> {
   };
 
   try {
-    return await prisma.user.create({
-      data: {
-        clerkUserId: userId,
-        ...userData,
-      },
-    });
+    return await withDbRetry(() =>
+      prisma.user.create({
+        data: {
+          clerkUserId: userId,
+          ...userData,
+        },
+      }),
+    );
   } catch (error) {
     if (
       error instanceof Error &&
       "code" in error &&
       (error as { code?: string }).code === "P2002"
     ) {
-      const user = await prisma.user.findUnique({
-        where: { clerkUserId: userId },
-      });
+      const user = await withDbRetry(() =>
+        prisma.user.findUnique({
+          where: { clerkUserId: userId },
+        }),
+      );
 
       if (user) {
         return user;

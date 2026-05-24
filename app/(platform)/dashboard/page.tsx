@@ -7,6 +7,7 @@ import {
 import { getCustomerStats } from "@/features/customers/queries/get-customers";
 import { getCommunicationChannel } from "@/features/voice-channel/queries/get-communication-channel";
 import { getCurrentWorkspace } from "@/features/workspace";
+import { withDbRetry } from "@/lib/db-retry";
 
 type DashboardPageProps = {
   searchParams: Promise<{
@@ -25,13 +26,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const params = await searchParams;
 
   const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats] =
-    await Promise.all([
-      getAIEmployeeSettings(currentWorkspace.workspace.id),
-      getCommunicationChannel(currentWorkspace.workspace.id),
-      getRecentConversations(currentWorkspace.workspace.id),
-      getConversationStats(currentWorkspace.workspace.id),
-      getCustomerStats(currentWorkspace.workspace.id),
-    ]);
+    await withDbRetry(() =>
+      Promise.all([
+        getAIEmployeeSettings(currentWorkspace.workspace.id),
+        getCommunicationChannel(currentWorkspace.workspace.id),
+        getRecentConversations(currentWorkspace.workspace.id),
+        getConversationStats(currentWorkspace.workspace.id),
+        getCustomerStats(currentWorkspace.workspace.id),
+      ]),
+    );
 
   return (
     <DashboardOverview

@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 
 import { ensureLocalUser } from "@/features/users";
+import { withDbRetry } from "@/lib/db-retry";
 import { prisma } from "@/lib/prisma";
 import type { Workspace, WorkspaceMember, WorkspaceRole } from "@prisma/client";
 
@@ -17,13 +18,15 @@ export async function getCurrentWorkspace(): Promise<CurrentWorkspace | null> {
     return null;
   }
 
-  const user = await ensureLocalUser();
+  const user = await withDbRetry(() => ensureLocalUser());
 
-  const membership = await prisma.workspaceMember.findFirst({
-    where: { userId: user.id },
-    include: { workspace: true },
-    orderBy: { createdAt: "asc" },
-  });
+  const membership = await withDbRetry(() =>
+    prisma.workspaceMember.findFirst({
+      where: { userId: user.id },
+      include: { workspace: true },
+      orderBy: { createdAt: "asc" },
+    }),
+  );
 
   if (!membership) {
     return null;

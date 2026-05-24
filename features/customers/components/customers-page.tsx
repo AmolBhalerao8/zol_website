@@ -4,6 +4,7 @@ import { CustomerSearchForm } from "@/features/customers/components/customer-sea
 import { CustomersList } from "@/features/customers/components/customers-list";
 import { getCustomers } from "@/features/customers/queries/get-customers";
 import { requireWorkspace } from "@/features/workspace";
+import { withDbRetry } from "@/lib/db-retry";
 
 type CustomersPageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -12,7 +13,9 @@ type CustomersPageProps = {
 export async function CustomersPage({ searchParams }: CustomersPageProps) {
   const currentWorkspace = await requireWorkspace();
   const params = await searchParams;
-  const customers = await getCustomers(currentWorkspace.workspace.id, params.q);
+  const customers = await withDbRetry(() =>
+    getCustomers(currentWorkspace.workspace.id, params.q),
+  );
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -26,7 +29,11 @@ export async function CustomersPage({ searchParams }: CustomersPageProps) {
         </p>
       </section>
 
-      <Suspense fallback={null}>
+      <Suspense
+        fallback={
+          <div className="h-11 animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+        }
+      >
         <CustomerSearchForm initialQuery={params.q ?? ""} />
       </Suspense>
 
