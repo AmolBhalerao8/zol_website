@@ -39,8 +39,8 @@ export function RecentConversationsCard({
             </h3>
             <p className="mt-2 max-w-xl text-sm leading-7 text-zinc-600">
               {conversationCount > 0
-                ? "Latest customer conversations ZOL turned into operational intelligence."
-                : "Once ZOL handles customer calls, summaries and action items will appear here."}
+                ? "The latest calls ZOL answered for your business."
+                : "Calls will show up here once your phone line is active."}
             </p>
           </div>
           <Button variant="secondary" asChild>

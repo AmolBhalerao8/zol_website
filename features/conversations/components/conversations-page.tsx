@@ -22,8 +22,7 @@ export async function ConversationsPage() {
           Conversations
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-          Every customer call ZOL handles is captured, summarized, and organized into action items
-          for your team.
+          Every call ZOL answers is saved here with a summary and follow-up items for your team.
         </p>
       </section>
 

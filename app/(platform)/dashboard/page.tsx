@@ -4,6 +4,7 @@ import {
   getConversationStats,
   getRecentConversations,
 } from "@/features/conversations/queries/get-conversations";
+import { getCustomerStats } from "@/features/customers/queries/get-customers";
 import { getCommunicationChannel } from "@/features/voice-channel/queries/get-communication-channel";
 import { getCurrentWorkspace } from "@/features/workspace";
 
@@ -23,12 +24,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const params = await searchParams;
 
-  const [aiSettings, communicationChannel, recentConversations, conversationStats] =
+  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats] =
     await Promise.all([
       getAIEmployeeSettings(currentWorkspace.workspace.id),
       getCommunicationChannel(currentWorkspace.workspace.id),
       getRecentConversations(currentWorkspace.workspace.id),
       getConversationStats(currentWorkspace.workspace.id),
+      getCustomerStats(currentWorkspace.workspace.id),
     ]);
 
   return (
@@ -38,6 +40,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       communicationChannel={communicationChannel}
       recentConversations={recentConversations}
       conversationStats={conversationStats}
+      customerCount={customerStats.customerCount}
       aiEmployeeUpdated={params.aiEmployeeUpdated === "1"}
       assistantSync={params.assistantSync}
     />

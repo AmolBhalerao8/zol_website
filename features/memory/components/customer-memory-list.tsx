@@ -34,8 +34,7 @@ export function CustomerMemoryList({ memories }: CustomerMemoryListProps) {
       <Card className="border-zinc-200 bg-white shadow-card">
         <CardContent className="p-8 text-center">
           <p className="text-sm leading-7 text-zinc-600">
-            ZOL has not captured operational memory for this customer yet. Memories will appear after
-            more conversations are processed.
+            ZOL will remember useful details here after more conversations with this customer.
           </p>
         </CardContent>
       </Card>

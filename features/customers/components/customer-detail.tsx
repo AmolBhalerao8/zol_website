@@ -71,8 +71,7 @@ export function CustomerDetail({
                 {displayName}
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">
-                ZOL&apos;s operational memory about this customer — relationship continuity built
-                across conversations.
+                What ZOL knows about this customer from past conversations.
               </p>
             </div>
           </div>
@@ -117,7 +116,7 @@ export function CustomerDetail({
             </dd>
           </div>
           <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Operational memory</dt>
+            <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Things remembered</dt>
             <dd className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-950">
               <Brain className="h-4 w-4" />
               {customer._count.memories}
@@ -128,9 +127,9 @@ export function CustomerDetail({
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950">Operational context</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950">At a glance</h2>
           <p className="mt-2 text-sm leading-7 text-zinc-600">
-            A living summary of how this customer relates to your business over time.
+            A quick summary of this customer&apos;s history with your business.
           </p>
         </div>
         <Card className="border-emerald-200 bg-emerald-50/60 shadow-card">
@@ -145,9 +144,9 @@ export function CustomerDetail({
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950">Customer memories</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950">What ZOL remembers</h2>
           <p className="mt-2 text-sm leading-7 text-zinc-600">
-            Operationally useful context ZOL remembers from past conversations.
+            Useful details from past conversations that help on the next call.
           </p>
         </div>
         <CustomerMemoryList memories={customer.memories} />

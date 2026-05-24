@@ -22,8 +22,7 @@ export async function CustomersPage({ searchParams }: CustomersPageProps) {
         </div>
         <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">Customers</h1>
         <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-          ZOL remembers who customers are, what they have asked before, and the operational context
-          that makes every follow-up feel continuous.
+          People who have called your business — with what ZOL remembers from past conversations.
         </p>
       </section>
 

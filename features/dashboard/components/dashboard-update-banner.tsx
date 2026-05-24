@@ -27,10 +27,10 @@ export function DashboardUpdateBanner({ assistantSync }: DashboardUpdateBannerPr
           <p className="font-semibold">AI employee settings saved</p>
           <p className="mt-1 leading-6 opacity-90">
             {assistantSynced
-              ? "Your live communication channel was updated with the latest business context and instructions."
+              ? "Your live phone line was updated with your latest changes."
               : assistantSyncFailed
-                ? "Settings were saved, but the live channel could not be refreshed automatically. Open voice channel setup and update your AI employee to apply changes."
-                : "Your AI employee configuration is up to date."}
+                ? "Settings were saved, but your phone line could not be refreshed automatically. Open phone line setup to apply changes."
+                : "Your AI employee settings are saved."}
           </p>
         </div>
       </div>

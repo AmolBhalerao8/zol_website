@@ -32,8 +32,7 @@ export function AIEmployeeConfigCard({
             {settings.displayName}
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600">
-            Update business context, hours, and capabilities. Changes apply to how ZOL handles
-            customer communication.
+            Update your business details, hours, and how ZOL handles customer calls.
           </p>
         </div>
         <Button variant="secondary" size="lg" asChild className="shrink-0">
@@ -50,8 +49,7 @@ export function AIEmployeeConfigCard({
             <div>
               <p className="text-sm font-semibold text-amber-950">Business context is missing</p>
               <p className="mt-1 text-sm leading-6 text-amber-900/90">
-                Add a short description of your business so ZOL can respond with operational
-                intelligence instead of generic answers.
+                Add a short description of your business so ZOL can give helpful, specific answers.
               </p>
             </div>
             <Button variant="accent" asChild className="shrink-0">

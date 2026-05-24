@@ -45,8 +45,8 @@ export async function AIEmployeeSetupPage() {
           </h1>
           <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
             {isEditing
-              ? "Refine business context, communication style, and capabilities. Changes save to your workspace and refresh your live communication channel when active."
-              : "Share business context so ZOL can communicate with customers, organize workflows, and support your operations as an autonomous AI employee."}
+              ? "Update how ZOL introduces itself, what it knows about your business, and when you are open."
+              : "Tell ZOL about your business so it can answer customer calls with helpful, specific responses."}
           </p>
         </div>
 

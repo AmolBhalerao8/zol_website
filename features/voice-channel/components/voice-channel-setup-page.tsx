@@ -50,8 +50,7 @@ export async function VoiceChannelSetupPage() {
             Activate your AI employee
           </h1>
           <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-            Enter your business line area code, choose how ZOL should sound, and activate your
-            communication channel.
+            Pick your area code and voice, then activate the phone number customers will call.
           </p>
         </div>
 

@@ -82,7 +82,7 @@ export function CustomerCard({ customer }: CustomerCardProps) {
                 </p>
               </div>
               <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-center sm:min-w-32">
-                <p className="text-xs uppercase tracking-[0.16em] text-zinc-500">Memories</p>
+                <p className="text-xs uppercase tracking-[0.16em] text-zinc-500">Remembered</p>
                 <p className="mt-1 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-zinc-950">
                   <Brain className="h-4 w-4" />
                   {customer._count.memories}
@@ -98,7 +98,7 @@ export function CustomerCard({ customer }: CustomerCardProps) {
             </div>
 
             <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700">
-              View customer memory
+              View profile
               <ArrowRight className="h-4 w-4" />
             </span>
           </div>

@@ -2,7 +2,6 @@
 
 import { UserButton } from "@clerk/nextjs";
 import {
-  Brain,
   Bot,
   LayoutDashboard,
   Menu,
@@ -18,13 +17,13 @@ import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { getDashboardPageTitle, getSidebarStatusCopy } from "@/features/dashboard/utils/page-title";
 
 const sidebarItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "AI Employee", href: "/setup/ai-employee", icon: Bot },
   { label: "Conversations", href: "/conversations", icon: MessageSquareText, showCount: true },
   { label: "Customers", href: "/customers", icon: UsersRound, showCustomerCount: true },
-  { label: "Memory", href: "/customers", icon: Brain },
   { label: "Integrations", href: "#", icon: Network },
   { label: "Settings", href: "#", icon: Settings },
 ];
@@ -34,20 +33,27 @@ type DashboardShellProps = {
   workspaceName: string;
   conversationCount?: number;
   customerCount?: number;
+  isVoiceChannelActive?: boolean;
+  isAIConfigured?: boolean;
 };
 
 function SidebarContent({
   workspaceName,
   conversationCount = 0,
   customerCount = 0,
+  isVoiceChannelActive = false,
+  isAIConfigured = false,
   onNavigate,
 }: {
   workspaceName: string;
   conversationCount?: number;
   customerCount?: number;
+  isVoiceChannelActive?: boolean;
+  isAIConfigured?: boolean;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const sidebarStatus = getSidebarStatusCopy({ isVoiceChannelActive, isAIConfigured });
 
   return (
     <div className="flex h-full flex-col">
@@ -100,10 +106,8 @@ function SidebarContent({
       </nav>
 
       <div className="mt-auto rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-        <p className="text-sm font-semibold text-white">AI employee status</p>
-        <p className="mt-2 text-sm leading-6 text-zinc-400">
-          Workspace setup is ready for the next onboarding step.
-        </p>
+        <p className="text-sm font-semibold text-white">{sidebarStatus.title}</p>
+        <p className="mt-2 text-sm leading-6 text-zinc-400">{sidebarStatus.body}</p>
       </div>
     </div>
   );
@@ -114,13 +118,23 @@ export function DashboardShell({
   workspaceName,
   conversationCount = 0,
   customerCount = 0,
+  isVoiceChannelActive = false,
+  isAIConfigured = false,
 }: DashboardShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const pageTitle = getDashboardPageTitle(pathname);
 
   return (
     <main className="min-h-screen bg-[#f7f4ee] text-zinc-950">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-white/10 bg-zinc-950 p-5 md:block">
-        <SidebarContent workspaceName={workspaceName} conversationCount={conversationCount} customerCount={customerCount} />
+        <SidebarContent
+          workspaceName={workspaceName}
+          conversationCount={conversationCount}
+          customerCount={customerCount}
+          isVoiceChannelActive={isVoiceChannelActive}
+          isAIConfigured={isAIConfigured}
+        />
       </aside>
 
       {mobileOpen ? (
@@ -144,6 +158,8 @@ export function DashboardShell({
               workspaceName={workspaceName}
               conversationCount={conversationCount}
               customerCount={customerCount}
+              isVoiceChannelActive={isVoiceChannelActive}
+              isAIConfigured={isAIConfigured}
               onNavigate={() => setMobileOpen(false)}
             />
           </aside>
@@ -164,15 +180,17 @@ export function DashboardShell({
               </button>
               <div>
                 <p className="text-sm font-medium text-zinc-500">{workspaceName}</p>
-                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Dashboard</h1>
+                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{pageTitle}</h1>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 sm:flex">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Operational layer active
-              </div>
+              {isVoiceChannelActive ? (
+                <div className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 sm:flex">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Live on your business line
+                </div>
+              ) : null}
               <UserButton />
             </div>
           </div>

@@ -52,7 +52,7 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
             <ConversationStatusBadge status={conversation.status} />
           </div>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">
-            ZOL turned this customer conversation into organized business intelligence.
+            Summary, follow-ups, and call details from this customer conversation.
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
                   href={`/customers/${conversation.customerLink.customer.id}`}
                   className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-800 hover:text-emerald-900"
                 >
-                  View customer memory
+                  View customer profile
                   <ExternalLink className="h-4 w-4" />
                 </Link>
               </dd>
