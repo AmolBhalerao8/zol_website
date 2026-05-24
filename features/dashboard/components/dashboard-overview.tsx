@@ -17,6 +17,7 @@ import { DashboardUpdateBanner } from "@/features/dashboard/components/dashboard
 import { SetupInsightTile } from "@/features/dashboard/components/setup-insight-tile";
 import { CommunicationChannelStatus } from "@/features/voice-channel/components/communication-channel-status";
 import { RecentConversationsCard } from "@/features/conversations/components/recent-conversations-card";
+import { OperationalInsightCard } from "@/features/intelligence/components/operational-insight-card";
 import { TekmetricSyncDashboardCard } from "@/features/integrations/components/tekmetric-sync-dashboard-card";
 import type { TekmetricSyncStatusSummary } from "@/features/integrations/queries/get-tekmetric-sync-status";
 import type { Conversation } from "@prisma/client";
@@ -104,12 +105,6 @@ export function DashboardOverview({
       value: `${conversationStats.openActionItemsCount} open`,
       body: "Follow-ups, appointments, and handoffs pulled from customer conversations.",
       icon: ClipboardList,
-    },
-    {
-      title: "Operational Insights",
-      value: "Preparing",
-      body: "Signals about missed opportunities, urgent requests, and follow-up will live here.",
-      icon: Sparkles,
     },
   ];
 
@@ -241,6 +236,8 @@ export function DashboardOverview({
         syncStatus={tekmetricSyncStatus}
         canManage={canManageIntegrations}
       />
+
+      <OperationalInsightCard />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {overviewCards.map((card) => (

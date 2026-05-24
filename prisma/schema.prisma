@@ -43,6 +43,7 @@ model Workspace {
   tekmetricVehicles       TekmetricVehicle[]
   tekmetricAppointments   TekmetricAppointment[]
   tekmetricRepairOrders   TekmetricRepairOrder[]
+  intelligenceQueries     IntelligenceQuery[]
 }
 
 enum WorkspaceRole {
@@ -419,4 +420,15 @@ model TekmetricRepairOrder {
   @@unique([workspaceId, integrationId, externalId])
   @@index([workspaceId, zolCustomerId])
   @@index([workspaceId, status])
+}
+
+model IntelligenceQuery {
+  id          String   @id @default(cuid())
+  workspaceId String
+  query       String
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt(sort: Desc)])
 }

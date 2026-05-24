@@ -8,6 +8,7 @@ import {
   MessageSquareText,
   Network,
   Settings,
+  Sparkles,
   UsersRound,
   X,
 } from "lucide-react";
@@ -24,6 +25,7 @@ const sidebarItems = [
   { label: "AI Employee", href: "/setup/ai-employee", icon: Bot },
   { label: "Conversations", href: "/conversations", icon: MessageSquareText, showCount: true },
   { label: "Customers", href: "/customers", icon: UsersRound, showCustomerCount: true },
+  { label: "Intelligence", href: "/intelligence", icon: Sparkles },
   { label: "Integrations", href: "/integrations", icon: Network },
   { label: "Settings", href: "#", icon: Settings },
 ];
