@@ -1,10 +1,6 @@
 "use server";
 
-import { processIntelligenceQuery } from "@/features/intelligence/services/process-intelligence-query";
-import {
-  ensureIntelligenceSession,
-  saveIntelligenceExchange,
-} from "@/features/intelligence/services/save-intelligence-chat";
+import { executeIntelligenceQuery } from "@/features/intelligence/services/execute-intelligence-query";
 import type { IntelligenceQueryResult } from "@/features/intelligence/types/intelligence-types";
 import { requireWorkspace } from "@/features/workspace";
 
@@ -35,27 +31,17 @@ export async function runIntelligenceQuery(
         ? Number.parseInt(turnIdField, 10)
         : undefined;
 
-    const sessionId = await ensureIntelligenceSession(
-      currentWorkspace.workspace.id,
-      typeof sessionIdField === "string" ? sessionIdField : null,
-    );
-
-    const result = await processIntelligenceQuery({
+    const response = await executeIntelligenceQuery({
       workspaceId: currentWorkspace.workspace.id,
       workspaceName: currentWorkspace.workspace.name,
       query,
-    });
-
-    await saveIntelligenceExchange({
-      sessionId,
-      query: query.trim(),
-      result,
+      sessionId: typeof sessionIdField === "string" ? sessionIdField : null,
     });
 
     return {
-      result,
-      query: query.trim(),
-      sessionId,
+      result: response.result,
+      query: response.query,
+      sessionId: response.sessionId,
       turnId: Number.isFinite(turnId) ? turnId : undefined,
     };
   } catch (error) {

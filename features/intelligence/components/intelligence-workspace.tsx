@@ -1,21 +1,18 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  runIntelligenceQuery,
-  type IntelligenceActionState,
-} from "@/features/intelligence/actions/run-intelligence-query";
 import {
   IntelligenceChatThread,
   type IntelligenceChatMessage,
 } from "@/features/intelligence/components/intelligence-chat-message";
 import { IntelligenceSearchBox } from "@/features/intelligence/components/intelligence-search-box";
 import { SuggestedQueryList } from "@/features/intelligence/components/suggested-query-list";
-import { SUGGESTED_INTELLIGENCE_QUERIES } from "@/features/intelligence/types/intelligence-types";
-
-const initialState: IntelligenceActionState = {};
+import {
+  SUGGESTED_INTELLIGENCE_QUERIES,
+  type IntelligenceQueryResult,
+} from "@/features/intelligence/types/intelligence-types";
 
 function createMessageId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -25,56 +22,53 @@ function createMessageId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+type IntelligenceQueryResponse = {
+  result: IntelligenceQueryResult;
+  query: string;
+  sessionId: string;
+  turnId?: number;
+  error?: string;
+};
+
 export function IntelligenceWorkspace() {
-  const [state, formAction, isPending] = useActionState(runIntelligenceQuery, initialState);
   const [draftQuery, setDraftQuery] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [turnCounter, setTurnCounter] = useState(0);
   const [messages, setMessages] = useState<IntelligenceChatMessage[]>([]);
-  const appliedTurnRef = useRef<number | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef(0);
+
+  const scrollToBottom = useCallback(() => {
+    const container = scrollRef.current;
+    if (!container) {
+      return;
+    }
+
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: "smooth",
+    });
+  }, []);
 
   useEffect(() => {
-    if (!state.result || !state.query || state.turnId === undefined) {
-      return;
-    }
+    scrollToBottom();
+  }, [messages, isPending, scrollToBottom]);
 
-    if (appliedTurnRef.current === state.turnId) {
-      return;
-    }
-
-    appliedTurnRef.current = state.turnId;
-
-    setMessages((current) => {
-      if (current.some((message) => message.role === "assistant" && message.turnId === state.turnId)) {
-        return current;
-      }
-
-      return [
-        ...current,
-        {
-          id: createMessageId(),
-          role: "assistant",
-          turnId: state.turnId!,
-          result: state.result!,
-        },
-      ];
-    });
-
-    if (state.sessionId) {
-      setSessionId(state.sessionId);
-    }
-
-    setDraftQuery("");
-  }, [state]);
-
-  const submitQuery = (query: string) => {
+  const submitQuery = async (query: string) => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery || isPending) {
       return;
     }
 
     const nextTurnId = turnCounter + 1;
+    const requestId = requestRef.current + 1;
+    requestRef.current = requestId;
+
     setTurnCounter(nextTurnId);
+    setError(null);
+    setIsPending(true);
     setMessages((current) => [
       ...current,
       {
@@ -86,27 +80,69 @@ export function IntelligenceWorkspace() {
     ]);
     setDraftQuery("");
 
-    const formData = new FormData();
-    formData.set("query", trimmedQuery);
-    formData.set("turnId", String(nextTurnId));
-    if (sessionId) {
-      formData.set("sessionId", sessionId);
-    }
+    try {
+      const response = await fetch("/api/intelligence/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: trimmedQuery,
+          sessionId: sessionId || undefined,
+          turnId: nextTurnId,
+        }),
+      });
 
-    formAction(formData);
+      const data = (await response.json()) as IntelligenceQueryResponse;
+
+      if (requestRef.current !== requestId) {
+        return;
+      }
+
+      if (!response.ok || data.error) {
+        setError(data.error ?? "Unable to process your operational query.");
+        return;
+      }
+
+      setSessionId(data.sessionId);
+
+      setMessages((current) => {
+        if (current.some((message) => message.role === "assistant" && message.turnId === nextTurnId)) {
+          return current;
+        }
+
+        return [
+          ...current,
+          {
+            id: createMessageId(),
+            role: "assistant",
+            turnId: nextTurnId,
+            result: data.result,
+          },
+        ];
+      });
+    } catch {
+      if (requestRef.current === requestId) {
+        setError("Unable to reach ZOL right now. Please try again.");
+      }
+    } finally {
+      if (requestRef.current === requestId) {
+        setIsPending(false);
+      }
+    }
   };
 
   const startNewChat = () => {
+    requestRef.current += 1;
     setMessages([]);
     setDraftQuery("");
     setSessionId("");
     setTurnCounter(0);
-    appliedTurnRef.current = null;
+    setError(null);
+    setIsPending(false);
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
+    <div className="flex min-h-[calc(100dvh-12rem)] flex-col">
+      <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
         <p className="text-sm text-zinc-500">
           {messages.length > 0 ? "Follow up in this conversation" : "Start a new operational search"}
         </p>
@@ -117,36 +153,38 @@ export function IntelligenceWorkspace() {
         ) : null}
       </div>
 
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          submitQuery(String(formData.get("query") ?? ""));
-        }}
-      >
-        <input type="hidden" name="sessionId" value={sessionId} />
-        <IntelligenceSearchBox
-          value={draftQuery}
-          onChange={setDraftQuery}
-          isPending={isPending}
-        />
-        {state.error ? <p className="mt-2 text-sm text-red-700">{state.error}</p> : null}
-      </form>
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto pb-4">
+        {messages.length > 0 ? (
+          <IntelligenceChatThread messages={messages} isPending={isPending} />
+        ) : (
+          <section className="flex h-full flex-col justify-end space-y-3 pb-2">
+            <div>
+              <h2 className="text-base font-semibold text-zinc-950">Example operational queries</h2>
+              <p className="mt-1 text-sm text-zinc-600">Click an example to get started.</p>
+            </div>
+            <SuggestedQueryList
+              queries={SUGGESTED_INTELLIGENCE_QUERIES}
+              onSelect={(query) => void submitQuery(query)}
+            />
+          </section>
+        )}
+      </div>
 
-      {messages.length > 0 ? <IntelligenceChatThread messages={messages} isPending={isPending} /> : null}
-
-      {messages.length === 0 ? (
-        <section className="space-y-3 pt-2">
-          <div>
-            <h2 className="text-base font-semibold text-zinc-950">Example operational queries</h2>
-            <p className="mt-1 text-sm text-zinc-600">Click an example to get started.</p>
-          </div>
-          <SuggestedQueryList
-            queries={SUGGESTED_INTELLIGENCE_QUERIES}
-            onSelect={(query) => submitQuery(query)}
+      <div className="sticky bottom-0 shrink-0 border-t border-zinc-200/80 bg-[#f7f4ee] pt-4">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            void submitQuery(draftQuery);
+          }}
+        >
+          <IntelligenceSearchBox
+            value={draftQuery}
+            onChange={setDraftQuery}
+            isPending={isPending}
           />
-        </section>
-      ) : null}
+        </form>
+        {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
+      </div>
     </div>
   );
 }

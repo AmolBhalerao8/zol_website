@@ -5,8 +5,8 @@ export async function IntelligencePage() {
   await requireWorkspace();
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <section>
+    <div className="mx-auto flex h-full max-w-5xl flex-col">
+      <section className="shrink-0 pb-4">
         <div className="mb-3 inline-flex rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-700">
           Operational intelligence
         </div>
