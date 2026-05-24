@@ -1,10 +1,22 @@
 import {
+  getMockTekmetricAppointments,
+  getMockTekmetricCustomers,
+  getMockTekmetricRepairOrders,
+  getMockTekmetricVehicles,
+} from "@/features/integrations/services/tekmetric/mock-tekmetric-data";
+import {
   TEKMETRIC_DEFAULT_API_BASE_URL,
   type TekmetricCredentials,
+  type TekmetricListResponse,
+  type TekmetricRawAppointment,
+  type TekmetricRawCustomer,
+  type TekmetricRawRepairOrder,
+  type TekmetricRawVehicle,
   type TekmetricShop,
   type TekmetricShopsResponse,
   type TekmetricTokenResponse,
 } from "@/features/integrations/services/tekmetric/types";
+import { isTekmetricMockMode } from "@/features/integrations/utils/tekmetric-mock-mode";
 
 export class TekmetricClientError extends Error {
   status: number;
@@ -118,6 +130,58 @@ export class TekmetricClient {
     return (
       shops.find((shop) => shop.id === shopIdNumber || String(shop.id) === this.shopId) ?? null
     );
+  }
+
+  private unwrapList<T>(response: TekmetricListResponse<T>): T[] {
+    if (Array.isArray(response)) {
+      return response;
+    }
+
+    return response.data ?? response.content ?? [];
+  }
+
+  async getCustomers(): Promise<TekmetricRawCustomer[]> {
+    if (isTekmetricMockMode()) {
+      return getMockTekmetricCustomers();
+    }
+
+    const response = await this.request<TekmetricListResponse<TekmetricRawCustomer>>(
+      `/shops/${this.shopId}/customers`,
+    );
+    return this.unwrapList(response);
+  }
+
+  async getVehicles(): Promise<TekmetricRawVehicle[]> {
+    if (isTekmetricMockMode()) {
+      return getMockTekmetricVehicles();
+    }
+
+    const response = await this.request<TekmetricListResponse<TekmetricRawVehicle>>(
+      `/shops/${this.shopId}/vehicles`,
+    );
+    return this.unwrapList(response);
+  }
+
+  async getAppointments(): Promise<TekmetricRawAppointment[]> {
+    if (isTekmetricMockMode()) {
+      return getMockTekmetricAppointments();
+    }
+
+    const response = await this.request<TekmetricListResponse<TekmetricRawAppointment>>(
+      `/shops/${this.shopId}/appointments`,
+    );
+    return this.unwrapList(response);
+  }
+
+  async getRepairOrders(): Promise<TekmetricRawRepairOrder[]> {
+    if (isTekmetricMockMode()) {
+      return getMockTekmetricRepairOrders();
+    }
+
+    const response = await this.request<TekmetricListResponse<TekmetricRawRepairOrder>>(
+      `/shops/${this.shopId}/repair-orders`,
+    );
+    return this.unwrapList(response);
   }
 }
 

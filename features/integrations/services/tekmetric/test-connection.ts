@@ -3,6 +3,7 @@ import type {
   TekmetricConnectionTestResult,
   TekmetricCredentials,
 } from "@/features/integrations/services/tekmetric/types";
+import { isTekmetricMockMode } from "@/features/integrations/utils/tekmetric-mock-mode";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof TekmetricClientError) {
@@ -27,6 +28,15 @@ function getErrorMessage(error: unknown): string {
 export async function testTekmetricConnection(
   credentials: TekmetricCredentials,
 ): Promise<TekmetricConnectionTestResult> {
+  if (isTekmetricMockMode()) {
+    return {
+      success: true,
+      shopId: credentials.shopId,
+      shopName: "Demo Auto Shop (Mock)",
+      apiBaseUrl: credentials.apiBaseUrl ?? "https://shop.tekmetric.com",
+    };
+  }
+
   try {
     const client = createTekmetricClient(credentials);
     await client.getAccessToken();

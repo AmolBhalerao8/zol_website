@@ -6,6 +6,7 @@ import type { IntegrationProvider } from "@prisma/client";
 import { IntegrationConnectPanel } from "@/features/integrations/components/integration-connect-panel";
 import { IntegrationProviderCard } from "@/features/integrations/components/integration-provider-card";
 import type { SafeIntegration } from "@/features/integrations/queries/get-integrations";
+import type { TekmetricSyncStatusSummary } from "@/features/integrations/queries/get-tekmetric-sync-status";
 import {
   INTEGRATION_PROVIDERS,
   getProviderStatus,
@@ -14,9 +15,14 @@ import {
 type IntegrationsWorkspaceProps = {
   integrations: Partial<Record<IntegrationProvider, SafeIntegration | null>>;
   canManage: boolean;
+  tekmetricSyncStatus: TekmetricSyncStatusSummary;
 };
 
-export function IntegrationsWorkspace({ integrations, canManage }: IntegrationsWorkspaceProps) {
+export function IntegrationsWorkspace({
+  integrations,
+  canManage,
+  tekmetricSyncStatus,
+}: IntegrationsWorkspaceProps) {
   const [selectedProvider, setSelectedProvider] = useState<IntegrationProvider | null>(null);
 
   return (
@@ -38,6 +44,7 @@ export function IntegrationsWorkspace({ integrations, canManage }: IntegrationsW
           provider={selectedProvider}
           integration={integrations[selectedProvider] ?? null}
           canManage={canManage}
+          tekmetricSyncStatus={tekmetricSyncStatus}
           onClose={() => setSelectedProvider(null)}
         />
       ) : (

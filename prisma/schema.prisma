@@ -38,6 +38,11 @@ model Workspace {
   customers          Customer[]
   customerMemories   CustomerMemory[]
   integrations       Integration[]
+  tekmetricSyncLogs       TekmetricSyncLog[]
+  tekmetricCustomers      TekmetricCustomer[]
+  tekmetricVehicles       TekmetricVehicle[]
+  tekmetricAppointments   TekmetricAppointment[]
+  tekmetricRepairOrders   TekmetricRepairOrder[]
 }
 
 enum WorkspaceRole {
@@ -202,6 +207,7 @@ model Customer {
   workspace         Workspace                  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   memories          CustomerMemory[]
   conversationLinks ConversationCustomerLink[]
+  tekmetricCustomers TekmetricCustomer[]
 
   @@index([workspaceId, createdAt(sort: Desc)])
   @@index([workspaceId, primaryPhone])
@@ -287,7 +293,130 @@ model Integration {
   updatedAt            DateTime            @updatedAt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tekmetricSyncLogs     TekmetricSyncLog[]
+  tekmetricCustomers    TekmetricCustomer[]
+  tekmetricVehicles     TekmetricVehicle[]
+  tekmetricAppointments TekmetricAppointment[]
+  tekmetricRepairOrders TekmetricRepairOrder[]
 
   @@unique([workspaceId, provider])
+  @@index([workspaceId, status])
+}
+
+enum TekmetricSyncStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+model TekmetricSyncLog {
+  id            String              @id @default(cuid())
+  workspaceId   String
+  integrationId String
+  status        TekmetricSyncStatus
+  startedAt     DateTime            @default(now())
+  completedAt   DateTime?
+  errorMessage  String?
+  recordsSynced Json?
+  createdAt     DateTime            @default(now())
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt(sort: Desc)])
+  @@index([integrationId, createdAt(sort: Desc)])
+}
+
+model TekmetricCustomer {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  integrationId String
+  externalId    String
+  zolCustomerId String?
+  name          String?
+  phone         String?
+  email         String?
+  rawData       Json
+  lastSyncedAt  DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  zolCustomer Customer?   @relation(fields: [zolCustomerId], references: [id], onDelete: SetNull)
+
+  @@unique([workspaceId, integrationId, externalId])
+  @@index([workspaceId, zolCustomerId])
+  @@index([workspaceId, phone])
+  @@index([workspaceId, email])
+}
+
+model TekmetricVehicle {
+  id                   String   @id @default(cuid())
+  workspaceId          String
+  integrationId        String
+  externalId           String
+  tekmetricCustomerId  String?
+  zolCustomerId        String?
+  year                 String?
+  make                 String?
+  model                String?
+  vin                  String?
+  rawData              Json
+  lastSyncedAt         DateTime
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, integrationId, externalId])
+  @@index([workspaceId, zolCustomerId])
+  @@index([workspaceId, tekmetricCustomerId])
+}
+
+model TekmetricAppointment {
+  id                  String    @id @default(cuid())
+  workspaceId         String
+  integrationId       String
+  externalId          String
+  tekmetricCustomerId String?
+  zolCustomerId       String?
+  scheduledAt         DateTime?
+  status              String?
+  summary             String?
+  rawData             Json
+  lastSyncedAt        DateTime
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, integrationId, externalId])
+  @@index([workspaceId, zolCustomerId])
+  @@index([workspaceId, scheduledAt])
+}
+
+model TekmetricRepairOrder {
+  id                  String   @id @default(cuid())
+  workspaceId         String
+  integrationId       String
+  externalId          String
+  tekmetricCustomerId String?
+  zolCustomerId       String?
+  status              String?
+  totalAmount         String?
+  summary             String?
+  rawData             Json
+  lastSyncedAt        DateTime
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, integrationId, externalId])
+  @@index([workspaceId, zolCustomerId])
   @@index([workspaceId, status])
 }

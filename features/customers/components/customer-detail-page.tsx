@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { CustomerDetail } from "@/features/customers/components/customer-detail";
 import { getCustomerById } from "@/features/customers/queries/get-customers";
 import { getCustomerDisplayName } from "@/features/customers/utils/normalize-customer-identity";
+import { CustomerTekmetricSection } from "@/features/integrations/components/customer-tekmetric-section";
+import { getTekmetricDataForCustomer } from "@/features/integrations/queries/get-tekmetric-data";
 import { generateOperationalSummary } from "@/features/memory/services/build-customer-context";
 import { requireWorkspace } from "@/features/workspace";
 import { withDbRetry } from "@/lib/db-retry";
@@ -38,6 +40,12 @@ export async function CustomerDetailPage({ customerId }: CustomerDetailPageProps
     conversationCount: customer._count.conversationLinks,
   });
 
+  const tekmetricData = await withDbRetry(() =>
+    getTekmetricDataForCustomer(currentWorkspace.workspace.id, customer.id),
+  );
+  const [tekmetricCustomers, tekmetricVehicles, tekmetricAppointments, tekmetricRepairOrders] =
+    tekmetricData;
+
   return (
     <div className="mx-auto max-w-5xl">
       <CustomerDetail
@@ -45,6 +53,14 @@ export async function CustomerDetailPage({ customerId }: CustomerDetailPageProps
         operationalSummary={operationalSummary}
         firstInteraction={firstInteraction}
         latestInteraction={latestInteraction}
+        tekmetricSection={
+          <CustomerTekmetricSection
+            tekmetricCustomers={tekmetricCustomers}
+            vehicles={tekmetricVehicles}
+            appointments={tekmetricAppointments}
+            repairOrders={tekmetricRepairOrders}
+          />
+        }
       />
     </div>
   );

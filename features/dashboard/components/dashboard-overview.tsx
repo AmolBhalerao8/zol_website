@@ -17,6 +17,8 @@ import { DashboardUpdateBanner } from "@/features/dashboard/components/dashboard
 import { SetupInsightTile } from "@/features/dashboard/components/setup-insight-tile";
 import { CommunicationChannelStatus } from "@/features/voice-channel/components/communication-channel-status";
 import { RecentConversationsCard } from "@/features/conversations/components/recent-conversations-card";
+import { TekmetricSyncDashboardCard } from "@/features/integrations/components/tekmetric-sync-dashboard-card";
+import type { TekmetricSyncStatusSummary } from "@/features/integrations/queries/get-tekmetric-sync-status";
 import type { Conversation } from "@prisma/client";
 
 type DashboardOverviewProps = {
@@ -34,6 +36,8 @@ type DashboardOverviewProps = {
     urgentItemsCount: number;
   };
   customerCount: number;
+  tekmetricSyncStatus: TekmetricSyncStatusSummary;
+  canManageIntegrations: boolean;
   aiEmployeeUpdated?: boolean;
   assistantSync?: string;
 };
@@ -45,6 +49,8 @@ export function DashboardOverview({
   recentConversations,
   conversationStats,
   customerCount,
+  tekmetricSyncStatus,
+  canManageIntegrations,
   aiEmployeeUpdated = false,
   assistantSync,
 }: DashboardOverviewProps) {
@@ -229,6 +235,11 @@ export function DashboardOverview({
         conversationCount={conversationStats.conversationCount}
         openActionItemsCount={conversationStats.openActionItemsCount}
         urgentItemsCount={conversationStats.urgentItemsCount}
+      />
+
+      <TekmetricSyncDashboardCard
+        syncStatus={tekmetricSyncStatus}
+        canManage={canManageIntegrations}
       />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

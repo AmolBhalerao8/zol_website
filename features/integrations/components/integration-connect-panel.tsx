@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { disconnectShopmonkey } from "@/features/integrations/actions/connect-shopmonkey";
 import { disconnectTekmetric } from "@/features/integrations/actions/connect-tekmetric";
+import { TekmetricSyncControls } from "@/features/integrations/components/tekmetric-sync-controls";
 import { ShopmonkeyConnectForm } from "@/features/integrations/components/shopmonkey-connect-form";
 import { TekmetricConnectForm } from "@/features/integrations/components/tekmetric-connect-form";
+import type { TekmetricSyncStatusSummary } from "@/features/integrations/queries/get-tekmetric-sync-status";
 import type { SafeIntegration } from "@/features/integrations/queries/get-integrations";
 import {
   getIntegrationMetadataValue,
@@ -24,6 +26,7 @@ type IntegrationConnectPanelProps = {
   provider: IntegrationProvider;
   integration: SafeIntegration | null;
   canManage: boolean;
+  tekmetricSyncStatus?: TekmetricSyncStatusSummary | null;
   onClose: () => void;
 };
 
@@ -42,6 +45,7 @@ export function IntegrationConnectPanel({
   provider,
   integration,
   canManage,
+  tekmetricSyncStatus,
   onClose,
 }: IntegrationConnectPanelProps) {
   const providerDefinition = getIntegrationProviderDefinition(provider);
@@ -130,6 +134,22 @@ export function IntegrationConnectPanel({
                 You can view this connection, but only workspace owners and admins can change it.
               </p>
             )}
+
+            {provider === "TEKMETRIC" && tekmetricSyncStatus ? (
+              <div className="space-y-3 border-t border-zinc-200 pt-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-zinc-950">Operational data sync</h3>
+                  <p className="mt-2 text-sm leading-7 text-zinc-600">
+                    Pull customer, vehicle, appointment, and repair order context from your connected
+                    shop system.
+                  </p>
+                </div>
+                <TekmetricSyncControls
+                  syncStatus={tekmetricSyncStatus}
+                  canManage={canManage}
+                />
+              </div>
+            ) : null}
           </div>
         ) : canManage ? (
           provider === "TEKMETRIC" ? (

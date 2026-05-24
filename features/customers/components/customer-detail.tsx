@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ArrowLeft, Brain, Mail, MessageSquareText, Phone, Sparkles, UserRound } from "lucide-react";
 import type { ActionItem, Conversation, Customer, MemoryCategory } from "@prisma/client";
 
@@ -34,6 +35,7 @@ type CustomerDetailProps = {
   operationalSummary: string;
   firstInteraction: Date | null;
   latestInteraction: Date | null;
+  tekmetricSection?: ReactNode;
 };
 
 function formatTimestamp(value: Date): string {
@@ -48,6 +50,7 @@ export function CustomerDetail({
   operationalSummary,
   firstInteraction,
   latestInteraction,
+  tekmetricSection,
 }: CustomerDetailProps) {
   const displayName = getCustomerDisplayName(customer);
 
@@ -161,6 +164,8 @@ export function CustomerDetail({
         </div>
         <CustomerConversationsList conversationLinks={customer.conversationLinks} />
       </section>
+
+      {tekmetricSection}
     </div>
   );
 }

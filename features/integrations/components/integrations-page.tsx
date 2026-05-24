@@ -1,11 +1,16 @@
 import { IntegrationsWorkspace } from "@/features/integrations/components/integrations-workspace";
 import { getIntegrationsByProvider } from "@/features/integrations/queries/get-integrations";
+import { getTekmetricSyncStatus } from "@/features/integrations/queries/get-tekmetric-sync-status";
 import { canManageIntegrations } from "@/features/integrations/utils/can-manage-integrations";
 import { requireWorkspace } from "@/features/workspace";
 
 export async function IntegrationsPage() {
   const currentWorkspace = await requireWorkspace();
-  const integrations = await getIntegrationsByProvider(currentWorkspace.workspace.id);
+  const workspaceId = currentWorkspace.workspace.id;
+  const [integrations, tekmetricSyncStatus] = await Promise.all([
+    getIntegrationsByProvider(workspaceId),
+    getTekmetricSyncStatus(workspaceId),
+  ]);
   const canManage = canManageIntegrations(currentWorkspace.role);
 
   return (
@@ -18,12 +23,16 @@ export async function IntegrationsPage() {
           Business Integrations
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-          Connect ZOL to the systems your business already uses. Operational sync will build on
-          these connections in upcoming releases.
+          Connect ZOL to the systems your business already uses, then sync operational customer and
+          workflow data into your workspace.
         </p>
       </section>
 
-      <IntegrationsWorkspace integrations={integrations} canManage={canManage} />
+      <IntegrationsWorkspace
+        integrations={integrations}
+        canManage={canManage}
+        tekmetricSyncStatus={tekmetricSyncStatus}
+      />
     </div>
   );
 }

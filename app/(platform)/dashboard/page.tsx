@@ -5,6 +5,8 @@ import {
   getRecentConversations,
 } from "@/features/conversations/queries/get-conversations";
 import { getCustomerStats } from "@/features/customers/queries/get-customers";
+import { getTekmetricSyncStatus } from "@/features/integrations/queries/get-tekmetric-sync-status";
+import { canManageIntegrations } from "@/features/integrations/utils/can-manage-integrations";
 import { getCommunicationChannel } from "@/features/voice-channel/queries/get-communication-channel";
 import { getCurrentWorkspace } from "@/features/workspace";
 import { withDbRetry } from "@/lib/db-retry";
@@ -25,7 +27,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const params = await searchParams;
 
-  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats] =
+  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats, tekmetricSyncStatus] =
     await withDbRetry(() =>
       Promise.all([
         getAIEmployeeSettings(currentWorkspace.workspace.id),
@@ -33,6 +35,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         getRecentConversations(currentWorkspace.workspace.id),
         getConversationStats(currentWorkspace.workspace.id),
         getCustomerStats(currentWorkspace.workspace.id),
+        getTekmetricSyncStatus(currentWorkspace.workspace.id),
       ]),
     );
 
@@ -44,6 +47,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       recentConversations={recentConversations}
       conversationStats={conversationStats}
       customerCount={customerStats.customerCount}
+      tekmetricSyncStatus={tekmetricSyncStatus}
+      canManageIntegrations={canManageIntegrations(currentWorkspace.role)}
       aiEmployeeUpdated={params.aiEmployeeUpdated === "1"}
       assistantSync={params.assistantSync}
     />
