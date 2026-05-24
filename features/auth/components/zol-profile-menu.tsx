@@ -1,8 +1,7 @@
 "use client";
 
 import { useClerk, useUser } from "@clerk/nextjs";
-import { LogOut, Settings } from "lucide-react";
-import Image from "next/image";
+import { LogOut, Settings, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -18,6 +17,45 @@ const profileAppearance = {
 type ZolProfileMenuProps = {
   align?: "left" | "right";
 };
+
+function ProfileAvatar({
+  imageUrl,
+  hasImage,
+  label,
+  className,
+}: {
+  imageUrl?: string | null;
+  hasImage: boolean;
+  label: string;
+  className?: string;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const initials = label.charAt(0).toUpperCase();
+  const showImage = hasImage && Boolean(imageUrl) && !imageFailed;
+
+  return (
+    <div
+      className={cn(
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-100 text-emerald-700",
+        className,
+      )}
+    >
+      {showImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={imageUrl ?? ""}
+          alt=""
+          className="h-full w-full object-cover"
+          onError={() => setImageFailed(true)}
+        />
+      ) : initials ? (
+        <span className="text-sm font-semibold">{initials}</span>
+      ) : (
+        <UserRound className="h-4 w-4" />
+      )}
+    </div>
+  );
+}
 
 export function ZolProfileMenu({ align = "right" }: ZolProfileMenuProps) {
   const { user } = useUser();
@@ -60,7 +98,6 @@ export function ZolProfileMenu({ align = "right" }: ZolProfileMenuProps) {
     user.emailAddresses[0]?.emailAddress ??
     "Account";
   const displayName = user.fullName?.trim() || email;
-  const initials = displayName.charAt(0).toUpperCase();
 
   return (
     <div ref={containerRef} className="relative">
@@ -70,19 +107,14 @@ export function ZolProfileMenu({ align = "right" }: ZolProfileMenuProps) {
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((current) => !current)}
-        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300"
+        className="rounded-full border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300"
       >
-        {user.imageUrl ? (
-          <Image
-            src={user.imageUrl}
-            alt=""
-            width={40}
-            height={40}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <span className="text-sm font-semibold text-zinc-700">{initials}</span>
-        )}
+        <ProfileAvatar
+          imageUrl={user.imageUrl}
+          hasImage={user.hasImage}
+          label={displayName}
+          className="h-10 w-10"
+        />
       </button>
 
       {open ? (
@@ -95,19 +127,12 @@ export function ZolProfileMenu({ align = "right" }: ZolProfileMenuProps) {
         >
           <div className="border-b border-zinc-100 px-4 py-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-zinc-100">
-                {user.imageUrl ? (
-                  <Image
-                    src={user.imageUrl}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-sm font-semibold text-zinc-700">{initials}</span>
-                )}
-              </div>
+              <ProfileAvatar
+                imageUrl={user.imageUrl}
+                hasImage={user.hasImage}
+                label={displayName}
+                className="h-10 w-10"
+              />
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-zinc-950">{displayName}</p>
                 <p className="truncate text-xs text-zinc-500">{email}</p>
