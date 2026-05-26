@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 
+import { CopilotSuggestionsSection } from "@/features/copilot/components/copilot-suggestions-section";
+import { getCopilotRecommendations } from "@/features/copilot/queries/get-copilot-recommendations";
 import { CustomerDetail } from "@/features/customers/components/customer-detail";
 import { getCustomerById } from "@/features/customers/queries/get-customers";
 import { getCustomerDisplayName } from "@/features/customers/utils/normalize-customer-identity";
@@ -46,8 +48,15 @@ export async function CustomerDetailPage({ customerId }: CustomerDetailPageProps
   const [tekmetricCustomers, tekmetricVehicles, tekmetricAppointments, tekmetricRepairOrders] =
     tekmetricData;
 
+  const copilotRecommendations = await withDbRetry(() =>
+    getCopilotRecommendations(currentWorkspace.workspace.id, {
+      scope: "customer",
+      customerId: customer.id,
+    }),
+  );
+
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl space-y-8">
       <CustomerDetail
         customer={customer}
         operationalSummary={operationalSummary}
@@ -61,6 +70,12 @@ export async function CustomerDetailPage({ customerId }: CustomerDetailPageProps
             repairOrders={tekmetricRepairOrders}
           />
         }
+      />
+      <CopilotSuggestionsSection
+        title="Operational Suggestions"
+        description="Customer insights, follow-up drafts, and operational recommendations grounded in workspace data."
+        recommendations={copilotRecommendations}
+        scope={{ scope: "customer", customerId: customer.id }}
       />
     </div>
   );

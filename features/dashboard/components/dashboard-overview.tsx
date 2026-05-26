@@ -23,6 +23,8 @@ import type { TekmetricSyncStatusSummary } from "@/features/integrations/queries
 import { ActiveWorkflowsCard } from "@/features/workflows/components/active-workflows-card";
 import { DailySummaryCard } from "@/features/workflows/components/daily-summary-card";
 import { OperationalAlertCard } from "@/features/workflows/components/operational-alert-card";
+import { DailyCopilotInsightsCard } from "@/features/copilot/components/daily-copilot-insights-card";
+import type { DailyOperationalInsights } from "@/features/copilot/types/copilot-types";
 import type { Conversation, Workflow } from "@prisma/client";
 
 type DashboardOverviewProps = {
@@ -48,6 +50,7 @@ type DashboardOverviewProps = {
     appointmentsTomorrow: number;
     dailySummary: Workflow | null;
   };
+  copilotInsights: DailyOperationalInsights;
   canManageIntegrations: boolean;
   aiEmployeeUpdated?: boolean;
   assistantSync?: string;
@@ -62,6 +65,7 @@ export function DashboardOverview({
   customerCount,
   tekmetricSyncStatus,
   workflowStats,
+  copilotInsights,
   canManageIntegrations,
   aiEmployeeUpdated = false,
   assistantSync,
@@ -265,6 +269,8 @@ export function DashboardOverview({
           appointmentsTomorrow={workflowStats.appointmentsTomorrow}
         />
       </section>
+
+      <DailyCopilotInsightsCard insights={copilotInsights} />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {overviewCards.map((card) => (

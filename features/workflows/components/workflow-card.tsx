@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useTransition } from "react";
 import { ArrowRight, Check, EyeOff, MessageSquareText, UserRound } from "lucide-react";
+import type { CopilotRecommendation } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { RecommendationCard } from "@/features/copilot/components/recommendation-card";
 import { updateWorkflowStatus } from "@/features/workflows/actions/update-workflow-status";
 import { WorkflowPriorityBadge } from "@/features/workflows/components/workflow-priority-badge";
 import {
@@ -16,6 +18,7 @@ import {
 type WorkflowCardProps = {
   workflow: WorkflowWithSources;
   canDismiss: boolean;
+  copilotRecommendations?: CopilotRecommendation[];
 };
 
 function getInsightReason(workflow: WorkflowWithSources): string | null {
@@ -23,7 +26,7 @@ function getInsightReason(workflow: WorkflowWithSources): string | null {
   return metadata?.insightReason ?? null;
 }
 
-export function WorkflowCard({ workflow, canDismiss }: WorkflowCardProps) {
+export function WorkflowCard({ workflow, canDismiss, copilotRecommendations = [] }: WorkflowCardProps) {
   const [isPending, startTransition] = useTransition();
   const insightReason = getInsightReason(workflow);
   const customerLabel =
@@ -54,6 +57,17 @@ export function WorkflowCard({ workflow, canDismiss }: WorkflowCardProps) {
       {insightReason ? (
         <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-3 text-sm leading-7 text-emerald-950">
           {insightReason}
+        </div>
+      ) : null}
+
+      {copilotRecommendations.length > 0 ? (
+        <div className="mt-5 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
+            Copilot recommendations
+          </p>
+          {copilotRecommendations.slice(0, 2).map((recommendation) => (
+            <RecommendationCard key={recommendation.id} recommendation={recommendation} />
+          ))}
         </div>
       ) : null}
 

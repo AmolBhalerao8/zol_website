@@ -1,4 +1,6 @@
 import { WorkflowList } from "@/features/workflows/components/workflow-list";
+import { CopilotSuggestionsSection } from "@/features/copilot/components/copilot-suggestions-section";
+import { getCopilotRecommendations } from "@/features/copilot/queries/get-copilot-recommendations";
 import { getActiveWorkflows } from "@/features/workflows/queries/get-workflows";
 import { runOperationalWorkflowScan } from "@/features/workflows/services/run-operational-workflow-scan";
 import { canManageWorkflows } from "@/features/workflows/utils/can-manage-workflows";
@@ -12,6 +14,17 @@ export async function WorkflowsPage() {
 
   const workflows = await getActiveWorkflows(workspaceId);
   const canDismiss = canManageWorkflows(currentWorkspace.role);
+
+  const [workspaceRecommendations, ...workflowRecommendationSets] = await Promise.all([
+    getCopilotRecommendations(workspaceId, { scope: "workspace" }),
+    ...workflows.slice(0, 5).map((workflow) =>
+      getCopilotRecommendations(workspaceId, { scope: "workflow", workflowId: workflow.id }),
+    ),
+  ]);
+
+  const recommendationsByWorkflowId = Object.fromEntries(
+    workflows.slice(0, 5).map((workflow, index) => [workflow.id, workflowRecommendationSets[index] ?? []]),
+  );
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
@@ -28,7 +41,18 @@ export async function WorkflowsPage() {
         </p>
       </section>
 
-      <WorkflowList workflows={workflows} canDismiss={canDismiss} />
+      <WorkflowList
+        workflows={workflows}
+        canDismiss={canDismiss}
+        recommendationsByWorkflowId={recommendationsByWorkflowId}
+      />
+
+      <CopilotSuggestionsSection
+        title="Copilot Recommendations"
+        description="Operational actions and follow-up suggestions based on active workflows and shop activity."
+        recommendations={workspaceRecommendations}
+        scope={{ scope: "workspace" }}
+      />
     </div>
   );
 }

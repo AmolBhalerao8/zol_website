@@ -46,6 +46,7 @@ model Workspace {
   intelligenceQueries     IntelligenceQuery[]
   intelligenceSessions    IntelligenceSession[]
   workflows               Workflow[]
+  copilotRecommendations  CopilotRecommendation[]
 }
 
 enum WorkspaceRole {
@@ -181,6 +182,7 @@ model Conversation {
   customerLink         ConversationCustomerLink?
   customerMemories     CustomerMemory[]
   sourceWorkflows      Workflow[]               @relation("WorkflowSourceConversation")
+  copilotRecommendations CopilotRecommendation[]
 
   @@index([workspaceId, createdAt(sort: Desc)])
   @@index([communicationChannelId])
@@ -213,6 +215,7 @@ model Customer {
   conversationLinks ConversationCustomerLink[]
   tekmetricCustomers TekmetricCustomer[]
   sourceWorkflows    Workflow[]                 @relation("WorkflowSourceCustomer")
+  copilotRecommendations CopilotRecommendation[]
 
   @@index([workspaceId, createdAt(sort: Desc)])
   @@index([workspaceId, primaryPhone])
@@ -519,9 +522,42 @@ model Workflow {
   workspace          Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   sourceConversation Conversation? @relation("WorkflowSourceConversation", fields: [sourceConversationId], references: [id], onDelete: SetNull)
   sourceCustomer     Customer?     @relation("WorkflowSourceCustomer", fields: [sourceCustomerId], references: [id], onDelete: SetNull)
+  copilotRecommendations CopilotRecommendation[]
 
   @@index([workspaceId, status, createdAt(sort: Desc)])
   @@index([workspaceId, type, status])
   @@index([workspaceId, sourceConversationId])
   @@index([workspaceId, sourceCustomerId, type, status])
+}
+
+enum RecommendationType {
+  REPLY_DRAFT
+  FOLLOW_UP
+  OPERATIONAL_ALERT
+  WORKFLOW_SUGGESTION
+  CUSTOMER_INSIGHT
+  DAILY_INSIGHT
+}
+
+model CopilotRecommendation {
+  id                   String             @id @default(cuid())
+  workspaceId          String
+  type                 RecommendationType
+  title                String
+  content              String
+  sourceConversationId String?
+  sourceCustomerId     String?
+  sourceWorkflowId     String?
+  metadata             Json?
+  createdAt            DateTime           @default(now())
+
+  workspace          Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sourceConversation Conversation? @relation(fields: [sourceConversationId], references: [id], onDelete: Cascade)
+  sourceCustomer     Customer?     @relation(fields: [sourceCustomerId], references: [id], onDelete: Cascade)
+  sourceWorkflow     Workflow?     @relation(fields: [sourceWorkflowId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, type, createdAt(sort: Desc)])
+  @@index([workspaceId, sourceConversationId, createdAt(sort: Desc)])
+  @@index([workspaceId, sourceCustomerId, createdAt(sort: Desc)])
+  @@index([workspaceId, sourceWorkflowId, createdAt(sort: Desc)])
 }

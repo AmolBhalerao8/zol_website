@@ -9,6 +9,7 @@ import { getTekmetricSyncStatus } from "@/features/integrations/queries/get-tekm
 import { canManageIntegrations } from "@/features/integrations/utils/can-manage-integrations";
 import { getCommunicationChannel } from "@/features/voice-channel/queries/get-communication-channel";
 import { getCurrentWorkspace } from "@/features/workspace";
+import { generateDailyOperationalInsights } from "@/features/copilot/services/generate-daily-operational-insights";
 import { getWorkflowStats } from "@/features/workflows/queries/get-workflows";
 import { runOperationalWorkflowScan } from "@/features/workflows/services/run-operational-workflow-scan";
 import { withDbRetry } from "@/lib/db-retry";
@@ -37,7 +38,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     console.error("Dashboard workflow scan failed:", error);
   }
 
-  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats, tekmetricSyncStatus, workflowStats] =
+  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats, tekmetricSyncStatus, workflowStats, copilotInsights] =
     await withDbRetry(() =>
       Promise.all([
         getAIEmployeeSettings(workspaceId),
@@ -47,6 +48,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         getCustomerStats(workspaceId),
         getTekmetricSyncStatus(workspaceId),
         getWorkflowStats(workspaceId),
+        generateDailyOperationalInsights(workspaceId),
       ]),
     );
 
@@ -60,6 +62,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       customerCount={customerStats.customerCount}
       tekmetricSyncStatus={tekmetricSyncStatus}
       workflowStats={workflowStats}
+      copilotInsights={copilotInsights}
       canManageIntegrations={canManageIntegrations(currentWorkspace.role)}
       aiEmployeeUpdated={params.aiEmployeeUpdated === "1"}
       assistantSync={params.assistantSync}

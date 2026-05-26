@@ -4,6 +4,8 @@ import { useTransition } from "react";
 import { RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import type { CopilotRecommendation } from "@prisma/client";
+
 import { runWorkflowScan } from "@/features/workflows/actions/run-workflow-scan";
 import { WorkflowCard } from "@/features/workflows/components/workflow-card";
 import { WorkflowExamplesSection } from "@/features/workflows/components/workflow-examples-section";
@@ -12,9 +14,14 @@ import type { WorkflowWithSources } from "@/features/workflows/types/workflow-ty
 type WorkflowListProps = {
   workflows: WorkflowWithSources[];
   canDismiss: boolean;
+  recommendationsByWorkflowId?: Record<string, CopilotRecommendation[]>;
 };
 
-export function WorkflowList({ workflows, canDismiss }: WorkflowListProps) {
+export function WorkflowList({
+  workflows,
+  canDismiss,
+  recommendationsByWorkflowId = {},
+}: WorkflowListProps) {
   const [isPending, startTransition] = useTransition();
 
   const handleScan = () => {
@@ -52,7 +59,12 @@ export function WorkflowList({ workflows, canDismiss }: WorkflowListProps) {
         </Button>
       </div>
       {workflows.map((workflow) => (
-        <WorkflowCard key={workflow.id} workflow={workflow} canDismiss={canDismiss} />
+        <WorkflowCard
+          key={workflow.id}
+          workflow={workflow}
+          canDismiss={canDismiss}
+          copilotRecommendations={recommendationsByWorkflowId[workflow.id]}
+        />
       ))}
     </div>
   );

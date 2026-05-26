@@ -4,6 +4,7 @@ import { ZolProfileMenu } from "@/features/auth/components/zol-profile-menu";
 import {
   Bot,
   LayoutDashboard,
+  Lightbulb,
   Menu,
   MessageSquareText,
   Network,
@@ -27,6 +28,7 @@ const sidebarItems = [
   { label: "Conversations", href: "/conversations", icon: MessageSquareText, showCount: true },
   { label: "Customers", href: "/customers", icon: UsersRound, showCustomerCount: true },
   { label: "Intelligence", href: "/intelligence", icon: Sparkles },
+  { label: "Copilot", href: "/copilot", icon: Lightbulb },
   { label: "Workflows", href: "/workflows", icon: Workflow },
   { label: "Integrations", href: "/integrations", icon: Network },
   { label: "Settings", href: "#", icon: Settings },
