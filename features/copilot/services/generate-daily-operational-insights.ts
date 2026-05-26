@@ -70,50 +70,50 @@ export async function generateDailyOperationalInsights(
   const workflowBottlenecks: string[] = [];
 
   if (conversationCount > 0) {
-    highlights.push(`${conversationCount} conversation${conversationCount === 1 ? "" : "s"} captured by ZOL.`);
+    highlights.push(`ZOL answered ${conversationCount} customer call${conversationCount === 1 ? "" : "s"}.`);
   }
 
   if (openWorkflows > 0) {
-    highlights.push(`${openWorkflows} active operational workflow${openWorkflows === 1 ? "" : "s"} need attention.`);
+    highlights.push(`${openWorkflows} item${openWorkflows === 1 ? "" : "s"} need your attention today.`);
   }
 
   if (followUpWorkflows > 0) {
     unresolvedConcerns.push(
-      `${followUpWorkflows} customer${followUpWorkflows === 1 ? "" : "s"} may require follow-up.`,
+      `${followUpWorkflows} customer${followUpWorkflows === 1 ? "" : "s"} waiting for a follow-up.`,
     );
   }
 
   if (urgentConversations > 0) {
     customerIssues.push(
-      `${urgentConversations} urgent conversation${urgentConversations === 1 ? "" : "s"} on record.`,
+      `${urgentConversations} urgent customer call${urgentConversations === 1 ? "" : "s"} to review.`,
     );
   }
 
   if (issueMemories > 0) {
     customerIssues.push(
-      `${issueMemories} recent issue memor${issueMemories === 1 ? "y" : "ies"} may indicate unresolved concerns.`,
+      `${issueMemories} customer${issueMemories === 1 ? "" : "s"} reported repeat issues recently.`,
     );
   }
 
   if (openActionItems > 0) {
     workflowBottlenecks.push(
-      `${openActionItems} open action item${openActionItems === 1 ? "" : "s"} from conversations.`,
+      `${openActionItems} follow-up${openActionItems === 1 ? "" : "s"} from recent calls.`,
     );
   }
 
   if (pendingOrders > 0) {
     workflowBottlenecks.push(
-      `${pendingOrders} repair order${pendingOrders === 1 ? "" : "s"} still pending.`,
+      `${pendingOrders} job${pendingOrders === 1 ? "" : "s"} still open in the shop.`,
     );
   }
 
   const appointmentLoad =
     appointmentsTomorrow > 0
-      ? `${appointmentsTomorrow} appointment${appointmentsTomorrow === 1 ? "" : "s"} scheduled for tomorrow.`
+      ? `${appointmentsTomorrow} appointment${appointmentsTomorrow === 1 ? "" : "s"} tomorrow.`
       : null;
 
   if (highlights.length === 0) {
-    highlights.push("ZOL is monitoring operations. Insights will appear as customer activity grows.");
+    highlights.push("ZOL is ready. Suggestions will appear as customer activity comes in.");
   }
 
   return {

@@ -22,9 +22,9 @@ export function DailyCopilotInsightsCard({ insights }: DailyCopilotInsightsCardP
     <Card className="p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-zinc-500">Daily operational insights</p>
+          <p className="text-sm font-semibold text-zinc-500">What ZOL noticed today</p>
           <h3 className="mt-3 text-2xl font-semibold tracking-tight text-zinc-950">
-            Copilot highlights
+            Your daily summary
           </h3>
         </div>
         <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-700">
@@ -42,7 +42,7 @@ export function DailyCopilotInsightsCard({ insights }: DailyCopilotInsightsCardP
       </ul>
 
       <Button className="mt-6" variant="secondary" asChild>
-        <Link href="/copilot">Open operational copilot</Link>
+        <Link href="/copilot">Open Copilot</Link>
       </Button>
     </Card>
   );

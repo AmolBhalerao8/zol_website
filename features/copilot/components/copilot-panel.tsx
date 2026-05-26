@@ -19,7 +19,6 @@ type CopilotPanelProps = {
   description: string;
   recommendations: CopilotRecommendation[];
   scope: CopilotScope;
-  contextSummary?: string;
   showRefresh?: boolean;
 };
 
@@ -42,7 +41,6 @@ export function CopilotPanel({
   description,
   recommendations,
   scope,
-  contextSummary,
   showRefresh = true,
 }: CopilotPanelProps) {
   const router = useRouter();
@@ -65,33 +63,18 @@ export function CopilotPanel({
         {showRefresh ? (
           <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={isPending}>
             <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
-            Refresh suggestions
+            Update suggestions
           </Button>
         ) : null}
       </div>
-
-      {contextSummary ? (
-        <Card className="border-zinc-200 bg-zinc-50/80 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
-            Operational context
-          </p>
-          <p className="mt-3 text-sm leading-7 text-zinc-700">{contextSummary}</p>
-        </Card>
-      ) : null}
 
       {recommendations.length === 0 ? (
         <Card className="border-dashed border-zinc-200 p-8 text-center">
           <p className="text-sm font-medium text-zinc-950">No suggestions yet</p>
           <p className="mt-2 text-sm leading-7 text-zinc-600">
-            ZOL generates reply drafts, follow-ups, and operational recommendations from your
-            conversations, customer memory, and workflows. Run a refresh once more data is available.
+            ZOL will suggest messages and next steps once there are customer calls and follow-ups
+            to work from.
           </p>
-          {showRefresh ? (
-            <Button className="mt-4" variant="secondary" size="sm" onClick={handleRefresh} disabled={isPending}>
-              <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
-              Generate suggestions
-            </Button>
-          ) : null}
         </Card>
       ) : (
         <div className="space-y-4">{recommendations.map(renderRecommendation)}</div>

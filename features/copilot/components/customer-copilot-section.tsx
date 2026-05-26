@@ -17,8 +17,8 @@ export async function CustomerCopilotSection({
 
   return (
     <CopilotSuggestionsSection
-      title="Operational Suggestions"
-      description="Customer insights, follow-up drafts, and operational recommendations based on conversation history and memory."
+      title="Suggestions for this customer"
+      description="Follow-up ideas and notes based on past calls and what ZOL remembers."
       recommendations={recommendations}
       scope={{ scope: "customer", customerId }}
     />

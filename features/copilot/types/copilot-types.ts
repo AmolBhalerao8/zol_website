@@ -38,12 +38,12 @@ export type DailyOperationalInsights = {
 export type CopilotRecommendationRecord = CopilotRecommendation;
 
 export const RECOMMENDATION_TYPE_LABELS: Record<RecommendationType, string> = {
-  REPLY_DRAFT: "Suggested reply",
-  FOLLOW_UP: "Follow-up draft",
-  OPERATIONAL_ALERT: "Operational alert",
-  WORKFLOW_SUGGESTION: "Workflow recommendation",
-  CUSTOMER_INSIGHT: "Customer insight",
-  DAILY_INSIGHT: "Daily insight",
+  REPLY_DRAFT: "Suggested message",
+  FOLLOW_UP: "Follow-up message",
+  OPERATIONAL_ALERT: "Needs attention",
+  WORKFLOW_SUGGESTION: "Recommended action",
+  CUSTOMER_INSIGHT: "Customer note",
+  DAILY_INSIGHT: "Today",
 };
 
 export function getScopeKey(scope: CopilotScope): string {

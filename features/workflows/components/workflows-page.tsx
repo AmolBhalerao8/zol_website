@@ -55,8 +55,8 @@ export async function WorkflowsPage() {
       />
 
       <CopilotSuggestionsSection
-        title="Copilot Recommendations"
-        description="Operational actions and follow-up suggestions based on active workflows and shop activity."
+        title="Copilot recommendations"
+        description="Suggested next steps based on your active follow-ups and shop activity."
         recommendations={workspaceRecommendations}
         scope={{ scope: "workspace" }}
       />

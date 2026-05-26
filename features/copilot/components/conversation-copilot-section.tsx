@@ -18,7 +18,7 @@ export async function ConversationCopilotSection({
   return (
     <CopilotSuggestionsSection
       title="ZOL Suggestions"
-      description="Suggested replies, follow-ups, and operational next steps for this conversation. Drafts are ready to copy — nothing is sent automatically."
+      description="Suggested messages and next steps for this call. Copy any draft — nothing sends automatically."
       recommendations={recommendations}
       scope={{ scope: "conversation", conversationId }}
     />
