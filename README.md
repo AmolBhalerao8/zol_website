@@ -1,6 +1,6 @@
 # ZOL Website
 
-AI employee platform for customer-facing businesses. ZOL answers calls, captures conversations, remembers customers, syncs shop data, and provides operational intelligence search.
+AI employee platform for customer-facing businesses. ZOL answers calls, captures conversations, remembers customers, syncs shop data, searches operational data, and proactively detects follow-ups and business issues.
 
 **Production:** [tryzol.com](https://tryzol.com)
 
@@ -11,8 +11,23 @@ AI employee platform for customer-facing businesses. ZOL answers calls, captures
 - **Clerk** — authentication
 - **Prisma** + **Supabase Postgres** — database
 - **Vapi** — voice channel / AI phone calls
-- **OpenAI** — conversation intelligence & operational answers
+- **OpenAI** — conversation intelligence, workflow reasoning & operational answers
 - **Vercel** — hosting
+
+## Platform capabilities
+
+| Step | Capability | Route / area |
+|------|------------|--------------|
+| 1 | Authentication | `/sign-in`, `/sign-up` |
+| 2 | Workspace onboarding | `/onboarding` |
+| 3 | AI employee setup | `/setup/ai-employee` |
+| 4 | Vapi voice channel | `/setup/voice-channel` |
+| 5 | Conversation capture | `/conversations` |
+| 6 | Customer memory | `/customers` |
+| 7 | Tekmetric integration foundation | `/integrations` |
+| 8 | Tekmetric data sync | `/integrations/tekmetric` |
+| 9 | Operational intelligence search | `/intelligence` |
+| 10 | **Proactive operational workflows** | `/workflows`, `/dashboard` |
 
 ## Features
 
@@ -21,7 +36,7 @@ AI employee platform for customer-facing businesses. ZOL answers calls, captures
 | Marketing | `/` | Landing page, book-a-demo form |
 | Auth | `/sign-in`, `/sign-up` | Clerk sign-in / sign-up |
 | Onboarding | `/onboarding` | Workspace setup |
-| Dashboard | `/dashboard` | Operations overview |
+| Dashboard | `/dashboard` | Operations overview, workflow alerts, daily summary |
 | AI Employee | `/setup/ai-employee` | Business profile & AI settings |
 | Voice Channel | `/setup/voice-channel` | Phone number, voice, Vapi activation |
 | Conversations | `/conversations` | Call & message history |
@@ -30,6 +45,28 @@ AI employee platform for customer-facing businesses. ZOL answers calls, captures
 | Workflows | `/workflows` | Proactive operational workflows & alerts |
 | Integrations | `/integrations` | Tekmetric & other connectors |
 | Tekmetric sync | `/integrations/tekmetric` | Sync status & manual sync |
+
+## Operational workflows (Step 10)
+
+ZOL proactively detects operational issues and generates workflows — not a rule builder or Zapier-style automation.
+
+**Workflow types:** follow-up, urgent issue, missed callback, appointment reminder, customer escalation, repeated issue, operational alert, daily summary.
+
+**Detection sources:**
+- Conversations & urgency
+- Open / stale action items
+- Customer memory patterns
+- Tekmetric appointments & repair orders
+
+**Scan triggers:**
+- After conversation processing (Vapi webhook)
+- After successful Tekmetric sync
+- Dashboard and `/workflows` page load
+- Manual **Refresh scan** on the workflows page
+
+**User actions:** mark complete, dismiss (admins only), view linked conversation or customer.
+
+**Dashboard cards:** Active Workflows, Urgent Operational Alerts, Daily Operational Summary.
 
 ## Prerequisites
 
@@ -81,7 +118,7 @@ AI employee platform for customer-facing businesses. ZOL answers calls, captures
 | `DATABASE_URL` | Yes | Supabase **transaction pooler** (port **6543**, `?pgbouncer=true&connection_limit=1`) |
 | `DIRECT_URL` | Yes | Supabase **direct** connection (port **5432**) for migrations |
 | `NEXT_PUBLIC_APP_URL` | Prod | Public app URL, e.g. `https://tryzol.com` |
-| `OPENAI_API_KEY` | For AI features | Intelligence search & conversation extraction |
+| `OPENAI_API_KEY` | For AI features | Intelligence search, workflow reasoning & conversation extraction |
 | `ENCRYPTION_KEY` | For integrations | 32+ char secret for stored credentials |
 | `VAPI_PRIVATE_KEY` or `VAPI_API_KEY` | For voice | Vapi assistant & phone |
 | `VAPI_WEBHOOK_SECRET` | For voice | Validates inbound Vapi webhooks |
@@ -138,11 +175,26 @@ app/
   (marketing)/     Landing page
   (auth)/          Sign-in / sign-up
   (platform)/      Dashboard & authenticated app
+    workflows/     Operational workflows page
   api/             Webhooks & API routes
-features/          Domain logic by feature (dashboard, intelligence, integrations, …)
+features/
+  workflows/       Detection engine, scan orchestration, workflow UI
+  intelligence/    Operational search
+  integrations/    Tekmetric & connectors
+  conversations/   Vapi capture & processing
+  dashboard/       Shell, overview, sidebar
 components/ui/     Shared UI primitives
-prisma/            Schema & migrations
+prisma/            Schema & migrations (incl. Workflow model)
 ```
+
+## Not yet implemented
+
+- Billing
+- Multi-workspace switching
+- Live call streaming
+- Cron / scheduled workflow scans
+- Autonomous write-back (Tekmetric updates, auto-email/SMS to customers)
+- External notification infrastructure beyond demo email placeholders
 
 ## License
 
