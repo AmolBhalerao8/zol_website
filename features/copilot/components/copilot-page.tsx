@@ -71,15 +71,8 @@ export async function CopilotPage() {
     (item) => item.type === "REPLY_DRAFT" || item.type === "FOLLOW_UP",
   );
 
-  const tips = recommendations.filter(
-    (item) =>
-      item.type === "CUSTOMER_INSIGHT" ||
-      item.type === "OPERATIONAL_ALERT" ||
-      item.type === "WORKFLOW_SUGGESTION",
-  );
-
   const hasAttention = attentionWorkflows.length > 0 || followUps.length > 0;
-  const hasContent = hasAttention || draftMessages.length > 0 || tips.length > 0;
+  const hasContent = hasAttention || draftMessages.length > 0;
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -99,10 +92,25 @@ export async function CopilotPage() {
           {todaySummary.map((line) => (
             <li key={line} className="flex gap-2 text-sm leading-7 text-emerald-950">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-              {line}
+              {line.includes("waiting for a follow-up") ? (
+                <Link href="/workflows" className="font-medium underline underline-offset-2">
+                  {line}
+                </Link>
+              ) : (
+                line
+              )}
             </li>
           ))}
         </ul>
+        {stats.followUpCount > 0 ? (
+          <p className="mt-4 text-sm leading-7 text-emerald-900/80">
+            These are customers ZOL flagged from recent calls — open{" "}
+            <Link href="/workflows" className="font-medium underline underline-offset-2">
+              Follow-ups
+            </Link>{" "}
+            below to see who they are and what to do next.
+          </p>
+        ) : null}
       </section>
 
       {!hasContent ? <CopilotEmptyState /> : null}
@@ -168,15 +176,6 @@ export async function CopilotPage() {
               }
               linkLabel="View context"
             />
-          ))}
-        </section>
-      ) : null}
-
-      {tips.length > 0 ? (
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-zinc-950">Helpful notes</h2>
-          {tips.map((item) => (
-            <CopilotActionItem key={item.id} title={item.title} description={item.content} />
           ))}
         </section>
       ) : null}

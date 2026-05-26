@@ -92,19 +92,9 @@ function templateRecommendations(
 
   if (scope.scope === "workspace") {
     recommendations.push({
-      type: "DAILY_INSIGHT",
-      title: "Operational overview",
-      content: `ZOL is monitoring ${context.businessName} for follow-ups, urgent issues, and workflow bottlenecks.`,
-    });
-    recommendations.push({
       type: "WORKFLOW_SUGGESTION",
-      title: "Review active workflows",
-      content: "Check open operational workflows and assign next steps to your team.",
-    });
-    recommendations.push({
-      type: "OPERATIONAL_ALERT",
-      title: "Stay ahead of customer follow-ups",
-      content: "Prioritize customers with open action items or unresolved urgent conversations.",
+      title: "Review open follow-ups",
+      content: `Open your follow-up list in ZOL to see which customers at ${context.businessName} still need a call or message back.`,
     });
   }
 
@@ -153,6 +143,10 @@ Rules:
 - Stay grounded in the provided context only.
 - Do not invent facts, appointments, or order statuses.
 - Be concise, calm, and operationally useful.
+- Use customer names when they appear in the context.
+- Give a specific next step (call back, confirm appointment, review a conversation).
+- Never use vague corporate language like "ensure timely communication", "keep them informed and engaged", or "proactive outreach".
+- Never restate a count without naming who or what to do.
 - If context is insufficient, say so clearly in one recommendation.
 - Return JSON: { recommendations: [{ type: RecommendationType, title: string, content: string }] }
 Valid types: REPLY_DRAFT, FOLLOW_UP, OPERATIONAL_ALERT, WORKFLOW_SUGGESTION, CUSTOMER_INSIGHT, DAILY_INSIGHT
