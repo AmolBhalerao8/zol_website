@@ -344,6 +344,15 @@ export async function syncTekmetricData({
       where: { id: integration.id },
       data: { lastSyncAt: syncedAt },
     });
+
+    try {
+      const { runOperationalWorkflowScan } = await import(
+        "@/features/workflows/services/run-operational-workflow-scan"
+      );
+      await runOperationalWorkflowScan(workspaceId);
+    } catch (error) {
+      console.error("Operational workflow scan after Tekmetric sync failed:", error);
+    }
   }
 
   if (!success) {

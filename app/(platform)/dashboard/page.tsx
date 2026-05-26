@@ -9,6 +9,8 @@ import { getTekmetricSyncStatus } from "@/features/integrations/queries/get-tekm
 import { canManageIntegrations } from "@/features/integrations/utils/can-manage-integrations";
 import { getCommunicationChannel } from "@/features/voice-channel/queries/get-communication-channel";
 import { getCurrentWorkspace } from "@/features/workspace";
+import { getWorkflowStats } from "@/features/workflows/queries/get-workflows";
+import { runOperationalWorkflowScan } from "@/features/workflows/services/run-operational-workflow-scan";
 import { withDbRetry } from "@/lib/db-retry";
 
 type DashboardPageProps = {
@@ -27,15 +29,24 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const params = await searchParams;
 
-  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats, tekmetricSyncStatus] =
+  const workspaceId = currentWorkspace.workspace.id;
+
+  try {
+    await runOperationalWorkflowScan(workspaceId);
+  } catch (error) {
+    console.error("Dashboard workflow scan failed:", error);
+  }
+
+  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats, tekmetricSyncStatus, workflowStats] =
     await withDbRetry(() =>
       Promise.all([
-        getAIEmployeeSettings(currentWorkspace.workspace.id),
-        getCommunicationChannel(currentWorkspace.workspace.id),
-        getRecentConversations(currentWorkspace.workspace.id),
-        getConversationStats(currentWorkspace.workspace.id),
-        getCustomerStats(currentWorkspace.workspace.id),
-        getTekmetricSyncStatus(currentWorkspace.workspace.id),
+        getAIEmployeeSettings(workspaceId),
+        getCommunicationChannel(workspaceId),
+        getRecentConversations(workspaceId),
+        getConversationStats(workspaceId),
+        getCustomerStats(workspaceId),
+        getTekmetricSyncStatus(workspaceId),
+        getWorkflowStats(workspaceId),
       ]),
     );
 
@@ -48,6 +59,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       conversationStats={conversationStats}
       customerCount={customerStats.customerCount}
       tekmetricSyncStatus={tekmetricSyncStatus}
+      workflowStats={workflowStats}
       canManageIntegrations={canManageIntegrations(currentWorkspace.role)}
       aiEmployeeUpdated={params.aiEmployeeUpdated === "1"}
       assistantSync={params.assistantSync}

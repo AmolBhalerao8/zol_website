@@ -20,7 +20,10 @@ import { RecentConversationsCard } from "@/features/conversations/components/rec
 import { OperationalInsightCard } from "@/features/intelligence/components/operational-insight-card";
 import { TekmetricSyncDashboardCard } from "@/features/integrations/components/tekmetric-sync-dashboard-card";
 import type { TekmetricSyncStatusSummary } from "@/features/integrations/queries/get-tekmetric-sync-status";
-import type { Conversation } from "@prisma/client";
+import { ActiveWorkflowsCard } from "@/features/workflows/components/active-workflows-card";
+import { DailySummaryCard } from "@/features/workflows/components/daily-summary-card";
+import { OperationalAlertCard } from "@/features/workflows/components/operational-alert-card";
+import type { Conversation, Workflow } from "@prisma/client";
 
 type DashboardOverviewProps = {
   workspace: Workspace;
@@ -38,6 +41,13 @@ type DashboardOverviewProps = {
   };
   customerCount: number;
   tekmetricSyncStatus: TekmetricSyncStatusSummary;
+  workflowStats: {
+    activeCount: number;
+    urgentCount: number;
+    followUpCount: number;
+    appointmentsTomorrow: number;
+    dailySummary: Workflow | null;
+  };
   canManageIntegrations: boolean;
   aiEmployeeUpdated?: boolean;
   assistantSync?: string;
@@ -51,6 +61,7 @@ export function DashboardOverview({
   conversationStats,
   customerCount,
   tekmetricSyncStatus,
+  workflowStats,
   canManageIntegrations,
   aiEmployeeUpdated = false,
   assistantSync,
@@ -238,6 +249,22 @@ export function DashboardOverview({
       />
 
       <OperationalInsightCard />
+
+      <section className="grid gap-4 xl:grid-cols-3">
+        <ActiveWorkflowsCard
+          activeCount={workflowStats.activeCount}
+          followUpCount={workflowStats.followUpCount}
+        />
+        <OperationalAlertCard
+          urgentCount={workflowStats.urgentCount}
+          followUpCount={workflowStats.followUpCount}
+        />
+        <DailySummaryCard
+          activeCount={workflowStats.activeCount}
+          dailySummary={workflowStats.dailySummary}
+          appointmentsTomorrow={workflowStats.appointmentsTomorrow}
+        />
+      </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {overviewCards.map((card) => (

@@ -27,6 +27,7 @@ AI employee platform for customer-facing businesses. ZOL answers calls, captures
 | Conversations | `/conversations` | Call & message history |
 | Customers | `/customers` | Customer profiles & memory |
 | Intelligence | `/intelligence` | Chat-style operational search |
+| Workflows | `/workflows` | Proactive operational workflows & alerts |
 | Integrations | `/integrations` | Tekmetric & other connectors |
 | Tekmetric sync | `/integrations/tekmetric` | Sync status & manual sync |
 

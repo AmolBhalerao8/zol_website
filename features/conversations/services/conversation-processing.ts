@@ -5,6 +5,7 @@ import { processConversationCustomerMemory } from "@/features/customers/services
 import { extractConversationIntelligence } from "@/features/conversations/services/extract-conversation-intelligence";
 import type { ParsedVapiWebhook } from "@/features/conversations/utils/parse-vapi-webhook";
 import { normalizeCustomerPhone } from "@/features/conversations/utils/normalize-customer-phone";
+import { runOperationalWorkflowScan } from "@/features/workflows/services/run-operational-workflow-scan";
 import { fetchVapiCall, hasVapiConfigured } from "@/features/voice-channel/services/vapi";
 import { prisma } from "@/lib/prisma";
 
@@ -135,6 +136,12 @@ export async function processVapiWebhookEvent(
       console.error("Customer memory processing failed:", error);
     }
 
+    try {
+      await runOperationalWorkflowScan(channel.workspaceId);
+    } catch (error) {
+      console.error("Operational workflow scan failed:", error);
+    }
+
     return {
       status: "processed",
       conversationId: conversation.id,
@@ -196,6 +203,12 @@ export async function processVapiWebhookEvent(
       });
     } catch (error) {
       console.error("Customer memory processing failed:", error);
+    }
+
+    try {
+      await runOperationalWorkflowScan(channel.workspaceId);
+    } catch (error) {
+      console.error("Operational workflow scan failed:", error);
     }
   } catch (error) {
     console.error("Conversation intelligence processing failed:", error);
