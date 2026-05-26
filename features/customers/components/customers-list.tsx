@@ -17,8 +17,7 @@ export function CustomersList({ customers }: CustomersListProps) {
         </div>
         <h2 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-950">No customers yet</h2>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-zinc-600">
-          As ZOL handles customer conversations, it will build relationship memory and organize
-          customers here automatically.
+          As ZOL answers calls, customers will show up here automatically with notes from each call.
         </p>
       </Card>
     );

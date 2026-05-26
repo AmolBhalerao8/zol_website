@@ -98,7 +98,7 @@ export function IntelligenceWorkspace() {
       }
 
       if (!response.ok || data.error) {
-        setError(data.error ?? "Unable to process your operational query.");
+        setError(data.error ?? "Unable to answer that question right now.");
         return;
       }
 
@@ -144,7 +144,7 @@ export function IntelligenceWorkspace() {
     <div className="flex min-h-[calc(100dvh-12rem)] flex-col">
       <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
         <p className="text-sm text-zinc-500">
-          {messages.length > 0 ? "Follow up in this conversation" : "Start a new operational search"}
+          {messages.length > 0 ? "Ask a follow-up question" : "Try an example question below"}
         </p>
         {messages.length > 0 ? (
           <Button type="button" variant="secondary" size="sm" onClick={startNewChat}>
@@ -159,8 +159,8 @@ export function IntelligenceWorkspace() {
         ) : (
           <section className="flex h-full flex-col justify-end space-y-3 pb-2">
             <div>
-              <h2 className="text-base font-semibold text-zinc-950">Example operational queries</h2>
-              <p className="mt-1 text-sm text-zinc-600">Click an example to get started.</p>
+              <h2 className="text-base font-semibold text-zinc-950">Example questions</h2>
+              <p className="mt-1 text-sm text-zinc-600">Tap one to get started.</p>
             </div>
             <SuggestedQueryList
               queries={SUGGESTED_INTELLIGENCE_QUERIES}

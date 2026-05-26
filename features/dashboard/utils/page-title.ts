@@ -1,20 +1,20 @@
 const PAGE_TITLES: Array<{ prefix: string; title: string }> = [
-  { prefix: "/conversations/", title: "Conversation" },
+  { prefix: "/conversations/", title: "Call details" },
   { prefix: "/customers/", title: "Customer" },
-  { prefix: "/conversations", title: "Conversations" },
+  { prefix: "/conversations", title: "Calls" },
   { prefix: "/customers", title: "Customers" },
-  { prefix: "/integrations", title: "Integrations" },
-  { prefix: "/intelligence", title: "Operational Intelligence" },
+  { prefix: "/integrations", title: "Connections" },
+  { prefix: "/intelligence", title: "Ask ZOL" },
   { prefix: "/copilot", title: "Copilot" },
-  { prefix: "/workflows", title: "Operational Workflows" },
-  { prefix: "/setup/ai-employee", title: "AI Employee" },
-  { prefix: "/setup/voice-channel", title: "Voice Channel" },
-  { prefix: "/dashboard", title: "Dashboard" },
+  { prefix: "/workflows", title: "Follow-ups" },
+  { prefix: "/setup/ai-employee", title: "ZOL setup" },
+  { prefix: "/setup/voice-channel", title: "Phone line" },
+  { prefix: "/dashboard", title: "Home" },
 ];
 
 export function getDashboardPageTitle(pathname: string): string {
   const match = PAGE_TITLES.find((entry) => pathname.startsWith(entry.prefix));
-  return match?.title ?? "Dashboard";
+  return match?.title ?? "Home";
 }
 
 export function getSidebarStatusCopy(input: {
@@ -23,20 +23,20 @@ export function getSidebarStatusCopy(input: {
 }): { title: string; body: string } {
   if (input.isVoiceChannelActive) {
     return {
-      title: "AI employee is live",
-      body: "ZOL is answering calls on your business line and saving conversations for your team.",
+      title: "ZOL is answering calls",
+      body: "Customer calls are being saved for your team.",
     };
   }
 
   if (input.isAIConfigured) {
     return {
       title: "Almost ready",
-      body: "Activate your phone line to start receiving customer calls through ZOL.",
+      body: "Turn on your phone line to start receiving calls through ZOL.",
     };
   }
 
   return {
     title: "Getting started",
-    body: "Tell ZOL about your business, then choose a voice and phone number.",
+    body: "Tell ZOL about your business, then choose a phone number.",
   };
 }

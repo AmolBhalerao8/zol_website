@@ -138,7 +138,7 @@ export function IntegrationConnectPanel({
             {provider === "TEKMETRIC" && tekmetricSyncStatus ? (
               <div className="space-y-3 border-t border-zinc-200 pt-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-zinc-950">Operational data sync</h3>
+                  <h3 className="text-lg font-semibold text-zinc-950">Shop data sync</h3>
                   <p className="mt-2 text-sm leading-7 text-zinc-600">
                     Pull customer, vehicle, appointment, and repair order context from your connected
                     shop system.

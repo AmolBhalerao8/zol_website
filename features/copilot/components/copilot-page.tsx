@@ -132,7 +132,7 @@ export async function CopilotPage() {
               }
               linkLabel={
                 workflow.sourceConversation
-                  ? "View conversation"
+                  ? "View call"
                   : workflow.sourceCustomer
                     ? "View customer"
                     : "View follow-ups"
@@ -149,7 +149,7 @@ export async function CopilotPage() {
                   : item.description ?? "Open follow-up from a recent conversation."
               }
               href={`/conversations/${item.conversation.id}`}
-              linkLabel="View conversation"
+              linkLabel="View call"
             />
           ))}
         </section>
@@ -186,7 +186,7 @@ export async function CopilotPage() {
         <p className="text-center text-xs text-zinc-500">
           For message drafts on a specific call, open that{" "}
           <Link href="/conversations" className="font-medium text-zinc-700 underline">
-            conversation
+            call
           </Link>
           .
         </p>

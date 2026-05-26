@@ -28,8 +28,7 @@ export function CustomerConversationsList({ conversationLinks }: CustomerConvers
       <Card className="border-zinc-200 bg-white shadow-card">
         <CardContent className="p-8 text-center">
           <p className="text-sm leading-7 text-zinc-600">
-            No linked conversations yet. Conversations appear here once ZOL connects them to this
-            customer.
+            No calls linked yet. They will appear here once ZOL connects them to this customer.
           </p>
         </CardContent>
       </Card>
@@ -45,18 +44,18 @@ export function CustomerConversationsList({ conversationLinks }: CustomerConvers
               <div>
                 <CardTitle className="text-lg">{formatTimestamp(conversation.createdAt)}</CardTitle>
                 <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600">
-                  {conversation.summary ?? "Conversation captured without summary."}
+                  {conversation.summary ?? "Call saved without a summary yet."}
                 </p>
               </div>
-              <UrgencyBadge urgency={conversation.urgency as Urgency} />
+              {conversation.urgency === "HIGH" || conversation.urgency === "URGENT" ? (
+                <UrgencyBadge urgency={conversation.urgency as Urgency} />
+              ) : null}
             </div>
           </CardHeader>
           <CardContent className="space-y-4 p-6">
             {conversation.actionItems.length > 0 ? (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
-                  Action items
-                </p>
+                <p className="text-sm font-medium text-zinc-500">Follow-ups</p>
                 <ul className="mt-3 space-y-2">
                   {conversation.actionItems.slice(0, 3).map((item) => (
                     <li
@@ -74,7 +73,7 @@ export function CustomerConversationsList({ conversationLinks }: CustomerConvers
               href={`/conversations/${conversation.id}`}
               className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:text-emerald-800"
             >
-              View conversation detail
+              View call
               <ArrowRight className="h-4 w-4" />
             </Link>
           </CardContent>

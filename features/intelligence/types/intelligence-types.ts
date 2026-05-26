@@ -55,9 +55,9 @@ export type IntelligenceQueryResult = {
 };
 
 export const SUGGESTED_INTELLIGENCE_QUERIES = [
-  "What conversations were urgent this week?",
-  "Which customers need follow-up?",
+  "Which customers need a follow-up?",
   "What appointments are scheduled tomorrow?",
-  "What were the most common customer requests?",
-  "Which repair orders are still open?",
+  "What were the most common customer requests this week?",
+  "Which jobs are still open?",
+  "Who called about brakes this month?",
 ] as const;

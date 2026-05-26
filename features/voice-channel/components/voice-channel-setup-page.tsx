@@ -18,14 +18,11 @@ export async function VoiceChannelSetupPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <section>
-        <div className="mb-3 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
-          Voice channel setup
-        </div>
         <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
-          Activate your AI employee
+          Set up your phone line
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-          Pick your area code and voice, then activate the phone number customers will call.
+          Pick your area code and voice, then turn on the number customers will call.
         </p>
       </section>
 

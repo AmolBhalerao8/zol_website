@@ -7,8 +7,8 @@ export function SignInPage() {
   return (
     <AuthShell
       eyebrow="Welcome back"
-      title="Sign in to your ZOL workspace"
-      description="Access conversations, customer memory, operational insights, and your AI employee dashboard."
+      title="Sign in to ZOL"
+      description="See your calls, customers, follow-ups, and daily summary."
       footer={
         <>
           New to ZOL?{" "}

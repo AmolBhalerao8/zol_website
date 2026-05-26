@@ -1,18 +1,15 @@
 import Link from "next/link";
 import {
-  Brain,
   Check,
   Circle,
-  ClipboardList,
-  MessageSquareText,
   Phone,
-  Sparkles,
 } from "lucide-react";
 import type { AIEmployeeSettings, CommunicationChannel, Workspace } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AIEmployeeConfigCard } from "@/features/dashboard/components/ai-employee-config-card";
+import { DashboardFollowUpsCard } from "@/features/dashboard/components/dashboard-follow-ups-card";
 import { DashboardUpdateBanner } from "@/features/dashboard/components/dashboard-update-banner";
 import { SetupInsightTile } from "@/features/dashboard/components/setup-insight-tile";
 import { CommunicationChannelStatus } from "@/features/voice-channel/components/communication-channel-status";
@@ -20,12 +17,9 @@ import { RecentConversationsCard } from "@/features/conversations/components/rec
 import { OperationalInsightCard } from "@/features/intelligence/components/operational-insight-card";
 import { TekmetricSyncDashboardCard } from "@/features/integrations/components/tekmetric-sync-dashboard-card";
 import type { TekmetricSyncStatusSummary } from "@/features/integrations/queries/get-tekmetric-sync-status";
-import { ActiveWorkflowsCard } from "@/features/workflows/components/active-workflows-card";
-import { DailySummaryCard } from "@/features/workflows/components/daily-summary-card";
-import { OperationalAlertCard } from "@/features/workflows/components/operational-alert-card";
 import { DailyCopilotInsightsCard } from "@/features/copilot/components/daily-copilot-insights-card";
 import type { DailyOperationalInsights } from "@/features/copilot/types/copilot-types";
-import type { Conversation, Workflow } from "@prisma/client";
+import type { Conversation } from "@prisma/client";
 
 type DashboardOverviewProps = {
   workspace: Workspace;
@@ -48,7 +42,6 @@ type DashboardOverviewProps = {
     urgentCount: number;
     followUpCount: number;
     appointmentsTomorrow: number;
-    dailySummary: Workflow | null;
   };
   copilotInsights: DailyOperationalInsights;
   canManageIntegrations: boolean;
@@ -62,7 +55,6 @@ export function DashboardOverview({
   communicationChannel,
   recentConversations,
   conversationStats,
-  customerCount,
   tekmetricSyncStatus,
   workflowStats,
   copilotInsights,
@@ -75,10 +67,9 @@ export function DashboardOverview({
   const hasBusinessContext = Boolean(aiSettings?.businessContext?.trim());
 
   const setupChecklist = [
-    { label: "Account created", complete: true },
-    { label: "Workspace created", complete: true },
-    { label: "AI employee configured", complete: isAIConfigured },
-    { label: "Voice channel active", complete: isVoiceChannelActive },
+    { label: "Account ready", complete: true },
+    { label: "ZOL knows your business", complete: isAIConfigured },
+    { label: "Phone line active", complete: isVoiceChannelActive },
   ];
 
   const primaryCtaHref = !isAIConfigured
@@ -88,43 +79,13 @@ export function DashboardOverview({
       : "/conversations";
 
   const primaryCtaLabel = !isAIConfigured
-    ? "Set up AI employee"
+    ? "Set up ZOL"
     : !isVoiceChannelActive
       ? "Activate phone line"
-      : "View conversations";
-
-  const overviewCards = [
-    {
-      title: "Conversations",
-      value:
-        conversationStats.conversationCount > 0
-          ? `${conversationStats.conversationCount} captured`
-          : "Pending",
-      body:
-        conversationStats.conversationCount > 0
-          ? "Customer calls ZOL has answered, summarized, and organized for your team."
-          : "Calls will show up here once your phone line is active.",
-      icon: MessageSquareText,
-    },
-    {
-      title: "Customer Memory",
-      value: customerCount > 0 ? `${customerCount} customers` : "Empty",
-      body:
-        customerCount > 0
-          ? "ZOL remembers returning customers and keeps useful context from past conversations."
-          : "ZOL will build reusable context from conversations, visits, orders, and service history.",
-      icon: Brain,
-    },
-    {
-      title: "Action Items",
-      value: `${conversationStats.openActionItemsCount} open`,
-      body: "Follow-ups, appointments, and handoffs pulled from customer conversations.",
-      icon: ClipboardList,
-    },
-  ];
+      : "View calls";
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       {aiEmployeeUpdated ? <DashboardUpdateBanner assistantSync={assistantSync} /> : null}
 
       <section className="overflow-hidden rounded-[2rem] border border-zinc-200 bg-white shadow-card">
@@ -133,19 +94,12 @@ export function DashboardOverview({
           <h2 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-950 sm:text-3xl">
             {workspace.name}
           </h2>
-          <p className="mt-2 text-sm text-zinc-600">
-            {workspace.businessType}
-            {isVoiceChannelActive && communicationChannel?.phoneNumber ? (
-              <>
-                {" "}
-                ·{" "}
-                <span className="inline-flex items-center gap-1.5 font-medium text-zinc-950">
-                  <Phone className="h-3.5 w-3.5" />
-                  {communicationChannel.phoneNumber}
-                </span>
-              </>
-            ) : null}
-          </p>
+          {isVoiceChannelActive && communicationChannel?.phoneNumber ? (
+            <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-zinc-600">
+              <Phone className="h-4 w-4" />
+              {communicationChannel.phoneNumber}
+            </p>
+          ) : null}
         </div>
       </section>
 
@@ -155,21 +109,18 @@ export function DashboardOverview({
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_0%,rgba(16,185,129,0.2),transparent_24rem),radial-gradient(circle_at_0%_100%,rgba(251,146,60,0.14),transparent_22rem)]" />
             <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
               <div>
-                <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200">
-                  Setup progress
-                </div>
                 <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                   {isAIConfigured
                     ? hasBusinessContext
                       ? "Activate your phone line"
-                      : "Finish teaching ZOL about your business"
-                    : "Teach ZOL about your business"}
+                      : "Tell ZOL a bit more about your business"
+                    : "Get ZOL ready for your business"}
                 </h2>
                 <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-300">
                   {isAIConfigured
                     ? hasBusinessContext
-                      ? "Choose a voice and area code to give ZOL a business phone number."
-                      : "Add a short business description, then activate your phone line when you are ready."
+                      ? "Pick a voice and area code so ZOL can answer your business phone."
+                      : "Add a short description of your business, then turn on your phone line."
                     : "Start with your business name, greeting, and what customers usually ask about."}
                 </p>
 
@@ -177,19 +128,15 @@ export function DashboardOverview({
                   <dl className="mt-6 grid gap-3 sm:grid-cols-2">
                     <SetupInsightTile
                       href="/setup/ai-employee"
-                      label="AI employee"
+                      label="ZOL name"
                       value={aiSettings.displayName}
                       hint="Edit name and greeting"
                     />
                     <SetupInsightTile
                       href="/setup/ai-employee"
-                      label="Business context"
-                      value={hasBusinessContext ? "Added" : "Missing"}
-                      hint={
-                        hasBusinessContext
-                          ? "Review or expand context"
-                          : "Add context to improve answers"
-                      }
+                      label="About your business"
+                      value={hasBusinessContext ? "Added" : "Not added yet"}
+                      hint={hasBusinessContext ? "Review or update" : "Add a short description"}
                       variant={hasBusinessContext ? "default" : "attention"}
                     />
                   </dl>
@@ -240,6 +187,11 @@ export function DashboardOverview({
         compact={isVoiceChannelActive}
       />
 
+      <DashboardFollowUpsCard
+        followUpCount={workflowStats.followUpCount}
+        urgentCount={workflowStats.urgentCount}
+      />
+
       <RecentConversationsCard
         conversations={recentConversations}
         conversationCount={conversationStats.conversationCount}
@@ -247,49 +199,17 @@ export function DashboardOverview({
         urgentItemsCount={conversationStats.urgentItemsCount}
       />
 
-      <TekmetricSyncDashboardCard
-        syncStatus={tekmetricSyncStatus}
-        canManage={canManageIntegrations}
-      />
-
-      <OperationalInsightCard />
-
-      <section className="grid gap-4 xl:grid-cols-3">
-        <ActiveWorkflowsCard
-          activeCount={workflowStats.activeCount}
-          followUpCount={workflowStats.followUpCount}
-        />
-        <OperationalAlertCard
-          urgentCount={workflowStats.urgentCount}
-          followUpCount={workflowStats.followUpCount}
-        />
-        <DailySummaryCard
-          activeCount={workflowStats.activeCount}
-          dailySummary={workflowStats.dailySummary}
-          appointmentsTomorrow={workflowStats.appointmentsTomorrow}
-        />
+      <section className="grid gap-4 md:grid-cols-2">
+        <DailyCopilotInsightsCard insights={copilotInsights} />
+        <OperationalInsightCard compact />
       </section>
 
-      <DailyCopilotInsightsCard insights={copilotInsights} />
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {overviewCards.map((card) => (
-          <Card key={card.title} className="p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm font-semibold text-zinc-500">{card.title}</p>
-                <h3 className="mt-3 text-2xl font-semibold tracking-tight text-zinc-950">
-                  {card.value}
-                </h3>
-              </div>
-              <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-700">
-                <card.icon className="h-5 w-5" />
-              </div>
-            </div>
-            <p className="mt-5 text-sm leading-7 text-zinc-600">{card.body}</p>
-          </Card>
-        ))}
-      </section>
+      {tekmetricSyncStatus.integrationConnected ? null : (
+        <TekmetricSyncDashboardCard
+          syncStatus={tekmetricSyncStatus}
+          canManage={canManageIntegrations}
+        />
+      )}
     </div>
   );
 }

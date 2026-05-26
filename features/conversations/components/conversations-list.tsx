@@ -27,16 +27,14 @@ export function ConversationsList({
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-orange-600">
           <MessageSquareText className="h-6 w-6" />
         </div>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-950">
-          No conversations yet
-        </h2>
+        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-950">No calls yet</h2>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-zinc-600">
-          Once ZOL starts handling customer calls, conversations will appear here with summaries,
-          urgency, and action items.
+          Once ZOL starts answering your phone, each call will appear here with a summary and any
+          follow-ups for your team.
         </p>
         {!hasCommunicationChannel ? (
           <Button variant="accent" size="lg" className="mt-6" asChild>
-            <Link href="/setup/voice-channel">Activate Voice Channel</Link>
+            <Link href="/setup/voice-channel">Set up phone line</Link>
           </Button>
         ) : null}
       </Card>

@@ -2,37 +2,23 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { ArrowRight, Check, EyeOff, MessageSquareText, UserRound } from "lucide-react";
-import type { CopilotRecommendation } from "@prisma/client";
+import { ArrowRight, Check, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { RecommendationCard } from "@/features/copilot/components/recommendation-card";
 import { updateWorkflowStatus } from "@/features/workflows/actions/update-workflow-status";
 import { WorkflowPriorityBadge } from "@/features/workflows/components/workflow-priority-badge";
-import {
-  WORKFLOW_TYPE_LABELS,
-  type WorkflowWithSources,
-} from "@/features/workflows/types/workflow-types";
+import type { WorkflowWithSources } from "@/features/workflows/types/workflow-types";
 
 type WorkflowCardProps = {
   workflow: WorkflowWithSources;
   canDismiss: boolean;
-  copilotRecommendations?: CopilotRecommendation[];
 };
 
-function getInsightReason(workflow: WorkflowWithSources): string | null {
-  const metadata = workflow.metadata as { insightReason?: string } | null;
-  return metadata?.insightReason ?? null;
-}
-
-export function WorkflowCard({ workflow, canDismiss, copilotRecommendations = [] }: WorkflowCardProps) {
+export function WorkflowCard({ workflow, canDismiss }: WorkflowCardProps) {
   const [isPending, startTransition] = useTransition();
-  const insightReason = getInsightReason(workflow);
   const customerLabel =
-    workflow.sourceCustomer?.name ??
-    workflow.sourceConversation?.customerName ??
-    null;
+    workflow.sourceCustomer?.name ?? workflow.sourceConversation?.customerName ?? null;
 
   const handleStatus = (status: "COMPLETED" | "DISMISSED") => {
     startTransition(async () => {
@@ -44,57 +30,23 @@ export function WorkflowCard({ workflow, canDismiss, copilotRecommendations = []
     <Card className="p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
-            {WORKFLOW_TYPE_LABELS[workflow.type]}
-          </p>
-          <h3 className="mt-2 text-lg font-semibold text-zinc-950">{workflow.title}</h3>
+          {customerLabel ? (
+            <p className="text-sm font-medium text-zinc-500">{customerLabel}</p>
+          ) : null}
+          <h3 className="mt-1 text-lg font-semibold text-zinc-950">{workflow.title}</h3>
         </div>
-        <WorkflowPriorityBadge priority={workflow.priority} />
+        {(workflow.priority === "HIGH" || workflow.priority === "URGENT") ? (
+          <WorkflowPriorityBadge priority={workflow.priority} />
+        ) : null}
       </div>
 
-      <p className="mt-4 text-sm leading-7 text-zinc-600">{workflow.description}</p>
-
-      {insightReason ? (
-        <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-3 text-sm leading-7 text-emerald-950">
-          {insightReason}
-        </div>
-      ) : null}
-
-      {copilotRecommendations.length > 0 ? (
-        <div className="mt-5 space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
-            Copilot recommendations
-          </p>
-          {copilotRecommendations.slice(0, 2).map((recommendation) => (
-            <RecommendationCard key={recommendation.id} recommendation={recommendation} />
-          ))}
-        </div>
-      ) : null}
-
-      <div className="mt-5 flex flex-wrap gap-4 text-sm text-zinc-500">
-        {customerLabel ? (
-          <span className="inline-flex items-center gap-2">
-            <UserRound className="h-4 w-4" />
-            {customerLabel}
-          </span>
-        ) : null}
-        {workflow.sourceConversation ? (
-          <span className="inline-flex items-center gap-2">
-            <MessageSquareText className="h-4 w-4" />
-            Linked conversation
-          </span>
-        ) : null}
-        <span>{new Date(workflow.createdAt).toLocaleString()}</span>
-        <span className="font-medium capitalize text-zinc-700">
-          {workflow.status.toLowerCase().replace("_", " ")}
-        </span>
-      </div>
+      <p className="mt-3 text-sm leading-7 text-zinc-600">{workflow.description}</p>
 
       <div className="mt-6 flex flex-wrap gap-2">
         {workflow.sourceConversation ? (
           <Button variant="secondary" size="sm" asChild>
             <Link href={`/conversations/${workflow.sourceConversation.id}`}>
-              View source <ArrowRight className="h-4 w-4" />
+              View call <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         ) : workflow.sourceCustomer ? (
@@ -113,7 +65,7 @@ export function WorkflowCard({ workflow, canDismiss, copilotRecommendations = []
             onClick={() => handleStatus("COMPLETED")}
           >
             <Check className="h-4 w-4" />
-            Mark complete
+            Done
           </Button>
         ) : null}
 

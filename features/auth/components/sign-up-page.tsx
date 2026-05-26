@@ -6,9 +6,9 @@ import { AuthShell } from "@/features/auth/layouts/auth-shell";
 export function SignUpPage() {
   return (
     <AuthShell
-      eyebrow="Create your workspace"
-      title="Start building your AI employee"
-      description="Create your ZOL account to organize customer communication, workflows, and operational intelligence."
+      eyebrow="Get started"
+      title="Create your ZOL account"
+      description="Set up ZOL to answer calls, remember customers, and keep track of follow-ups."
       footer={
         <>
           Already have an account?{" "}

@@ -48,7 +48,7 @@ function getSummaryPreview(conversation: ConversationListItem): string {
     return preview.length > 160 ? `${preview.slice(0, 157)}...` : preview;
   }
 
-  return "Conversation captured. Intelligence is still processing.";
+  return "Summary is still being prepared.";
 }
 
 type ConversationCardProps = {
@@ -66,7 +66,9 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
                 {getCustomerLabel(conversation)}
               </h3>
               <UrgencyBadge urgency={conversation.urgency as Urgency} />
-              <ConversationStatusBadge status={conversation.status} />
+              {conversation.status !== "COMPLETED" ? (
+                <ConversationStatusBadge status={conversation.status} />
+              ) : null}
             </div>
 
             <p className="mt-3 text-sm leading-7 text-zinc-600">{getSummaryPreview(conversation)}</p>
@@ -86,14 +88,19 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
                   <span>{conversation.customerPhone}</span>
                 </div>
               ) : null}
-              <div>
-                <span>{conversation._count.actionItems} action items</span>
-              </div>
+              {conversation._count.actionItems > 0 ? (
+                <div>
+                  <span>
+                    {conversation._count.actionItems} follow-up
+                    {conversation._count.actionItems === 1 ? "" : "s"}
+                  </span>
+                </div>
+              ) : null}
             </dl>
           </div>
 
           <div className="inline-flex items-center gap-2 text-sm font-medium text-emerald-700 transition-colors group-hover:text-emerald-800">
-            View conversation
+            View call
             <ArrowRight className="h-4 w-4" />
           </div>
         </div>

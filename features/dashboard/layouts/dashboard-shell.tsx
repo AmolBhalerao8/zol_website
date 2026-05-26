@@ -23,14 +23,14 @@ import { cn } from "@/lib/utils";
 import { getDashboardPageTitle, getSidebarStatusCopy } from "@/features/dashboard/utils/page-title";
 
 const sidebarItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "AI Employee", href: "/setup/ai-employee", icon: Bot },
-  { label: "Conversations", href: "/conversations", icon: MessageSquareText, showCount: true },
+  { label: "Home", href: "/dashboard", icon: LayoutDashboard },
+  { label: "ZOL setup", href: "/setup/ai-employee", icon: Bot },
+  { label: "Calls", href: "/conversations", icon: MessageSquareText, showCount: true },
   { label: "Customers", href: "/customers", icon: UsersRound, showCustomerCount: true },
-  { label: "Intelligence", href: "/intelligence", icon: Sparkles },
+  { label: "Ask ZOL", href: "/intelligence", icon: Sparkles },
   { label: "Copilot", href: "/copilot", icon: Lightbulb },
-  { label: "Workflows", href: "/workflows", icon: Workflow },
-  { label: "Integrations", href: "/integrations", icon: Network },
+  { label: "Follow-ups", href: "/workflows", icon: Workflow },
+  { label: "Connections", href: "/integrations", icon: Network },
   { label: "Settings", href: "#", icon: Settings },
 ];
 

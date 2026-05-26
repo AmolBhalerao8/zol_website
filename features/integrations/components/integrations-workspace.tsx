@@ -49,9 +49,9 @@ export function IntegrationsWorkspace({
         />
       ) : (
         <div className="rounded-[1.75rem] border border-dashed border-zinc-300 bg-white/70 px-6 py-10 text-center">
-          <p className="text-sm font-medium text-zinc-700">Select an integration to connect</p>
+          <p className="text-sm font-medium text-zinc-700">Choose a connection above</p>
           <p className="mt-2 text-sm leading-7 text-zinc-500">
-            Choose Tekmetric or Shopmonkey above to open the connection setup and test your shop link.
+            Connect Tekmetric or Shopmonkey to bring appointments, customers, and jobs into ZOL.
           </p>
         </div>
       )}

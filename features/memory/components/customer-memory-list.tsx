@@ -34,7 +34,7 @@ export function CustomerMemoryList({ memories }: CustomerMemoryListProps) {
       <Card className="border-zinc-200 bg-white shadow-card">
         <CardContent className="p-8 text-center">
           <p className="text-sm leading-7 text-zinc-600">
-            ZOL will remember useful details here after more conversations with this customer.
+            ZOL will remember useful details here after more calls with this customer.
           </p>
         </CardContent>
       </Card>
@@ -72,7 +72,7 @@ export function CustomerMemoryList({ memories }: CustomerMemoryListProps) {
                       href={`/conversations/${memory.conversation.id}`}
                       className="font-semibold text-emerald-700 hover:text-emerald-800"
                     >
-                      From conversation
+                      From call
                     </Link>
                   ) : null}
                 </div>

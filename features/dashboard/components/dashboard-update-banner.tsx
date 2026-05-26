@@ -24,13 +24,13 @@ export function DashboardUpdateBanner({ assistantSync }: DashboardUpdateBannerPr
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
         )}
         <div>
-          <p className="font-semibold">AI employee settings saved</p>
+          <p className="font-semibold">ZOL setup saved</p>
           <p className="mt-1 leading-6 opacity-90">
             {assistantSynced
-              ? "Your live phone line was updated with your latest changes."
+              ? "Your phone line was updated with your latest changes."
               : assistantSyncFailed
-                ? "Settings were saved, but your phone line could not be refreshed automatically. Open phone line setup to apply changes."
-                : "Your AI employee settings are saved."}
+                ? "Settings were saved, but your phone line could not be updated automatically. Open phone line setup to try again."
+                : "Your changes are saved."}
           </p>
         </div>
       </div>

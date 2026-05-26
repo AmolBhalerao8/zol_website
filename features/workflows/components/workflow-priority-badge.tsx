@@ -18,7 +18,7 @@ export function WorkflowPriorityBadge({ priority, className }: WorkflowPriorityB
   return (
     <span
       className={cn(
-        "inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em]",
+        "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium capitalize",
         PRIORITY_STYLES[priority],
         className,
       )}

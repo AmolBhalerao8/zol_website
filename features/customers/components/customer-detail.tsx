@@ -4,7 +4,7 @@ import { ArrowLeft, Brain, Mail, MessageSquareText, Phone, Sparkles, UserRound }
 import type { ActionItem, Conversation, Customer, MemoryCategory } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { CustomerConversationsList } from "@/features/customers/components/customer-conversations-list";
 import { getCustomerDisplayName } from "@/features/customers/utils/normalize-customer-identity";
 import { CustomerMemoryList } from "@/features/memory/components/customer-memory-list";
@@ -74,16 +74,16 @@ export function CustomerDetail({
                 {displayName}
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">
-                What ZOL knows about this customer from past conversations.
+                What ZOL knows about this customer from past calls.
               </p>
             </div>
           </div>
         </div>
 
-        <dl className="grid gap-3 p-6 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
+        <dl className="grid gap-3 p-6 sm:grid-cols-2 sm:px-8 lg:grid-cols-3">
           {customer.primaryPhone ? (
             <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-              <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Phone</dt>
+              <dt className="text-sm text-zinc-500">Phone</dt>
               <dd className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-950">
                 <Phone className="h-4 w-4" />
                 {customer.primaryPhone}
@@ -92,34 +92,38 @@ export function CustomerDetail({
           ) : null}
           {customer.primaryEmail ? (
             <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-              <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Email</dt>
+              <dt className="text-sm text-zinc-500">Email</dt>
               <dd className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-950">
                 <Mail className="h-4 w-4" />
                 {customer.primaryEmail}
               </dd>
             </div>
           ) : null}
+          {firstInteraction ? (
+            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+              <dt className="text-sm text-zinc-500">First call</dt>
+              <dd className="mt-1 text-sm font-semibold text-zinc-950">
+                {formatTimestamp(firstInteraction)}
+              </dd>
+            </div>
+          ) : null}
+          {latestInteraction ? (
+            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+              <dt className="text-sm text-zinc-500">Most recent call</dt>
+              <dd className="mt-1 text-sm font-semibold text-zinc-950">
+                {formatTimestamp(latestInteraction)}
+              </dd>
+            </div>
+          ) : null}
           <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">First interaction</dt>
-            <dd className="mt-1 text-sm font-semibold text-zinc-950">
-              {firstInteraction ? formatTimestamp(firstInteraction) : "—"}
-            </dd>
-          </div>
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Latest interaction</dt>
-            <dd className="mt-1 text-sm font-semibold text-zinc-950">
-              {latestInteraction ? formatTimestamp(latestInteraction) : "—"}
-            </dd>
-          </div>
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Conversations</dt>
+            <dt className="text-sm text-zinc-500">Calls</dt>
             <dd className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-950">
               <MessageSquareText className="h-4 w-4" />
               {customer._count.conversationLinks}
             </dd>
           </div>
           <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <dt className="text-xs uppercase tracking-[0.16em] text-zinc-500">Things remembered</dt>
+            <dt className="text-sm text-zinc-500">Notes saved</dt>
             <dd className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-950">
               <Brain className="h-4 w-4" />
               {customer._count.memories}
@@ -132,7 +136,7 @@ export function CustomerDetail({
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-zinc-950">At a glance</h2>
           <p className="mt-2 text-sm leading-7 text-zinc-600">
-            A quick summary of this customer&apos;s history with your business.
+            A quick summary of this customer&apos;s history with your shop.
           </p>
         </div>
         <Card className="border-emerald-200 bg-emerald-50/60 shadow-card">
@@ -149,7 +153,7 @@ export function CustomerDetail({
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-zinc-950">What ZOL remembers</h2>
           <p className="mt-2 text-sm leading-7 text-zinc-600">
-            Useful details from past conversations that help on the next call.
+            Useful details from past calls that help on the next one.
           </p>
         </div>
         <CustomerMemoryList memories={customer.memories} />
@@ -157,9 +161,9 @@ export function CustomerDetail({
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950">Conversation history</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950">Past calls</h2>
           <p className="mt-2 text-sm leading-7 text-zinc-600">
-            Every conversation linked to this customer, with summaries and follow-ups.
+            Every call linked to this customer, with summaries and follow-ups.
           </p>
         </div>
         <CustomerConversationsList conversationLinks={customer.conversationLinks} />

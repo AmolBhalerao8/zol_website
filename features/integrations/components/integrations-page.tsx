@@ -16,15 +16,11 @@ export async function IntegrationsPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <section>
-        <div className="mb-3 inline-flex rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-700">
-          Connected systems
-        </div>
         <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
-          Business Integrations
+          Connections
         </h1>
-        <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-          Connect ZOL to the systems your business already uses, then sync operational customer and
-          workflow data into your workspace.
+        <p className="mt-2 max-w-2xl text-base leading-8 text-zinc-600">
+          Connect your shop software so ZOL can see appointments, customers, and jobs.
         </p>
       </section>
 

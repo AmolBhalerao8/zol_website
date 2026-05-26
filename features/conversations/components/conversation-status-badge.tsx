@@ -22,7 +22,7 @@ export function ConversationStatusBadge({ status, className }: ConversationStatu
   return (
     <span
       className={cn(
-        "inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em]",
+        "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium",
         STATUS_STYLES[status],
         className,
       )}

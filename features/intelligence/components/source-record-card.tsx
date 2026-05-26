@@ -36,19 +36,7 @@ export function SourceRecordCard({ source }: SourceRecordCardProps) {
         </div>
         <div className="min-w-0">
           <p className="font-semibold text-zinc-950">{source.title}</p>
-          <p className="mt-1 text-sm leading-7 text-zinc-600">{source.summary}</p>
-          {source.metadata ? (
-            <dl className="mt-3 flex flex-wrap gap-2">
-              {Object.entries(source.metadata).map(([key, value]) => (
-                <div
-                  key={key}
-                  className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-600"
-                >
-                  {key}: {value}
-                </div>
-              ))}
-            </dl>
-          ) : null}
+          <p className="mt-2 text-sm leading-7 text-zinc-600">{source.summary}</p>
         </div>
       </CardContent>
     </Card>

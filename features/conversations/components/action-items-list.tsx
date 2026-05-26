@@ -3,55 +3,33 @@ import type { ActionItem } from "@prisma/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UrgencyBadge } from "@/features/conversations/components/urgency-badge";
 
-const PRIORITY_LABELS = {
-  LOW: "Low priority",
-  MEDIUM: "Medium priority",
-  HIGH: "High priority",
-  URGENT: "Urgent priority",
-} as const;
-
 type ActionItemsListProps = {
   actionItems: ActionItem[];
 };
 
 export function ActionItemsList({ actionItems }: ActionItemsListProps) {
   if (actionItems.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Action items</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm leading-7 text-zinc-600">
-            No action items were extracted from this conversation.
-          </p>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Action items</CardTitle>
+        <CardTitle>Follow-ups</CardTitle>
         <p className="text-sm leading-6 text-zinc-600">
-          Follow-ups ZOL identified from this customer conversation.
+          Things your team may want to do based on this call.
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
         {actionItems.map((item) => (
-          <div
-            key={item.id}
-            className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4"
-          >
+          <div key={item.id} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-sm font-semibold text-zinc-950">{item.title}</h3>
-              <span className="rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-600">
-                {PRIORITY_LABELS[item.priority]}
-              </span>
-              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700">
-                {item.status.replace("_", " ")}
-              </span>
+              {item.priority === "HIGH" || item.priority === "URGENT" ? (
+                <UrgencyBadge
+                  urgency={item.priority === "URGENT" ? "URGENT" : "HIGH"}
+                />
+              ) : null}
             </div>
             {item.description ? (
               <p className="mt-2 text-sm leading-7 text-zinc-600">{item.description}</p>

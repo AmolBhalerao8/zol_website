@@ -15,14 +15,9 @@ export async function ConversationsPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <section>
-        <div className="mb-3 inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-700">
-          Customer conversations
-        </div>
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
-          Conversations
-        </h1>
-        <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-          Every call ZOL answers is saved here with a summary and follow-up items for your team.
+        <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">Calls</h1>
+        <p className="mt-2 max-w-2xl text-base leading-8 text-zinc-600">
+          Every call ZOL answers is saved here with a summary and any follow-ups for your team.
         </p>
       </section>
 

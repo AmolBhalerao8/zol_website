@@ -21,10 +21,10 @@ export function TekmetricSyncDashboardCard({
         <div className="rounded-[1.75rem] border border-dashed border-zinc-300 bg-white/70 px-6 py-8">
           <p className="text-sm font-medium text-zinc-700">Connect your shop system</p>
           <p className="mt-2 text-sm leading-7 text-zinc-500">
-            Link Tekmetric from Integrations to sync customer, vehicle, and workflow data into ZOL.
+            Link Tekmetric from Connections to sync customers, vehicles, and jobs into ZOL.
           </p>
           <Button className="mt-5" asChild>
-            <Link href="/integrations">Go to Integrations</Link>
+            <Link href="/integrations">Go to Connections</Link>
           </Button>
         </div>
       </section>
@@ -36,7 +36,7 @@ export function TekmetricSyncDashboardCard({
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <SyncStatusCard status={syncStatus} />
         <div className="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-card">
-          <p className="text-sm font-semibold text-zinc-500">Synced business context</p>
+          <p className="text-sm font-semibold text-zinc-500">Shop data synced</p>
           <div className="mt-4">
             <SyncSummary records={syncStatus.recordCounts} compact />
           </div>

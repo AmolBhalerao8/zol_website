@@ -1,6 +1,4 @@
 import { WorkflowList } from "@/features/workflows/components/workflow-list";
-import { CopilotSuggestionsSection } from "@/features/copilot/components/copilot-suggestions-section";
-import { getCopilotRecommendations } from "@/features/copilot/queries/get-copilot-recommendations";
 import { getActiveWorkflows } from "@/features/workflows/queries/get-workflows";
 import { runOperationalWorkflowScan } from "@/features/workflows/services/run-operational-workflow-scan";
 import { canManageWorkflows } from "@/features/workflows/utils/can-manage-workflows";
@@ -15,51 +13,18 @@ export async function WorkflowsPage() {
   const workflows = await getActiveWorkflows(workspaceId);
   const canDismiss = canManageWorkflows(currentWorkspace.role);
 
-  const priorityWorkflows = workflows
-    .filter((workflow) => workflow.priority === "HIGH" || workflow.priority === "URGENT")
-    .slice(0, 3);
-
-  const [workspaceRecommendations, ...workflowRecommendationSets] = await Promise.all([
-    getCopilotRecommendations(workspaceId, { scope: "workspace" }),
-    ...priorityWorkflows.map((workflow) =>
-      getCopilotRecommendations(workspaceId, { scope: "workflow", workflowId: workflow.id }),
-    ),
-  ]);
-
-  const recommendationsByWorkflowId = Object.fromEntries(
-    priorityWorkflows.map((workflow, index) => [
-      workflow.id,
-      workflowRecommendationSets[index] ?? [],
-    ]),
-  );
-
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="mx-auto max-w-5xl space-y-6">
       <section>
-        <div className="mb-3 inline-flex rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-700">
-          Proactive operational intelligence
-        </div>
         <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
-          Operational Workflows
+          Follow-ups
         </h1>
-        <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
-          ZOL proactively detects operational tasks, customer follow-ups, and business issues from
-          your conversations and synced shop data.
+        <p className="mt-2 max-w-2xl text-base leading-8 text-zinc-600">
+          Customers and tasks that need a call back, confirmation, or check-in from your team.
         </p>
       </section>
 
-      <WorkflowList
-        workflows={workflows}
-        canDismiss={canDismiss}
-        recommendationsByWorkflowId={recommendationsByWorkflowId}
-      />
-
-      <CopilotSuggestionsSection
-        title="Copilot recommendations"
-        description="Suggested next steps based on your active follow-ups and shop activity."
-        recommendations={workspaceRecommendations}
-        scope={{ scope: "workspace" }}
-      />
+      <WorkflowList workflows={workflows} canDismiss={canDismiss} />
     </div>
   );
 }
