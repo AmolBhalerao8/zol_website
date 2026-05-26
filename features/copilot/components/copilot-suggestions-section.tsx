@@ -16,10 +16,6 @@ export function CopilotSuggestionsSection({
   recommendations,
   scope,
 }: CopilotSuggestionsSectionProps) {
-  if (recommendations.length === 0) {
-    return null;
-  }
-
   return (
     <CopilotPanel
       title={title}

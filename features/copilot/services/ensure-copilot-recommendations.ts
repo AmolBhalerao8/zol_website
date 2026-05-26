@@ -53,11 +53,15 @@ export async function ensureCopilotRecommendations(
   const context = await buildOperationalContext(workspaceId, scope);
   const suggestions = await generateOperationalRecommendations({ context, scope });
 
-  await prisma.copilotRecommendation.deleteMany({ where });
-
   if (suggestions.length === 0) {
-    return [];
+    return prisma.copilotRecommendation.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    });
   }
+
+  await prisma.copilotRecommendation.deleteMany({ where });
 
   await prisma.copilotRecommendation.createMany({
     data: suggestions.map((suggestion) => ({

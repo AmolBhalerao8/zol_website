@@ -6,18 +6,24 @@ import type {
   OperationalContext,
 } from "@/features/copilot/types/copilot-types";
 
+function extractField(context: OperationalContext, field: string): string | null {
+  const match = context.contextSummary.match(new RegExp(`- ${field}:\\s*(.+)$`, "m"));
+  return match?.[1]?.trim() ?? null;
+}
+
 function templateRecommendations(
   context: OperationalContext,
   scope: CopilotScope,
 ): CopilotRecommendationInput[] {
   const recommendations: CopilotRecommendationInput[] = [];
+  const customerName = extractField(context, "Customer") ?? extractField(context, "Name") ?? "the customer";
 
   if (scope.scope === "conversation") {
+    const summary = extractField(context, "Summary") ?? "your recent request";
     recommendations.push({
       type: "REPLY_DRAFT",
       title: "Suggested reply",
-      content:
-        "Thank you for reaching out. We understand your concern and are reviewing the details now. A team member will follow up shortly with a clear update.",
+      content: `Hi ${customerName}, thank you for reaching out about ${summary.toLowerCase()}. We are reviewing the details now and will follow up shortly with a clear update.`,
       sourceConversationId: scope.conversationId,
     });
     recommendations.push({
@@ -33,14 +39,24 @@ function templateRecommendations(
       content: "Review open action items from this conversation and confirm ownership with your team.",
       sourceConversationId: scope.conversationId,
     });
+
+    const urgency = extractField(context, "Urgency");
+    if (urgency === "HIGH" || urgency === "URGENT") {
+      recommendations.push({
+        type: "OPERATIONAL_ALERT",
+        title: "Operational insight",
+        content:
+          "This conversation was flagged as urgent. Prioritize a same-day response or internal handoff.",
+        sourceConversationId: scope.conversationId,
+      });
+    }
   }
 
   if (scope.scope === "customer") {
     recommendations.push({
       type: "CUSTOMER_INSIGHT",
       title: "Customer may require follow-up",
-      content:
-        "Based on recent conversation history, this customer may benefit from a proactive check-in.",
+      content: `${customerName} may benefit from a proactive check-in based on recent conversation history and open follow-ups.`,
       sourceCustomerId: scope.customerId,
     });
     recommendations.push({
@@ -59,10 +75,11 @@ function templateRecommendations(
   }
 
   if (scope.scope === "workflow") {
+    const workflowTitle = extractField(context, "Title") ?? "this operational workflow";
     recommendations.push({
       type: "WORKFLOW_SUGGESTION",
       title: "Consider escalating this issue",
-      content: "This workflow may need direct team attention to prevent further delay.",
+      content: `"${workflowTitle}" may need direct team attention to prevent further delay.`,
       sourceWorkflowId: scope.workflowId,
     });
     recommendations.push({

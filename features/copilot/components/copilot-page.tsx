@@ -1,9 +1,25 @@
+import { CopilotContextPanel } from "@/features/copilot/components/copilot-context-panel";
 import { CopilotPanel } from "@/features/copilot/components/copilot-panel";
 import { RecommendationCard } from "@/features/copilot/components/recommendation-card";
 import { getCopilotRecommendations } from "@/features/copilot/queries/get-copilot-recommendations";
 import { buildOperationalContext } from "@/features/copilot/services/build-operational-context";
 import { generateDailyOperationalInsights } from "@/features/copilot/services/generate-daily-operational-insights";
 import { requireWorkspace } from "@/features/workspace";
+
+const COPILOT_CAPABILITIES = [
+  {
+    title: "Suggested replies",
+    body: "Professional response drafts grounded in conversation context and your business tone.",
+  },
+  {
+    title: "Follow-up drafts",
+    body: "Ready-to-copy check-in messages for pending appointments, issues, and open action items.",
+  },
+  {
+    title: "Operational recommendations",
+    body: "Workflow actions, escalation hints, and customer insights from live workspace data.",
+  },
+];
 
 export async function CopilotPage() {
   const currentWorkspace = await requireWorkspace();
@@ -36,8 +52,21 @@ export async function CopilotPage() {
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-8 text-zinc-600">
           ZOL helps your team respond faster, follow up intelligently, and manage operational
-          workflows with context-aware recommendations.
+          workflows. Copilot assists your staff — it does not send messages or take autonomous
+          action.
         </p>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {COPILOT_CAPABILITIES.map((item) => (
+          <div
+            key={item.title}
+            className="rounded-[1.5rem] border border-zinc-200 bg-white p-5 shadow-card"
+          >
+            <h2 className="text-sm font-semibold text-zinc-950">{item.title}</h2>
+            <p className="mt-2 text-sm leading-7 text-zinc-600">{item.body}</p>
+          </div>
+        ))}
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
@@ -64,13 +93,15 @@ export async function CopilotPage() {
           </div>
         </section>
 
-        <CopilotPanel
-          title="Recommendation feed"
-          description="AI-generated operational suggestions grounded in conversations, workflows, and synced shop data."
-          recommendations={recommendations}
-          scope={{ scope: "workspace" }}
-          contextSummary={context.contextSummary}
-        />
+        <div className="space-y-4">
+          <CopilotContextPanel context={context} />
+          <CopilotPanel
+            title="Recommendation feed"
+            description="AI-generated operational suggestions grounded in conversations, workflows, and synced shop data."
+            recommendations={recommendations}
+            scope={{ scope: "workspace" }}
+          />
+        </div>
       </div>
     </div>
   );

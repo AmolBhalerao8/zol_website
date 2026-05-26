@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 import type { CopilotRecommendation } from "@prisma/client";
 
@@ -44,11 +45,13 @@ export function CopilotPanel({
   contextSummary,
   showRefresh = true,
 }: CopilotPanelProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const handleRefresh = () => {
     startTransition(async () => {
       await refreshCopilotRecommendations(scope);
+      router.refresh();
     });
   };
 
@@ -72,18 +75,23 @@ export function CopilotPanel({
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
             Operational context
           </p>
-          <pre className="mt-3 whitespace-pre-wrap text-sm leading-7 text-zinc-700">
-            {contextSummary}
-          </pre>
+          <p className="mt-3 text-sm leading-7 text-zinc-700">{contextSummary}</p>
         </Card>
       ) : null}
 
       {recommendations.length === 0 ? (
         <Card className="border-dashed border-zinc-200 p-8 text-center">
-          <p className="text-sm leading-7 text-zinc-600">
-            ZOL will generate operational suggestions as more customer and workflow data becomes
-            available.
+          <p className="text-sm font-medium text-zinc-950">No suggestions yet</p>
+          <p className="mt-2 text-sm leading-7 text-zinc-600">
+            ZOL generates reply drafts, follow-ups, and operational recommendations from your
+            conversations, customer memory, and workflows. Run a refresh once more data is available.
           </p>
+          {showRefresh ? (
+            <Button className="mt-4" variant="secondary" size="sm" onClick={handleRefresh} disabled={isPending}>
+              <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
+              Generate suggestions
+            </Button>
+          ) : null}
         </Card>
       ) : (
         <div className="space-y-4">{recommendations.map(renderRecommendation)}</div>

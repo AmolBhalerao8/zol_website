@@ -113,7 +113,7 @@ export async function buildOperationalContext(
       }
 
       const urgentConversations = customer.conversationLinks.filter(
-        (link) => link.conversation.urgency === "HIGH",
+        (link) => link.conversation.urgency === "HIGH" || link.conversation.urgency === "URGENT",
       );
       if (urgentConversations.length > 0) {
         sections.push(`- ${urgentConversations.length} urgent conversation(s) on record`);
@@ -131,6 +131,16 @@ export async function buildOperationalContext(
       const metadata = workflow.metadata as { insightReason?: string } | null;
       if (metadata?.insightReason) {
         sections.push(`Workflow Insight:\n${metadata.insightReason}`);
+      }
+
+      if (workflow.sourceCustomer) {
+        sections.push(
+          `Linked Customer:\n- ${workflow.sourceCustomer.name ?? "Customer"}\n- Phone: ${workflow.sourceCustomer.primaryPhone ?? "Unknown"}`,
+        );
+      }
+
+      if (workflow.sourceConversation?.summary) {
+        sections.push(`Linked Conversation Summary:\n${workflow.sourceConversation.summary}`);
       }
     }
   }

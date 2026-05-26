@@ -15,15 +15,22 @@ export async function WorkflowsPage() {
   const workflows = await getActiveWorkflows(workspaceId);
   const canDismiss = canManageWorkflows(currentWorkspace.role);
 
+  const priorityWorkflows = workflows
+    .filter((workflow) => workflow.priority === "HIGH" || workflow.priority === "URGENT")
+    .slice(0, 3);
+
   const [workspaceRecommendations, ...workflowRecommendationSets] = await Promise.all([
     getCopilotRecommendations(workspaceId, { scope: "workspace" }),
-    ...workflows.slice(0, 5).map((workflow) =>
+    ...priorityWorkflows.map((workflow) =>
       getCopilotRecommendations(workspaceId, { scope: "workflow", workflowId: workflow.id }),
     ),
   ]);
 
   const recommendationsByWorkflowId = Object.fromEntries(
-    workflows.slice(0, 5).map((workflow, index) => [workflow.id, workflowRecommendationSets[index] ?? []]),
+    priorityWorkflows.map((workflow, index) => [
+      workflow.id,
+      workflowRecommendationSets[index] ?? [],
+    ]),
   );
 
   return (
