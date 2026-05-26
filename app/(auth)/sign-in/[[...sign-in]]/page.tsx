@@ -1,5 +1,7 @@
-import { SignInPage } from "@/features/auth";
+import { SignInPage, redirectAuthenticatedUser } from "@/features/auth";
 
-export default function Page() {
+export default async function Page() {
+  await redirectAuthenticatedUser();
+
   return <SignInPage />;
 }

@@ -22,7 +22,7 @@ export function SignInPage() {
         path="/sign-in"
         routing="path"
         signUpUrl="/sign-up"
-        forceRedirectUrl="/onboarding"
+        forceRedirectUrl="/auth/continue"
         appearance={{
           elements: {
             rootBox: "mx-auto w-full",

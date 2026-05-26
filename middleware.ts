@@ -14,6 +14,8 @@ const isProtectedRoute = createRouteMatcher([
   "/setup/voice-channel",
 ]);
 
+const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
+
 const hasClerkKeys =
   Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) &&
   Boolean(process.env.CLERK_SECRET_KEY);
@@ -28,9 +30,13 @@ function localAuthFallback(request: NextRequest) {
 
 export default hasClerkKeys
   ? clerkMiddleware(async (auth, request) => {
-      if (isProtectedRoute(request)) {
-        const { userId, redirectToSignIn } = await auth();
+      const { userId, redirectToSignIn } = await auth();
 
+      if (isAuthRoute(request) && userId) {
+        return NextResponse.redirect(new URL("/auth/continue", request.url));
+      }
+
+      if (isProtectedRoute(request)) {
         if (!userId) {
           return redirectToSignIn({ returnBackUrl: request.url });
         }
@@ -50,6 +56,8 @@ export const config = {
     "/auth/continue",
     "/setup/ai-employee",
     "/setup/voice-channel",
+    "/sign-in(.*)",
+    "/sign-up(.*)",
     "/(api|trpc)(.*)",
   ],
 };

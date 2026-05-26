@@ -13,7 +13,7 @@ export async function redirectAuthenticatedUser() {
   const { userId } = await auth();
 
   if (userId) {
-    redirect("/dashboard");
+    redirect("/auth/continue");
   }
 }
 
