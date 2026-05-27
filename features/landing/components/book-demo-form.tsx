@@ -6,7 +6,11 @@ import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function BookDemoForm() {
+type BookDemoFormProps = {
+  mode?: "demo" | "access";
+};
+
+export function BookDemoForm({ mode = "demo" }: BookDemoFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -30,7 +34,12 @@ export function BookDemoForm() {
       const data = (await response.json()) as { error?: string };
 
       if (!response.ok) {
-        setError(data.error ?? "Unable to submit your demo request.");
+        setError(
+          data.error ??
+            (mode === "access"
+              ? "Unable to submit your access request."
+              : "Unable to submit your demo request."),
+        );
         return;
       }
 
@@ -40,7 +49,11 @@ export function BookDemoForm() {
       setPhone("");
       setBusiness("");
     } catch {
-      setError("Unable to submit your demo request. Please try again.");
+      setError(
+        mode === "access"
+          ? "Unable to submit your access request. Please try again."
+          : "Unable to submit your demo request. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -52,9 +65,13 @@ export function BookDemoForm() {
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white">
           <Check className="h-6 w-6" />
         </div>
-        <h3 className="text-xl font-semibold text-zinc-950">Demo request received</h3>
+        <h3 className="text-xl font-semibold text-zinc-950">
+          {mode === "access" ? "Access request received" : "Demo request received"}
+        </h3>
         <p className="mt-3 text-sm leading-7 text-zinc-600">
-          Thanks for your interest in ZOL. Our team will reach out shortly to schedule your demo.
+          {mode === "access"
+            ? "Thanks for your interest in ZOL. We will review your request and follow up soon."
+            : "Thanks for your interest in ZOL. Our team will reach out shortly to schedule your demo."}
         </p>
         <Button
           type="button"
@@ -118,7 +135,11 @@ export function BookDemoForm() {
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
 
       <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto">
-        {isSubmitting ? "Submitting..." : "Book Demo"}
+        {isSubmitting
+          ? "Submitting..."
+          : mode === "access"
+            ? "Request access"
+            : "Book demo"}
         {!isSubmitting ? <ArrowRight className="h-4 w-4" /> : null}
       </Button>
     </form>

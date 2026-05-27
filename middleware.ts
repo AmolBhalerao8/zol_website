@@ -13,6 +13,7 @@ const isProtectedRoute = createRouteMatcher([
   "/auth/continue",
   "/setup/ai-employee",
   "/setup/voice-channel",
+  "/pending-access",
 ]);
 
 const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
@@ -22,6 +23,10 @@ const hasClerkKeys =
   Boolean(process.env.CLERK_SECRET_KEY);
 
 function localAuthFallback(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/sign-up")) {
+    return NextResponse.redirect(new URL("/request-access", request.url));
+  }
+
   if (isProtectedRoute(request)) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
@@ -32,6 +37,10 @@ function localAuthFallback(request: NextRequest) {
 export default hasClerkKeys
   ? clerkMiddleware(async (auth, request) => {
       const { userId, redirectToSignIn } = await auth();
+
+      if (request.nextUrl.pathname.startsWith("/sign-up")) {
+        return NextResponse.redirect(new URL("/request-access", request.url));
+      }
 
       if (isAuthRoute(request) && userId) {
         return NextResponse.redirect(new URL("/auth/continue", request.url));
@@ -58,6 +67,7 @@ export const config = {
     "/auth/continue",
     "/setup/ai-employee",
     "/setup/voice-channel",
+    "/pending-access",
     "/sign-in(.*)",
     "/sign-up(.*)",
     "/(api|trpc)(.*)",

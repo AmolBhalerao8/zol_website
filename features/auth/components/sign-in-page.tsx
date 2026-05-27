@@ -11,9 +11,9 @@ export function SignInPage() {
       description="See your calls, customers, follow-ups, and daily summary."
       footer={
         <>
-          New to ZOL?{" "}
-          <Link href="/sign-up" className="font-semibold text-emerald-700 hover:text-emerald-800">
-            Create your workspace
+          Need access?{" "}
+          <Link href="/request-access" className="font-semibold text-emerald-700 hover:text-emerald-800">
+            Request access
           </Link>
         </>
       }

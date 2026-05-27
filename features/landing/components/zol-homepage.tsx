@@ -308,7 +308,7 @@ function Navbar() {
               <Link href="/sign-in">Sign In</Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href="/sign-up">Get Started</Link>
+              <Link href="/request-access">Request access</Link>
             </Button>
           </Show>
           <Show when="signed-in">

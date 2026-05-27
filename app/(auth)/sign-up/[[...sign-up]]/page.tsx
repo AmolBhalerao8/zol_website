@@ -1,7 +1,8 @@
-import { SignUpPage, redirectAuthenticatedUser } from "@/features/auth";
+import { redirectAuthenticatedUser } from "@/features/auth";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   await redirectAuthenticatedUser();
 
-  return <SignUpPage />;
+  redirect("/request-access");
 }
