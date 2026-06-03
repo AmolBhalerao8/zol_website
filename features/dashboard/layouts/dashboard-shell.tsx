@@ -5,6 +5,7 @@ import {
   Bot,
   LayoutDashboard,
   Lightbulb,
+  Mail,
   Menu,
   MessageSquareText,
   Network,
@@ -30,6 +31,7 @@ const sidebarItems = [
   { label: "Ask ZOL", href: "/intelligence", icon: Sparkles },
   { label: "Copilot", href: "/copilot", icon: Lightbulb },
   { label: "Follow-ups", href: "/workflows", icon: Workflow },
+  { label: "Communications", href: "/messages", icon: Mail },
   { label: "Connections", href: "/integrations", icon: Network },
   { label: "Settings", href: "#", icon: Settings },
 ];

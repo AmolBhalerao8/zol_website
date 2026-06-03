@@ -9,6 +9,8 @@ import { getCustomerDisplayName } from "@/features/customers/utils/normalize-cus
 import { CustomerTekmetricSection } from "@/features/integrations/components/customer-tekmetric-section";
 import { getTekmetricDataForCustomer } from "@/features/integrations/queries/get-tekmetric-data";
 import { generateOperationalSummary } from "@/features/memory/services/build-customer-context";
+import { CustomerCommunicationHistory } from "@/features/messages/components/customer-communication-history";
+import { getCustomerMessages } from "@/features/messages/queries/get-message-drafts";
 import { requireWorkspace } from "@/features/workspace";
 import { withDbRetry } from "@/lib/db-retry";
 
@@ -46,6 +48,9 @@ export async function CustomerDetailPage({ customerId }: CustomerDetailPageProps
   const tekmetricData = await withDbRetry(() =>
     getTekmetricDataForCustomer(currentWorkspace.workspace.id, customer.id),
   );
+  const customerMessages = await withDbRetry(() =>
+    getCustomerMessages(currentWorkspace.workspace.id, customer.id),
+  );
   const [tekmetricCustomers, tekmetricVehicles, tekmetricAppointments, tekmetricRepairOrders] =
     tekmetricData;
 
@@ -65,6 +70,7 @@ export async function CustomerDetailPage({ customerId }: CustomerDetailPageProps
           />
         }
       />
+      <CustomerCommunicationHistory messages={customerMessages} />
       <Suspense fallback={<CopilotSuggestionsSkeleton />}>
         <CustomerCopilotSection
           workspaceId={currentWorkspace.workspace.id}

@@ -11,6 +11,8 @@ import { getCommunicationChannel } from "@/features/voice-channel/queries/get-co
 import { getCurrentWorkspace } from "@/features/workspace";
 import { generateDailyOperationalInsights } from "@/features/copilot/services/generate-daily-operational-insights";
 import { getWorkflowStats } from "@/features/workflows/queries/get-workflows";
+import { getMessageStats } from "@/features/messages/queries/get-message-stats";
+import { generateWorkflowMessageDraftsForWorkspace } from "@/features/messages/services/generate-workflow-message-drafts";
 import { runOperationalWorkflowScan } from "@/features/workflows/services/run-operational-workflow-scan";
 import { withDbRetry } from "@/lib/db-retry";
 
@@ -34,11 +36,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   try {
     await runOperationalWorkflowScan(workspaceId);
+    await generateWorkflowMessageDraftsForWorkspace(workspaceId);
   } catch (error) {
     console.error("Dashboard workflow scan failed:", error);
   }
 
-  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats, tekmetricSyncStatus, workflowStats, copilotInsights] =
+  const [aiSettings, communicationChannel, recentConversations, conversationStats, customerStats, tekmetricSyncStatus, workflowStats, copilotInsights, messageStats] =
     await withDbRetry(() =>
       Promise.all([
         getAIEmployeeSettings(workspaceId),
@@ -49,6 +52,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         getTekmetricSyncStatus(workspaceId),
         getWorkflowStats(workspaceId),
         generateDailyOperationalInsights(workspaceId),
+        getMessageStats(workspaceId),
       ]),
     );
 
@@ -63,6 +67,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       tekmetricSyncStatus={tekmetricSyncStatus}
       workflowStats={workflowStats}
       copilotInsights={copilotInsights}
+      messageStats={messageStats}
       canManageIntegrations={canManageIntegrations(currentWorkspace.role)}
       aiEmployeeUpdated={params.aiEmployeeUpdated === "1"}
       assistantSync={params.assistantSync}

@@ -132,7 +132,7 @@ export async function runOperationalWorkflowScan(
 
     const insightReason = await generateWorkflowInsight(suggestion);
 
-    await prisma.workflow.create({
+    const workflow = await prisma.workflow.create({
       data: {
         workspaceId,
         type: suggestion.type,
@@ -148,6 +148,15 @@ export async function runOperationalWorkflowScan(
         } as Prisma.InputJsonValue,
       },
     });
+
+    try {
+      const { generateWorkflowMessageDraft } = await import(
+        "@/features/messages/services/generate-workflow-message-drafts"
+      );
+      await generateWorkflowMessageDraft(workspaceId, workflow);
+    } catch (error) {
+      console.error("Workflow message draft generation failed:", error);
+    }
 
     created += 1;
   }

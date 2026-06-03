@@ -4,7 +4,8 @@ import {
   Circle,
   Phone,
 } from "lucide-react";
-import type { AIEmployeeSettings, CommunicationChannel, Workspace } from "@prisma/client";
+import type { AIEmployeeSettings, CommunicationChannel, Conversation, Workspace } from "@prisma/client";
+import type { DailyOperationalInsights } from "@/features/copilot/types/copilot-types";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,8 +19,8 @@ import { OperationalInsightCard } from "@/features/intelligence/components/opera
 import { TekmetricSyncDashboardCard } from "@/features/integrations/components/tekmetric-sync-dashboard-card";
 import type { TekmetricSyncStatusSummary } from "@/features/integrations/queries/get-tekmetric-sync-status";
 import { DailyCopilotInsightsCard } from "@/features/copilot/components/daily-copilot-insights-card";
-import type { DailyOperationalInsights } from "@/features/copilot/types/copilot-types";
-import type { Conversation } from "@prisma/client";
+import { DashboardMessagingCard } from "@/features/messages/components/dashboard-messaging-card";
+import type { MessageStats } from "@/features/messages/types/message-types";
 
 type DashboardOverviewProps = {
   workspace: Workspace;
@@ -44,6 +45,7 @@ type DashboardOverviewProps = {
     appointmentsTomorrow: number;
   };
   copilotInsights: DailyOperationalInsights;
+  messageStats: MessageStats;
   canManageIntegrations: boolean;
   aiEmployeeUpdated?: boolean;
   assistantSync?: string;
@@ -58,6 +60,7 @@ export function DashboardOverview({
   tekmetricSyncStatus,
   workflowStats,
   copilotInsights,
+  messageStats,
   canManageIntegrations,
   aiEmployeeUpdated = false,
   assistantSync,
@@ -191,6 +194,8 @@ export function DashboardOverview({
         followUpCount={workflowStats.followUpCount}
         urgentCount={workflowStats.urgentCount}
       />
+
+      <DashboardMessagingCard stats={messageStats} />
 
       <RecentConversationsCard
         conversations={recentConversations}
