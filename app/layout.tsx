@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ZOL | Your shop phone assistant",
+  title: "ZOL | Procedural intelligence for physical work",
   description:
-    "ZOL answers customer calls, remembers who called, and helps your team stay on top of follow-ups.",
+    "ZOL converts real-world repair videos and technical documentation into procedural intelligence that guides technicians today and powers embodied AI tomorrow.",
 };
 
 export default function RootLayout({

@@ -6,25 +6,24 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  Activity,
   ArrowRight,
-  Brain,
+  Boxes,
+  BrainCircuit,
   Check,
   ChevronDown,
-  ClipboardList,
-  DatabaseZap,
-  Gauge,
-  Headphones,
-  History,
-  Home,
+  ClipboardCheck,
+  Cpu,
+  Eye,
+  FileSearch,
+  GitBranch,
+  Layers,
   LucideIcon,
-  Network,
-  Phone,
-  Search,
+  Radar,
+  ScanEye,
   ShieldCheck,
-  ShoppingBag,
   Sparkles,
-  UsersRound,
-  Wrench,
+  Workflow,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -33,149 +32,153 @@ import { BookDemoForm } from "@/features/landing/components/book-demo-form";
 import { ZolProfileMenu } from "@/features/auth/components/zol-profile-menu";
 import { cn } from "@/lib/utils";
 
-const navLinks = ["Platform", "Use Cases", "How It Works", "Demo", "Integrations"];
+const navLinks = ["Technology", "How It Works", "Demo", "Evaluation", "Vision"];
 
-const trustIndicators = [
-  "Answers calls and messages",
-  "Remembers customer context",
-  "Creates quotes or next steps",
-  "Books appointments",
-  "Triggers follow-up",
-  "Works with existing tools",
-];
-
-const chaosCards = [
+const pipelineStages = [
   {
-    title: "Missed Calls Become Lost Revenue",
-    body: "Busy teams, ringing phones, and after-hours questions create opportunities that disappear before anyone can act.",
-    icon: Phone,
+    label: "Raw input",
+    detail: "Toyota Camry repair video",
   },
   {
-    title: "Front Desk Staff Juggle Too Much At Once",
-    body: "Calls, appointments, estimates, order questions, team updates, and customer follow-ups all compete for attention.",
-    icon: Headphones,
+    label: "Perception",
+    detail: "Parts and tools detected",
   },
   {
-    title: "Work Details Get Lost Between Teams",
-    body: "A customer concern turns into partial notes, verbal handoffs, and unclear next steps for the people doing the work.",
-    icon: ClipboardList,
+    label: "Extraction",
+    detail: "Steps and state changes extracted",
   },
   {
-    title: "Customer History Lives In People's Memory",
-    body: "The best context often sits in a staff member's head instead of a system the whole team can use.",
-    icon: History,
+    label: "Structure",
+    detail: "Procedural action graph created",
+  },
+  {
+    label: "Inference",
+    detail: "Unseen video analyzed",
+  },
+  {
+    label: "Guidance",
+    detail: "Current step: Release housing clips",
   },
 ];
 
-const workflowSteps = [
-  "Customer Reaches Out",
-  "ZOL Captures Context",
-  "ZOL Takes The Next Step",
-  "Calendar + Systems Update",
-  "Follow-Up Continues",
+const problemPoints = [
+  "Millions of repair demonstrations exist across videos, manuals, diagrams, forums, and technician experience.",
+  "Videos show how people perform the work, but they are difficult for machines to search, verify, or execute.",
+  "Manuals contain the official procedure, but they do not show the visual variations technicians encounter in real environments.",
+  "Existing AI can answer questions about a frame, but it rarely maintains procedural state across an entire physical task.",
+  "Robots and AI agents need more than instructions - they need grounded actions, dependencies, state transitions, failure conditions, and uncertainty.",
 ];
 
-const platformCards = [
+const pillars = [
   {
-    title: "AI Call Handling",
-    body: "Calls and messages become clean records your team can use.",
-    icon: Headphones,
+    title: "Visual understanding",
+    body: "Identifies tools, parts, hand-object interactions, actions, and important visual evidence across time.",
+    icon: Eye,
   },
   {
-    title: "Customer Memory",
-    body: "ZOL remembers previous purchases, visits, service requests, vehicles, and conversations.",
-    icon: Brain,
+    title: "State-change tracking",
+    body: "Understands that a component changed from attached to removed, closed to open, empty to installed, or unsecured to secured.",
+    icon: Activity,
   },
   {
-    title: "Workflow Execution",
-    body: "ZOL prepares estimates, schedules appointments, and routes work to the right people.",
-    icon: Wrench,
+    title: "Procedural action graphs",
+    body: "Converts demonstrations into structured steps with preconditions, resulting states, valid transitions, common mistakes, and completion conditions.",
+    icon: GitBranch,
   },
   {
-    title: "Operational Visibility",
-    body: "See callbacks, pending approvals, appointments, and open work without digging.",
-    icon: Gauge,
+    title: "Grounded repair memory",
+    body: "Connects visual demonstrations with manuals, diagrams, product information, specifications, and previously verified examples.",
+    icon: Layers,
   },
   {
-    title: "Operational Intelligence Search",
-    body: "Ask questions like: Which customers need follow-up? What work is waiting on approval?",
-    icon: Search,
-  },
-  {
-    title: "Integration Layer",
-    body: "Moves context into systems like Tekmetric, Shopify, calendars, CRMs, and payment tools.",
-    icon: Network,
+    title: "Real-time guidance",
+    body: "Uses the current visual state and completed-step history to explain what the technician should do next - or request a clearer view when evidence is insufficient.",
+    icon: Radar,
   },
 ];
 
-const searchPrompts = [
-  "How many customers are waiting for callbacks?",
-  "Which orders or estimates haven't been approved yet?",
-  "What appointments or pickups are scheduled tomorrow?",
-  "Which customers mentioned urgent issues this week?",
-];
-
-const useCases = [
+const howItWorks = [
   {
-    title: "Auto Repair Shops",
-    body: "Appointments, repair workflows, customer history, vehicle context, and follow-ups.",
-    icon: Wrench,
+    title: "Learn",
+    body: "ZOL ingests repair videos, manuals, diagrams, and parts information.",
+    icon: FileSearch,
   },
   {
-    title: "Apparel Stores",
-    body: "Customer communication, order support, returns, sizing questions, and Shopify-connected workflows.",
-    icon: ShoppingBag,
+    title: "Structure",
+    body: "It extracts actions, objects, timestamps, physical state changes, dependencies, and common variations.",
+    icon: Boxes,
   },
   {
-    title: "Home Services",
-    body: "Scheduling, customer intake, job details, callbacks, and post-service follow-ups.",
-    icon: Home,
-  },
-  {
-    title: "Customer-Service Businesses",
-    body: "Communication organization, customer memory, workflow visibility, and operational handoffs.",
-    icon: UsersRound,
-  },
-];
-
-const integrations = [
-  "Tekmetric",
-  "Shopify",
-  "Square",
-  "Google Calendar",
-  "Twilio",
-  "HubSpot",
-  "Stripe",
-];
-
-const dashboardCards = [
-  ["Conversation records", "Action-ready notes from calls, messages, and customer requests."],
-  ["Customer timelines", "Previous visits, open issues, orders, and service history."],
-  ["Work histories", "Vehicle, order, or service context available before the customer arrives."],
-  ["Calendar updates", "Requested times become confirmed slots when the workflow is ready."],
-  ["Action items", "Estimate prep, order check, callback, or team handoff."],
-  ["Follow-up actions", "ZOL keeps customers moving before work stalls."],
-  ["Business signals", "Pending approvals, urgent callbacks, and missed opportunities."],
-  ["Urgent issues", "High-priority customer needs surfaced before they get buried."],
-  ["Team notifications", "The right people get context when something needs attention."],
-];
-
-const adoptionCards = [
-  {
-    title: "No complicated onboarding",
-    body: "ZOL starts with the conversations your business already has every day.",
-    icon: Check,
-  },
-  {
-    title: "Works with existing workflows",
-    body: "Your team keeps using familiar tools while ZOL coordinates the work around them.",
-    icon: Network,
-  },
-  {
-    title: "Designed for operational teams",
-    body: "The product language is built around real customer requests, handoffs, and follow-through.",
+    title: "Verify",
+    body: "It compares demonstrations against authoritative technical documentation and flags disagreements or missing evidence.",
     icon: ShieldCheck,
   },
+  {
+    title: "Reason",
+    body: "During a new repair, ZOL determines the current step, retrieves similar demonstrations, and validates the action against the procedure graph.",
+    icon: BrainCircuit,
+  },
+  {
+    title: "Guide",
+    body: "It provides the next instruction, highlights risks, and explains what is visually confirmed versus uncertain.",
+    icon: Workflow,
+  },
+];
+
+const comparisonRows: Array<[string, string]> = [
+  ["Describes one image", "Understands chronological actions"],
+  ["Starts from zero each time", "Maintains the complete repair session"],
+  ["Gives a plausible answer", "Validates the next action against the procedure"],
+  ["Uses general knowledge", "Retrieves vehicle-specific demonstrations and documentation"],
+  ["May assume hidden actions", "Tracks what is visually confirmed and unknown"],
+  ["Produces text", "Produces structured actions, states, evidence and guidance"],
+  ["Answers questions", "Detects errors and predicts the next valid step"],
+];
+
+const architectureLayers = [
+  "Multimodal extraction",
+  "Procedural memory",
+  "State-transition graph",
+  "Vehicle-specific retrieval",
+  "Deterministic safety validation",
+  "Frontier model reasoning",
+];
+
+const moatPoints = [
+  "Every processed video adds new camera angles, technician styles, part appearances, and real-world variations.",
+  "Every verified procedure adds structured preconditions, state changes, errors, and completion evidence.",
+  "Every guided session produces examples of where models succeed, hesitate, or make incorrect predictions.",
+  "Every vehicle and repair expands a reusable procedural ontology.",
+  "The resulting dataset can support guidance, model training, benchmarking, and robotic planning.",
+];
+
+const todayItems = [
+  "Technician repair copilot",
+  "Visual step verification",
+  "Next-action guidance",
+  "Training and onboarding",
+  "Remote expert assistance",
+  "Quality-control documentation",
+];
+
+const tomorrowItems = [
+  "Embodied-AI training data",
+  "Robot task planning",
+  "Simulation and evaluation",
+  "Procedural benchmark creation",
+  "Cross-vehicle state representations",
+  "Human-to-robot skill transfer",
+];
+
+const evalQuestions = [
+  "Did the system identify the correct action?",
+  "Did it recognize the affected tool and component?",
+  "Did it detect the physical state change?",
+  "Did it understand the required earlier steps?",
+  "Did it predict a valid next action?",
+  "Did it catch a skipped or incorrect step?",
+  "Did it recognize when visual evidence was insufficient?",
+  "Did the procedure finish in a correct and safe state?",
 ];
 
 const fadeUp = {
@@ -221,11 +224,13 @@ function SectionHeading({
   title,
   description,
   align = "center",
+  invert = false,
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   align?: "center" | "left";
+  invert?: boolean;
 }) {
   return (
     <div
@@ -235,11 +240,21 @@ function SectionHeading({
       )}
     >
       {eyebrow ? <SectionLabel>{eyebrow}</SectionLabel> : null}
-      <h2 className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+      <h2
+        className={cn(
+          "text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl",
+          invert ? "text-white" : "text-zinc-950",
+        )}
+      >
         {title}
       </h2>
       {description ? (
-        <p className="mt-5 text-base leading-8 text-zinc-600 sm:text-lg">
+        <p
+          className={cn(
+            "mt-5 text-base leading-8 sm:text-lg",
+            invert ? "text-zinc-300" : "text-zinc-600",
+          )}
+        >
           {description}
         </p>
       ) : null}
@@ -323,29 +338,6 @@ function Navbar() {
   );
 }
 
-function Waveform() {
-  return (
-    <div className="flex h-10 items-center gap-1.5">
-      {Array.from({ length: 18 }).map((_, index) => (
-        <motion.span
-          key={index}
-          className="w-1 rounded-full bg-emerald-400/85"
-          animate={{
-            height: [8, 24 + (index % 4) * 4, 10],
-            opacity: [0.35, 1, 0.45],
-          }}
-          transition={{
-            duration: 1.1,
-            repeat: Infinity,
-            delay: index * 0.05,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 function StatusPill({ children }: { children: React.ReactNode }) {
   return (
     <motion.span
@@ -359,32 +351,21 @@ function StatusPill({ children }: { children: React.ReactNode }) {
   );
 }
 
-function MiniPanel({
-  title,
-  children,
-  className,
-}: {
-  title: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={cn("rounded-3xl border border-white/10 bg-white/[0.06] p-4", className)}>
-      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
-        {title}
-      </p>
-      {children}
-    </div>
-  );
+function useCycle(length: number, interval = 1600) {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActive((current) => (current + 1) % length);
+    }, interval);
+    return () => window.clearInterval(timer);
+  }, [length, interval]);
+
+  return active;
 }
 
-function HeroDashboard() {
-  const intelligence = [
-    ["Tomorrow", "12 appointments"],
-    ["Estimates", "3 pending"],
-    ["Callbacks", "2 urgent"],
-    ["Follow-up", "1 overdue"],
-  ];
+function HeroPipeline() {
+  const active = useCycle(pipelineStages.length);
 
   return (
     <motion.div
@@ -394,105 +375,127 @@ function HeroDashboard() {
       className="relative"
     >
       <div className="absolute -inset-8 rounded-[2.5rem] bg-emerald-500/10 blur-3xl" />
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950 p-3 text-white shadow-premium sm:p-4">
-        <div className="mb-3 flex items-center justify-between rounded-[1.5rem] border border-white/10 bg-white/[0.06] px-4 py-3">
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950 p-3 text-white shadow-premium sm:p-5">
+        <div className="mb-4 flex items-center justify-between rounded-[1.5rem] border border-white/10 bg-white/[0.06] px-4 py-3">
           <div className="flex items-center gap-3">
             <LogoMark className="h-8 w-8" />
             <div>
-              <p className="text-sm font-semibold">ZOL Operations OS</p>
-              <p className="text-xs text-zinc-400">Operational intelligence active</p>
+              <p className="text-sm font-semibold">ZOL procedural engine</p>
+              <p className="text-xs text-zinc-400">
+                2020 Toyota Camry - engine air-filter replacement
+              </p>
             </div>
           </div>
-          <StatusPill>Live</StatusPill>
+          <StatusPill>Learning</StatusPill>
         </div>
 
-        <div className="grid gap-3 lg:grid-cols-[0.9fr_1.2fr_0.95fr]">
-          <MiniPanel title="Live Incoming Call">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-semibold">Sarah Mitchell</h3>
-                <p className="text-sm text-zinc-300">2018 Toyota Camry</p>
-              </div>
-              <div className="rounded-2xl bg-black/25 p-3">
-                <Waveform />
-              </div>
-              <div className="grid gap-3">
-                <Metric label="Issue" value="Grinding noise while braking" />
-                <Metric label="Urgency" value="High" accent />
-                <Metric label="Status" value="AI Capturing Repair Details" />
-              </div>
-            </div>
-          </MiniPanel>
-
-          <MiniPanel title="AI Action Plan" className="bg-white text-zinc-950">
-            <p className="text-sm leading-6 text-zinc-700">
-              ZOL captures the request, prepares the right next step, books the
-              appointment, and keeps the team informed.
+        <div className="grid gap-3 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+              Pipeline
             </p>
-            <div className="mt-5 rounded-2xl bg-zinc-50 p-4">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Automated Next Steps
-              </p>
-              <ul className="space-y-3 text-sm text-zinc-700">
-                {[
-                  "Create quote or estimate when needed",
-                  "Book the appointment on the calendar",
-                  "Notify the team with customer context",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                      <Check className="h-3.5 w-3.5" />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <motion.div
-              className="mt-4 h-1.5 rounded-full bg-zinc-100"
-              initial={{ opacity: 0.5 }}
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 1.8, repeat: Infinity }}
-            >
-              <div className="h-full w-3/4 rounded-full bg-emerald-500" />
-            </motion.div>
-          </MiniPanel>
+            <div className="space-y-2">
+              {pipelineStages.map((stage, index) => {
+                const isActive = index === active;
+                const isDone = index < active;
 
-          <MiniPanel title="Customer Memory">
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-semibold text-white">Previous Visits</p>
-                <div className="mt-3 space-y-2 text-sm text-zinc-300">
-                  <p>Oil Change - 3 months ago</p>
-                  <p>Brake vibration inspection - 8 months ago</p>
+                return (
+                  <div key={stage.label}>
+                    <motion.div
+                      animate={{
+                        borderColor: isActive
+                          ? "rgba(16, 185, 129, 0.6)"
+                          : "rgba(255, 255, 255, 0.08)",
+                        backgroundColor: isActive
+                          ? "rgba(16, 185, 129, 0.12)"
+                          : "rgba(0, 0, 0, 0.2)",
+                      }}
+                      transition={{ duration: 0.35 }}
+                      className="flex items-center gap-3 rounded-2xl border p-3"
+                    >
+                      <span
+                        className={cn(
+                          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-colors",
+                          isActive
+                            ? "bg-emerald-500 text-white"
+                            : isDone
+                              ? "bg-emerald-500/20 text-emerald-300"
+                              : "bg-white/10 text-zinc-400",
+                        )}
+                      >
+                        {isDone ? <Check className="h-3.5 w-3.5" /> : index + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                          {stage.label}
+                        </p>
+                        <p
+                          className={cn(
+                            "truncate text-sm font-medium transition-colors",
+                            isActive ? "text-white" : "text-zinc-400",
+                          )}
+                        >
+                          {stage.detail}
+                        </p>
+                      </div>
+                    </motion.div>
+                    {index < pipelineStages.length - 1 ? (
+                      <div className="flex justify-center py-0.5">
+                        <ChevronDown
+                          className={cn(
+                            "h-3.5 w-3.5 transition-colors",
+                            index < active ? "text-emerald-400" : "text-white/20",
+                          )}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                Live procedure state
+              </p>
+              <div className="space-y-3">
+                <StateRow label="Front clip" value="Released" tone="good" />
+                <StateRow label="Rear clip" value="Not visible" tone="unknown" />
+                <StateRow label="Housing cover" value="Closed" tone="neutral" />
+              </div>
+              <div className="mt-4 rounded-2xl bg-black/25 p-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                  Procedure status
+                </p>
+                <p className="mt-1 text-sm font-semibold text-white">
+                  2 of 10 steps confirmed
+                </p>
+                <div className="mt-3 h-1.5 rounded-full bg-white/10">
+                  <motion.div
+                    className="h-full rounded-full bg-emerald-500"
+                    initial={{ width: "8%" }}
+                    animate={{ width: "20%" }}
+                    transition={{ duration: 1.4, ease: "easeOut" }}
+                  />
                 </div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
-                  Customer Notes
-                </p>
-                <p className="mt-2 text-sm text-zinc-200">Prefers text communication</p>
-              </div>
             </div>
-          </MiniPanel>
-        </div>
 
-        <div className="mt-3 rounded-3xl border border-white/10 bg-white/[0.06] p-4">
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
-              Operations Intelligence
-            </p>
-            <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">
-              Updated now
-            </span>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-4">
-            {intelligence.map(([label, value]) => (
-              <div key={label} className="rounded-2xl bg-black/20 p-3">
-                <p className="text-xs text-zinc-500">{label}</p>
-                <p className="mt-1 text-sm font-semibold text-white">{value}</p>
-              </div>
-            ))}
+            <div className="rounded-3xl bg-white p-4 text-zinc-950">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                Current step
+              </p>
+              <p className="text-base font-semibold">Release housing clips</p>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                Next action
+              </p>
+              <p className="mt-1 text-sm leading-6 text-zinc-700">
+                Lift the housing cover only after every retaining clip is confirmed
+                released.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -500,23 +503,28 @@ function HeroDashboard() {
   );
 }
 
-function Metric({
+function StateRow({
   label,
   value,
-  accent,
+  tone,
 }: {
   label: string;
   value: string;
-  accent?: boolean;
+  tone: "good" | "unknown" | "neutral";
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
-        {label}
-      </p>
-      <p className={cn("mt-1 text-sm font-semibold text-white", accent && "text-orange-300")}>
+    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-3 py-2.5">
+      <p className="text-sm text-zinc-400">{label}</p>
+      <span
+        className={cn(
+          "rounded-full px-2.5 py-1 text-xs font-semibold",
+          tone === "good" && "bg-emerald-500/15 text-emerald-300",
+          tone === "unknown" && "bg-orange-500/15 text-orange-300",
+          tone === "neutral" && "bg-white/10 text-zinc-300",
+        )}
+      >
         {value}
-      </p>
+      </span>
     </div>
   );
 }
@@ -534,101 +542,91 @@ function Hero() {
         >
           <div className="mx-auto mb-5 inline-flex max-w-[92vw] items-center justify-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-[10px] font-semibold uppercase leading-5 tracking-[0.12em] text-emerald-700 shadow-sm backdrop-blur sm:mb-6 sm:text-xs sm:tracking-[0.18em]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 sm:h-2 sm:w-2" />
-            Operational Intelligence For Customer-Facing Businesses
+            Procedural Intelligence Infrastructure
           </div>
           <h1 className="mx-auto max-w-4xl text-[clamp(2.5rem,7vw,4rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-zinc-950">
-            Your Business&apos;s First AI Employee
+            Teach AI how the physical world gets fixed.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8">
-            ZOL answers calls, remembers customers, and turns conversations into
-            organized operational intelligence.
-            <span className="mx-auto mt-3 block max-w-xl text-sm font-medium leading-6 text-zinc-500 sm:text-base sm:leading-7">
-              Reduce chaos, move faster, and keep every customer interaction
-              connected.
-            </span>
+            ZOL transforms repair videos, technical manuals, diagrams, and technician
+            knowledge into grounded procedures that can guide people today - and power
+            embodied AI tomorrow.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button size="lg" asChild>
               <a href="#demo">
-                Book Demo <ArrowRight className="h-4 w-4" />
+                Watch the system learn a repair <ArrowRight className="h-4 w-4" />
               </a>
             </Button>
+            <Button size="lg" variant="secondary" asChild>
+              <a href="#technology">Explore the technology</a>
+            </Button>
           </div>
-          <div className="mx-auto mt-7 grid max-w-4xl gap-3 text-left text-sm font-medium text-zinc-700 sm:grid-cols-2 lg:grid-cols-3">
-            {trustIndicators.map((item) => (
-              <div key={item} className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
-                {item}
-              </div>
-            ))}
-          </div>
-          <p className="mt-5 text-sm font-semibold text-zinc-500">
-            No complicated setup. Works alongside your existing workflow.
-          </p>
         </motion.div>
 
         <div className="w-full max-w-6xl">
-          <HeroDashboard />
+          <HeroPipeline />
         </div>
       </div>
     </section>
   );
 }
 
-function ChaosSection() {
+function CategorySection() {
   return (
-    <AnimatedSection>
-      <SectionHeading
-        eyebrow="The operating problem"
-        title="Operational businesses run on conversations - but conversations get lost."
-        description="Calls, notes, after-hours requests, team updates, and customer concerns create work that is easy to miss and hard to track."
-      />
-      <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        {chaosCards.map((card, index) => (
-          <FeatureCard
-            key={card.title}
-            title={card.title}
-            body={card.body}
-            icon={card.icon}
-            index={index}
-            darkIcon
-          />
-        ))}
+    <AnimatedSection className="py-16">
+      <div className="mx-auto max-w-4xl rounded-[2rem] border border-zinc-200 bg-white p-6 text-center shadow-card sm:p-10">
+        <SectionLabel>Procedural Intelligence Infrastructure</SectionLabel>
+        <p className="text-xl leading-9 text-zinc-700 sm:text-2xl sm:leading-10">
+          Most AI can describe an image. ZOL understands a procedure - what happened,
+          what changed, what must happen next, and when the system should stop and ask
+          for more evidence.
+        </p>
       </div>
     </AnimatedSection>
   );
 }
 
-function WorkflowSection() {
+function ProblemSection() {
   return (
-    <AnimatedSection id="how-it-works" className="py-24">
-      <div className="rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-premium sm:p-8 lg:p-12">
-        <SectionHeading
-          eyebrow="How it works"
-          title="From customer request to completed next step."
-          description="ZOL fits into the work your team already does: answer, capture, act, update, follow up."
-        />
-        <div className="mt-14 grid gap-4 md:grid-cols-5">
-          {workflowSteps.map((step, index) => (
-            <div key={step} className="relative">
-              <div className="h-full rounded-3xl border border-zinc-200 bg-zinc-50 p-4">
-                <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
-                  {index + 1}
-                </div>
-                <p className="text-sm font-semibold leading-6 text-zinc-950">{step}</p>
-              </div>
-              {index < workflowSteps.length - 1 ? (
-                <ChevronDown className="absolute -bottom-3 left-1/2 h-6 w-6 -translate-x-1/2 rounded-full bg-white text-zinc-300 md:-right-3 md:left-auto md:top-1/2 md:-translate-y-1/2 md:rotate-[-90deg]" />
-              ) : null}
-            </div>
-          ))}
-        </div>
-        <p className="mx-auto mt-10 max-w-3xl text-center text-lg leading-8 text-zinc-600">
-          The result is simple: fewer dropped requests, cleaner handoffs, and customers
-          who hear back without your team chasing every thread manually.
-        </p>
+    <AnimatedSection>
+      <SectionHeading
+        eyebrow="The problem"
+        title="The world's most valuable physical knowledge is trapped in unstructured content."
+      />
+      <div className="mt-12 grid gap-4 lg:grid-cols-2">
+        {problemPoints.map((point, index) => (
+          <motion.div
+            key={point}
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, delay: index * 0.05 }}
+          >
+            <Card className="flex h-full items-start gap-4 p-6">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-zinc-950 text-xs font-bold text-white">
+                {index + 1}
+              </span>
+              <p className="text-sm leading-7 text-zinc-600">{point}</p>
+            </Card>
+          </motion.div>
+        ))}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, delay: 0.25 }}
+          className="lg:col-span-2"
+        >
+          <div className="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-6 text-center sm:p-8">
+            <p className="text-lg font-semibold leading-8 text-emerald-900 sm:text-xl">
+              The data already exists. The missing layer is the system that converts it
+              into machine-usable procedural intelligence.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </AnimatedSection>
   );
@@ -640,12 +638,14 @@ function FeatureCard({
   icon: Icon,
   index,
   darkIcon = false,
+  className,
 }: {
   title: string;
   body: string;
   icon: LucideIcon;
   index: number;
   darkIcon?: boolean;
+  className?: string;
 }) {
   return (
     <motion.div
@@ -655,6 +655,7 @@ function FeatureCard({
       viewport={{ once: true }}
       transition={{ duration: 0.45, delay: index * 0.05 }}
       whileHover={{ y: -6 }}
+      className={className}
     >
       <Card className="h-full p-6">
         <div
@@ -672,22 +673,23 @@ function FeatureCard({
   );
 }
 
-function PlatformSection() {
+function PillarsSection() {
   return (
-    <AnimatedSection id="platform">
+    <AnimatedSection id="technology">
       <SectionHeading
-        eyebrow="Platform"
-        title="More than call handling."
-        description="ZOL gives customer-facing teams a shared layer for context, next steps, and visibility."
+        eyebrow="What ZOL creates"
+        title="From demonstrations to executable knowledge."
       />
       <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {platformCards.map((feature, index) => (
+        {pillars.map((pillar, index) => (
           <FeatureCard
-            key={feature.title}
-            title={feature.title}
-            body={feature.body}
-            icon={feature.icon}
+            key={pillar.title}
+            title={pillar.title}
+            body={pillar.body}
+            icon={pillar.icon}
             index={index}
+            darkIcon={index === 0}
+            className={index === 4 ? "md:col-span-2 lg:col-span-1" : undefined}
           />
         ))}
       </div>
@@ -695,129 +697,68 @@ function PlatformSection() {
   );
 }
 
-function UseCasesSection() {
+function HowItWorksSection() {
+  const active = useCycle(howItWorks.length, 2200);
+
   return (
-    <AnimatedSection id="use-cases">
+    <AnimatedSection id="how-it-works" className="py-24">
       <div className="rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-premium sm:p-8 lg:p-12">
         <SectionHeading
-          eyebrow="Use cases"
-          title="Built For Operational Businesses."
-          description="ZOL adapts to the context, tools, and handoffs behind each type of customer-facing work."
+          eyebrow="How it works"
+          title="One intelligence layer across the entire procedure."
         />
-        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {useCases.map((useCase, index) => (
-            <FeatureCard
-              key={useCase.title}
-              title={useCase.title}
-              body={useCase.body}
-              icon={useCase.icon}
-              index={index}
-              darkIcon={index === 0}
+
+        <div className="relative mt-14">
+          <div className="absolute inset-x-0 top-[2.25rem] hidden h-0.5 bg-zinc-200 md:block">
+            <motion.div
+              className="h-full bg-emerald-500"
+              animate={{
+                width: `${(active / (howItWorks.length - 1)) * 100}%`,
+              }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
             />
-          ))}
-        </div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function MemorySection() {
-  const examples = [
-    {
-      customer: "My brakes are making noise again.",
-      zol: "I see your Honda Accord previously came in for brake vibration issues three months ago. Has the issue gotten worse recently?",
-    },
-    {
-      customer: "I think I spoke with someone last week.",
-      zol: "Yes - you called about an oil leak inspection for your Ford F-150. Would you like me to continue helping with that appointment request?",
-    },
-  ];
-
-  return (
-    <AnimatedSection className="py-24">
-      <div className="grid items-center gap-10 lg:grid-cols-[0.82fr_1.18fr]">
-        <SectionHeading
-          align="left"
-          eyebrow="Core moat"
-          title="ZOL remembers every customer, order, vehicle, and conversation."
-          description="Every interaction adds context your team can use later."
-        />
-        <Card className="overflow-hidden p-0">
-          <div className="border-b border-zinc-200 bg-zinc-950 px-6 py-4 text-white">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-sm font-semibold">Operational memory examples</p>
-              <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-zinc-300">
-                Memory active
-              </span>
-            </div>
           </div>
-          <div className="space-y-6 p-6 sm:p-8">
-            {examples.map((example, index) => (
-              <div key={example.customer} className="space-y-4">
-                <div className="max-w-[86%] rounded-3xl rounded-tl-md bg-zinc-100 p-5">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                    Customer
-                  </p>
-                  <p className="text-base font-medium text-zinc-950">
-                    &quot;{example.customer}&quot;
-                  </p>
+
+          <div className="grid gap-6 md:grid-cols-5">
+            {howItWorks.map((step, index) => {
+              const isActive = index === active;
+              const isDone = index < active;
+              const Icon = step.icon;
+
+              return (
+                <div key={step.title} className="relative">
+                  <motion.div
+                    animate={{
+                      scale: isActive ? 1.06 : 1,
+                      backgroundColor: isActive
+                        ? "rgb(5, 150, 105)"
+                        : isDone
+                          ? "rgb(209, 250, 229)"
+                          : "rgb(244, 244, 245)",
+                      color: isActive ? "#ffffff" : isDone ? "#047857" : "#71717a",
+                    }}
+                    transition={{ duration: 0.4 }}
+                    className="relative z-10 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-2xl border-4 border-white shadow-card"
+                  >
+                    <Icon className="h-6 w-6" />
+                  </motion.div>
+                  <div className="mt-5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                      Step {index + 1}
+                    </p>
+                    <h3
+                      className={cn(
+                        "mt-1 text-lg font-semibold transition-colors",
+                        isActive ? "text-emerald-700" : "text-zinc-950",
+                      )}
+                    >
+                      {step.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-6 text-zinc-600">{step.body}</p>
+                  </div>
                 </div>
-                <motion.div
-                  initial={{ opacity: 0, x: 18 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.55, delay: index * 0.14 }}
-                  className="ml-auto max-w-[90%] rounded-3xl rounded-tr-md bg-emerald-600 p-5 text-white"
-                >
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100">
-                    ZOL
-                  </p>
-                  <p className="text-base font-medium leading-7">
-                    &quot;{example.zol}&quot;
-                  </p>
-                </motion.div>
-              </div>
-            ))}
-            <div className="rounded-3xl border border-zinc-200 bg-zinc-50 p-5">
-              <p className="text-sm leading-7 text-zinc-600">
-                ZOL helps teams respond with context instead of asking customers to
-                repeat themselves.
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function ShopIntelligenceSection() {
-  return (
-    <AnimatedSection className="py-24">
-      <div className="rounded-[2rem] border border-zinc-200 bg-zinc-950 p-6 text-white shadow-premium sm:p-8 lg:p-12">
-        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
-          <SectionHeading
-            align="left"
-            eyebrow="Operational intelligence"
-            title="Your business becomes searchable."
-            description="Owners and teams can ask direct questions instead of hunting through calls, notes, and tools."
-          />
-          <div className="space-y-3">
-            {searchPrompts.map((prompt, index) => (
-              <motion.div
-                key={prompt}
-                initial={{ opacity: 0, x: 18 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: index * 0.08 }}
-                className="flex items-center gap-3 rounded-3xl border border-white/10 bg-white/[0.06] p-4"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white">
-                  <Search className="h-5 w-5" />
-                </span>
-                <p className="text-sm font-medium text-zinc-100">&quot;{prompt}&quot;</p>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -825,101 +766,335 @@ function ShopIntelligenceSection() {
   );
 }
 
-function IntegrationsSection() {
+function DemoReadout({
+  label,
+  children,
+  accent = false,
+}: {
+  label: string;
+  children: React.ReactNode;
+  accent?: boolean;
+}) {
   return (
-    <AnimatedSection id="integrations">
-      <SectionHeading
-        eyebrow="Integrations"
-        title="Built to work alongside your existing systems."
-        description="Works alongside the tools your business already uses."
-      />
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {integrations.map((integration) => (
-          <Card
-            key={integration}
-            className="flex items-center justify-between p-6 transition-transform hover:-translate-y-1"
-          >
-            <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-950 text-white">
-                <DatabaseZap className="h-5 w-5" />
-              </span>
-              <p className="text-lg font-semibold text-zinc-950">{integration}</p>
-            </div>
-            <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-600">
-              Layer
-            </span>
-          </Card>
-        ))}
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function DashboardPreviewSection() {
-  return (
-    <AnimatedSection className="py-24">
-      <SectionHeading
-        eyebrow="Operational center"
-        title="The work stays organized automatically."
-        description="A single view for customer context, appointments, orders, follow-up, approvals, and urgent work."
-      />
-      <div className="mt-12 rounded-[2rem] border border-zinc-200 bg-zinc-950 p-4 shadow-premium sm:p-6 lg:p-8">
-        <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-white">Operations dashboard</p>
-            <p className="mt-1 text-sm text-zinc-400">
-              Customer context, next steps, and team visibility in one place
-            </p>
-          </div>
-          <span className="w-fit rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">
-            Live business context
-          </span>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {dashboardCards.map(([title, body]) => (
-            <div key={title} className="rounded-3xl bg-white p-5">
-              <p className="text-sm font-semibold text-zinc-950">{title}</p>
-              <p className="mt-3 text-sm leading-6 text-zinc-600">{body}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function AdoptionSection() {
-  return (
-    <AnimatedSection>
-      <SectionHeading
-        eyebrow="Adoption"
-        title="Easy for operational teams to adopt."
-        description="Your team keeps working normally. ZOL handles the capture, coordination, and follow-through around them."
-      />
-      <div className="mt-12 grid gap-5 lg:grid-cols-3">
-        {adoptionCards.map((card, index) => (
-          <FeatureCard
-            key={card.title}
-            title={card.title}
-            body={card.body}
-            icon={card.icon}
-            index={index}
-            darkIcon
-          />
-        ))}
-      </div>
-    </AnimatedSection>
+    <div
+      className={cn(
+        "rounded-3xl border p-5",
+        accent
+          ? "border-emerald-400/30 bg-emerald-400/10"
+          : "border-white/10 bg-white/[0.04]",
+      )}
+    >
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+        {label}
+      </p>
+      <div className="mt-3">{children}</div>
+    </div>
   );
 }
 
 function DemoSection() {
   return (
     <AnimatedSection id="demo" className="py-24">
+      <SectionHeading
+        eyebrow="Live demo"
+        title="Watch ZOL understand a repair it has never seen before."
+        description="2020 Toyota Camry - engine air-filter replacement, analyzed from a held-out silent repair video."
+      />
+
+      <div className="mt-12 overflow-hidden rounded-[2rem] border border-zinc-200 bg-zinc-950 p-4 text-white shadow-premium sm:p-6 lg:p-8">
+        <div className="mb-6 flex flex-col gap-3 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-600">
+              <ScanEye className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold">Held-out silent repair video</p>
+              <p className="text-xs text-zinc-400">No audio. No annotations. No prior exposure.</p>
+            </div>
+          </div>
+          <StatusPill>Session active</StatusPill>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <DemoReadout label="Detected">
+            <p className="text-base font-semibold leading-7">
+              Technician is releasing the front housing clip
+            </p>
+          </DemoReadout>
+
+          <DemoReadout label="Physical state">
+            <div className="space-y-2.5">
+              <StateRow label="Front clip" value="Released" tone="good" />
+              <StateRow label="Rear clip" value="Not visible" tone="unknown" />
+              <StateRow label="Housing cover" value="Closed" tone="neutral" />
+            </div>
+          </DemoReadout>
+
+          <DemoReadout label="Procedure status">
+            <p className="text-base font-semibold">2 of 10 steps confirmed</p>
+            <div className="mt-4 h-1.5 rounded-full bg-white/10">
+              <motion.div
+                className="h-full rounded-full bg-emerald-500"
+                initial={{ width: 0 }}
+                whileInView={{ width: "20%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              />
+            </div>
+            <p className="mt-4 text-sm leading-6 text-zinc-400">
+              Steps advance only when the required evidence is visually confirmed.
+            </p>
+          </DemoReadout>
+
+          <DemoReadout label="Next action" accent>
+            <p className="text-base font-semibold leading-7 text-emerald-100">
+              Show the rear side of the housing and confirm that the second clip is
+              released.
+            </p>
+          </DemoReadout>
+
+          <DemoReadout label="Reason">
+            <p className="text-sm leading-7 text-zinc-300">
+              The housing should not be lifted until all retaining clips are released.
+            </p>
+          </DemoReadout>
+
+          <DemoReadout label="Evidence">
+            <ul className="space-y-2.5 text-sm text-zinc-300">
+              <li className="flex items-center gap-3">
+                <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+                2 similar demonstrations
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+                1 relevant manual section
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+                89% visual confidence
+              </li>
+            </ul>
+          </DemoReadout>
+        </div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function ComparisonSection() {
+  return (
+    <AnimatedSection>
+      <SectionHeading
+        eyebrow="Not another chatbot"
+        title="A chatbot answers. ZOL maintains procedural state."
+      />
+      <div className="mt-12 overflow-hidden rounded-[2rem] border border-zinc-200 bg-white shadow-premium">
+        <div className="grid grid-cols-2 border-b border-zinc-200 bg-zinc-50">
+          <div className="px-5 py-4 sm:px-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+              General visual chatbot
+            </p>
+          </div>
+          <div className="border-l border-zinc-200 bg-zinc-950 px-5 py-4 sm:px-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              ZOL
+            </p>
+          </div>
+        </div>
+        {comparisonRows.map(([left, right], index) => (
+          <motion.div
+            key={left}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
+            className="grid grid-cols-2 border-b border-zinc-200 last:border-b-0"
+          >
+            <div className="px-5 py-5 text-sm leading-6 text-zinc-500 sm:px-8">
+              {left}
+            </div>
+            <div className="border-l border-zinc-200 bg-zinc-950 px-5 py-5 text-sm font-medium leading-6 text-white sm:px-8">
+              {right}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function ArchitectureSection() {
+  return (
+    <AnimatedSection className="py-24">
+      <div className="rounded-[2rem] border border-zinc-200 bg-zinc-950 p-6 text-white shadow-premium sm:p-8 lg:p-12">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-center">
+          <div>
+            <SectionHeading
+              align="left"
+              invert
+              eyebrow="Technical advantage"
+              title="Built for actions, not captions."
+              description="The language model interprets visual evidence and communicates naturally. ZOL's procedural engine controls task state, retrieves the correct domain knowledge, validates step order, and prevents unsupported actions from advancing the procedure."
+            />
+          </div>
+          <div className="space-y-2">
+            {architectureLayers.map((layer, index) => (
+              <div key={layer}>
+                <motion.div
+                  initial={{ opacity: 0, x: 18 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.07 }}
+                  className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-4"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600">
+                    <Cpu className="h-4 w-4" />
+                  </span>
+                  <p className="text-sm font-semibold text-zinc-100">{layer}</p>
+                </motion.div>
+                {index < architectureLayers.length - 1 ? (
+                  <p className="py-1 text-center text-lg font-light text-white/25">+</p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function MoatSection() {
+  return (
+    <AnimatedSection>
+      <SectionHeading
+        eyebrow="Data moat"
+        title="Every procedure makes the system harder to replicate."
+      />
+      <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {moatPoints.map((point, index) => (
+          <motion.div
+            key={point}
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, delay: index * 0.05 }}
+          >
+            <Card className="h-full p-6">
+              <span className="mb-5 flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                <Layers className="h-5 w-5" />
+              </span>
+              <p className="text-sm leading-7 text-zinc-600">{point}</p>
+            </Card>
+          </motion.div>
+        ))}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, delay: 0.25 }}
+        >
+          <div className="flex h-full items-center rounded-[1.75rem] bg-zinc-950 p-6">
+            <p className="text-lg font-semibold leading-8 text-white">
+              We are not collecting more repair content. We are converting repair
+              content into structured physical intelligence.
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function HorizonSection() {
+  return (
+    <AnimatedSection id="vision" className="py-24">
+      <SectionHeading
+        eyebrow="Today and tomorrow"
+        title="Guide technicians today. Train physical AI tomorrow."
+      />
+      <div className="mt-12 grid gap-5 lg:grid-cols-2">
+        <Card className="p-6 sm:p-8">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+              <ClipboardCheck className="h-5 w-5" />
+            </span>
+            <h3 className="text-2xl font-semibold text-zinc-950">Today</h3>
+          </div>
+          <ul className="space-y-4">
+            {todayItems.map((item) => (
+              <li key={item} className="flex items-center gap-3 text-sm text-zinc-700">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <Check className="h-3.5 w-3.5" />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <div className="rounded-[1.75rem] bg-zinc-950 p-6 text-white shadow-premium sm:p-8">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-600 text-white">
+              <Sparkles className="h-5 w-5" />
+            </span>
+            <h3 className="text-2xl font-semibold">Tomorrow</h3>
+          </div>
+          <ul className="space-y-4">
+            {tomorrowItems.map((item) => (
+              <li key={item} className="flex items-center gap-3 text-sm text-zinc-200">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function EvaluationSection() {
+  return (
+    <AnimatedSection id="evaluation">
+      <SectionHeading
+        eyebrow="Evaluation layer"
+        title="Physical AI needs evals, not just demos."
+        description="Every guided session is scored against the questions that determine whether a system truly understood the work."
+      />
+      <div className="mt-12 grid gap-4 sm:grid-cols-2">
+        {evalQuestions.map((question, index) => (
+          <motion.div
+            key={question}
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: index * 0.04 }}
+            className="flex items-start gap-4 rounded-3xl border border-zinc-200 bg-white p-5 shadow-card"
+          >
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-zinc-950 text-[10px] font-bold text-white">
+              {index + 1}
+            </span>
+            <p className="text-sm font-medium leading-6 text-zinc-700">{question}</p>
+          </motion.div>
+        ))}
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function ContactSection() {
+  return (
+    <AnimatedSection id="contact" className="py-24">
       <div className="mx-auto max-w-3xl">
         <SectionHeading
-          eyebrow="Demo"
-          title="Book a demo with ZOL."
-          description="Tell us about your business and we will reach out to schedule a walkthrough."
+          eyebrow="Get started"
+          title="See ZOL understand a repair."
+          description="Tell us what you work on and we will walk you through the system on a real procedure."
         />
         <Card className="mt-12 p-6 sm:p-8">
           <BookDemoForm />
@@ -937,16 +1112,17 @@ function FinalCta() {
         <div className="relative mx-auto max-w-4xl">
           <Sparkles className="mx-auto mb-5 h-7 w-7 text-emerald-300" />
           <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-            The next generation of operational businesses will run on AI employee infrastructure.
+            The next generation of AI will not just understand language. It will
+            understand work.
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-zinc-300">
-            ZOL helps customer-facing teams organize communication, reduce chaos, and
-            operate with real-time intelligence.
+            ZOL is building the intelligence layer that turns human demonstrations into
+            structured, verifiable, and actionable physical knowledge.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button size="lg" variant="accent" asChild>
-              <a href="#demo">
-                Book Demo <ArrowRight className="h-4 w-4" />
+              <a href="#contact">
+                See ZOL understand a repair <ArrowRight className="h-4 w-4" />
               </a>
             </Button>
           </div>
@@ -965,7 +1141,7 @@ function Footer() {
           <div>
             <p className="text-lg font-bold tracking-tight text-zinc-950">ZOL</p>
             <p className="mt-1 text-sm text-zinc-500">
-              AI employee platform for operational businesses
+              Procedural intelligence infrastructure for physical work
             </p>
           </div>
         </div>
@@ -976,7 +1152,7 @@ function Footer() {
           <a href="#" className="hover:text-zinc-950">
             Terms
           </a>
-          <a href="#" className="hover:text-zinc-950">
+          <a href="#contact" className="hover:text-zinc-950">
             Contact
           </a>
         </div>
@@ -991,16 +1167,17 @@ export function ZolHomepage() {
     <main className="min-h-screen overflow-hidden">
       <Navbar />
       <Hero />
-      <ChaosSection />
-      <WorkflowSection />
-      <PlatformSection />
-      <UseCasesSection />
-      <MemorySection />
-      <ShopIntelligenceSection />
-      <IntegrationsSection />
-      <DashboardPreviewSection />
-      <AdoptionSection />
+      <CategorySection />
+      <ProblemSection />
+      <PillarsSection />
+      <HowItWorksSection />
       <DemoSection />
+      <ComparisonSection />
+      <ArchitectureSection />
+      <MoatSection />
+      <HorizonSection />
+      <EvaluationSection />
+      <ContactSection />
       <FinalCta />
       <Footer />
     </main>
