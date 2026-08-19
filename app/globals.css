@@ -50,3 +50,43 @@ body {
     radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.12), transparent 24rem),
     linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(250, 250, 250, 0.74));
 }
+
+/* --- (app) product surface -------------------------------------------- */
+
+/* Staggered row entrance for the board and RO tables. */
+@keyframes app-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.app-row {
+  animation: app-row-in 320ms ease-out both;
+}
+
+/* Blinking LIVE indicator in the app top bar. */
+@keyframes app-led-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.app-led {
+  animation: app-led-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-row,
+  .app-led {
+    animation: none;
+  }
+}
