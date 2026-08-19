@@ -7,8 +7,10 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  CalendarRange,
   Check,
   ClipboardList,
+  LayoutGrid,
   MessageSquareText,
   Package,
   PhoneCall,
@@ -225,6 +227,35 @@ const compareRows: Array<{ before: string; after: string }> = [
     before: "New hires learn the shop's procedures by shadowing",
     after: "Procedures captured once, then guided step by step",
   },
+];
+
+/** Mirrors the four surfaces in the (app) rail. */
+const modules = [
+  {
+    icon: LayoutGrid,
+    name: "Board",
+    body: "Every open repair order on one screen — the bay it is in, what ZOL handled overnight, and whether it is waiting on a tech, a customer, or a part.",
+  },
+  {
+    icon: ClipboardList,
+    name: "Repair orders",
+    body: "Labor lines, parts, tech notes, and the full timeline on a single record. Totals build against your labor rate as the job is written.",
+  },
+  {
+    icon: CalendarRange,
+    name: "Schedule",
+    body: "Bays and appointments across the week, so a vendor pushing an ETA shows up as a conflict before the car is on a lift.",
+  },
+  {
+    icon: Package,
+    name: "Parts",
+    body: "Purchase orders and back-orders in one list, each flagged against the job it is about to delay.",
+  },
+];
+
+const integrations = [
+  { name: "Tekmetric", body: "Customers, vehicles, and repair orders sync both ways." },
+  { name: "Shopmonkey", body: "Same two-way sync, one record on both sides." },
 ];
 
 const fadeUp = {
@@ -723,11 +754,80 @@ function AgentsSection() {
   );
 }
 
+function ModulesSection() {
+  return (
+    <AnimatedSection className="py-24">
+      <SectionHeading
+        eyebrow="03 — The software"
+        title="Run every job from one screen."
+        description="Four surfaces over one record. Nothing gets retyped from the board into the ticket, or from the ticket into the parts order."
+      />
+
+      <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {modules.map((item) => (
+          <div
+            key={item.name}
+            className="rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-card"
+          >
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-950">
+              <item.icon className="h-5 w-5 text-white" />
+            </span>
+            <h3 className="mt-5 text-base font-semibold tracking-tight text-zinc-950">
+              {item.name}
+            </h3>
+            <p className="mt-2.5 text-sm leading-7 text-zinc-600">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </AnimatedSection>
+  );
+}
+
+function IntegrationsSection() {
+  return (
+    <AnimatedSection className="py-24">
+      <div className="overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white p-8 shadow-card sm:p-12">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <Eyebrow>04 — No rip and replace</Eyebrow>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
+              Keep the system you already run.
+            </h2>
+            <p className="mt-5 text-base leading-8 text-zinc-600">
+              ZOL sits on top of your shop management software instead of replacing it.
+              Customers, vehicles, and repair orders stay in sync, so your writers keep
+              working where they already work while ZOL takes the phone and the follow-up.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {integrations.map((item) => (
+              <div
+                key={item.name}
+                className="flex items-center justify-between gap-4 rounded-2xl border border-zinc-200 bg-zinc-50/60 px-5 py-4"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-zinc-950">{item.name}</p>
+                  <p className="mt-0.5 text-sm leading-6 text-zinc-600">{item.body}</p>
+                </div>
+                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-2.5 py-1 font-mono text-[11px] text-zinc-600">
+                  <Check className="h-3 w-3" />
+                  Two-way sync
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
 function CompareSection() {
   return (
     <AnimatedSection id="compare" className="scroll-mt-24 py-24">
       <SectionHeading
-        eyebrow="03 — The switch"
+        eyebrow="05 — The switch"
         title="What changes on the first day."
         description="Same shop, same techs, same labor rate. The difference is how much of the day survives contact with the phone."
       />
@@ -769,7 +869,7 @@ function VisionSection() {
         <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
         <div className="relative mx-auto max-w-4xl">
           <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-300">
-            04 — Where this goes
+            06 — Where this goes
           </span>
           <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-[2.75rem] lg:leading-[1.05]">
             Every repair teaches the system how the work is actually done.
@@ -887,6 +987,8 @@ export function ZolHomepage() {
       <StatsStrip />
       <RecordSection />
       <AgentsSection />
+      <ModulesSection />
+      <IntegrationsSection />
       <CompareSection />
       <VisionSection />
       <FinalCta />
