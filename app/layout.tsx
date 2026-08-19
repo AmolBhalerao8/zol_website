@@ -14,6 +14,11 @@ export const metadata: Metadata = {
   title: "ZOL | The best AI shop management tool for auto shops",
   description:
     "Don't let your competitors beat you with AI. ZOL is the best AI shop management tool for auto shops - converting real-world repair videos and technical documentation into procedural intelligence that guides technicians today and powers embodied AI tomorrow.",
+  icons: {
+    icon: "/zol-logo.png",
+    shortcut: "/zol-logo.png",
+    apple: "/zol-logo.png",
+  },
 };
 
 export default function RootLayout({
