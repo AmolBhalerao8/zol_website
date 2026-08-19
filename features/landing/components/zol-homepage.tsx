@@ -30,6 +30,14 @@ import { cn } from "@/lib/utils";
 /** TODO: swap for the real Cal.com / Calendly link. */
 const CALENDAR_URL = "/request-access";
 
+/**
+ * Shop photograph for the hero. Drop a licensed image at `public/hero-shop.jpg`
+ * and set this to "/hero-shop.jpg" -- the board panel below is the stand-in
+ * until then. Landscape, roughly 3:2, subject weighted to the right so the
+ * diagonal does not cut across faces.
+ */
+const HERO_IMAGE: string | null = null;
+
 const navLinks = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Software", href: "#software" },
@@ -402,6 +410,9 @@ function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  /** Unscrolled, the bar sits over the dark hero and has to invert. */
+  const onDark = !scrolled;
+
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <nav
@@ -409,12 +420,17 @@ function Navbar() {
           "flex items-center justify-between border-b px-5 py-3.5 transition-colors duration-300 sm:px-8",
           scrolled
             ? "border-zinc-950/10 bg-[#f7f4ee]/90 backdrop-blur-xl"
-            : "border-transparent bg-transparent",
+            : "border-white/10 bg-transparent",
         )}
       >
         <a href="#" className="flex items-center gap-2.5" aria-label="ZOL home">
           <LogoMark />
-          <span className="font-display text-xl font-extrabold uppercase tracking-[-0.02em] text-zinc-950">
+          <span
+            className={cn(
+              "font-display text-xl font-extrabold uppercase tracking-[-0.02em] transition-colors",
+              onDark ? "text-white" : "text-zinc-950",
+            )}
+          >
             ZOL
           </span>
         </a>
@@ -424,7 +440,10 @@ function Navbar() {
             <a
               key={link.href}
               href={link.href}
-              className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-500 transition-colors hover:text-zinc-950"
+              className={cn(
+                "font-mono text-[11px] uppercase tracking-[0.16em] transition-colors",
+                onDark ? "text-zinc-400 hover:text-white" : "text-zinc-500 hover:text-zinc-950",
+              )}
             >
               {link.label}
             </a>
@@ -433,15 +452,20 @@ function Navbar() {
 
         <div className="flex items-center gap-2">
           <Show when="signed-out">
-            <Button size="sm" variant="ghost" asChild>
+            <Button
+              size="sm"
+              variant="ghost"
+              className={onDark ? "text-zinc-200 hover:bg-white/10 hover:text-white" : undefined}
+              asChild
+            >
               <Link href={CALENDAR_URL}>My calendar</Link>
             </Button>
-            <Button size="sm" asChild>
+            <Button size="sm" variant={onDark ? "accent" : "default"} asChild>
               <Link href="/request-access">Book a demo</Link>
             </Button>
           </Show>
           <Show when="signed-in">
-            <Button size="sm" asChild>
+            <Button size="sm" variant={onDark ? "accent" : "default"} asChild>
               <Link href="/auth/continue">Profile</Link>
             </Button>
             <ZolProfileMenu />
@@ -638,50 +662,67 @@ function BoardShot() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden pb-16 pt-28 sm:pt-32 lg:pb-24 lg:pt-40">
-      <div className="industrial-grid absolute inset-x-0 top-0 h-[44rem] opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+    <section className="relative isolate overflow-hidden bg-zinc-950">
+      <div className="mx-auto grid max-w-[110rem] items-stretch lg:grid-cols-[1.06fr_0.94fr]">
+        <div className="hero-rise px-5 pb-14 pt-28 sm:px-8 sm:pt-32 lg:py-32 lg:pl-[5vw] lg:pr-14">
+          <Kicker className="text-emerald-400">The best AI</Kicker>
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12">
-        <div className="hero-rise">
-          <Kicker className="text-emerald-700">The best AI</Kicker>
-
-          <h1 className="mt-4 font-display text-[clamp(2.9rem,7.4vw,5.5rem)] font-extrabold uppercase leading-[0.86] tracking-[-0.035em] text-zinc-950">
+          <h1 className="mt-4 font-display text-[clamp(2.9rem,6.4vw,5.25rem)] font-extrabold uppercase leading-[0.86] tracking-[-0.035em] text-white">
             Auto repair
             <br />
             software
           </h1>
 
-          <p className="mt-6 max-w-md text-lg leading-8 text-zinc-700">
+          <p className="mt-6 max-w-md text-lg leading-8 text-zinc-300">
             Don&apos;t let your competitors beat you with AI.
           </p>
 
-          <ul className="rule mt-8 max-w-md border-t">
+          <ul className="mt-8 max-w-md border-t border-white/15">
             {heroPoints.map((point) => (
               <li
                 key={point}
-                className="rule flex items-start gap-3 border-b py-3 text-[15px] leading-6 text-zinc-700"
+                className="flex items-start gap-3 border-b border-white/15 py-3 text-[15px] leading-6 text-zinc-300"
               >
-                <span aria-hidden="true" className="mt-[7px] h-2 w-2 shrink-0 bg-emerald-600" />
+                <span aria-hidden="true" className="mt-[7px] h-2 w-2 shrink-0 bg-emerald-500" />
                 {point}
               </li>
             ))}
           </ul>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button size="lg" asChild>
+            <Button size="lg" variant="accent" asChild>
               <Link href="/request-access">
                 Book a demo <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button size="lg" variant="ghost" asChild>
+            <Button size="lg" variant="secondary" asChild>
               <Link href={CALENDAR_URL}>My calendar</Link>
             </Button>
           </div>
         </div>
 
-        {/* Bleeds past the container: a board is a working surface that keeps going. */}
-        <div className="lg:-mr-[10vw] xl:-mr-[14vw]">
-          <CompactBoard />
+        {/* Emerald diagonal, then the plate it edges. Straight on small screens. */}
+        <div className="relative min-h-[19rem] sm:min-h-[24rem] lg:min-h-[42rem]">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-emerald-500 lg:[clip-path:polygon(9%_0,100%_0,100%_100%,0_100%)]"
+          />
+          <div className="absolute inset-0 overflow-hidden bg-zinc-900 lg:[clip-path:polygon(11.5%_0,100%_0,100%_100%,2.5%_100%)]">
+            {HERO_IMAGE ? (
+              <Image
+                src={HERO_IMAGE}
+                alt="Technicians and a service writer on the floor of an independent auto shop"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full items-center px-5 py-10 sm:px-8 lg:py-14 lg:pl-[15%] lg:pr-12">
+                <CompactBoard />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>
