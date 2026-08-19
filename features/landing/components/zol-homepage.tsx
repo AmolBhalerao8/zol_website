@@ -10,10 +10,13 @@ import {
   CalendarRange,
   Check,
   ClipboardList,
+  FileSearch,
+  FileText,
   LayoutGrid,
   MessageSquareText,
   Package,
   PhoneCall,
+  Receipt,
   Sparkles,
   X,
 } from "lucide-react";
@@ -30,11 +33,20 @@ import { cn } from "@/lib/utils";
  * not survive hydration in a client component.
  */
 
+/** TODO: swap for the real Cal.com / Calendly link. */
+const CALENDAR_URL = "/request-access";
+
 const navLinks = [
-  { label: "The board", href: "#board" },
   { label: "How it works", href: "#how-it-works" },
+  { label: "Software", href: "#software" },
   { label: "Compare", href: "#compare" },
   { label: "Vision", href: "#vision" },
+];
+
+const heroPoints = [
+  "Answers every call, night and weekend",
+  "Texts estimates and chases approvals",
+  "Orders parts and flags vendor delays",
 ];
 
 type BoardStatus = "in-bay" | "waiting-customer" | "waiting-parts" | "ready";
@@ -141,6 +153,38 @@ const boardStats = [
   { label: "Avg text reply", value: "8s", hint: "ZOL, unattended" },
 ];
 
+/** The four stages of a job, in the order a customer experiences them. */
+const flowSteps = [
+  {
+    icon: PhoneCall,
+    step: "01",
+    name: "The call",
+    body: "The phone rings at 9:41 at night and ZOL picks up. It captures the complaint, the vehicle, and how the customer wants to be reached — then books the slot. Missed calls get transcribed and called back.",
+    proof: "2m18s · after hours · complaint, VIN, and callback captured",
+  },
+  {
+    icon: FileSearch,
+    step: "02",
+    name: "Diagnosis",
+    body: "The call is transcribed and triaged onto a repair order before anyone opens the shop. When the tech finishes the scan, the codes and findings attach to the same record.",
+    proof: "P0455 evap leak · smoke test found the purge valve stuck open",
+  },
+  {
+    icon: FileText,
+    step: "03",
+    name: "The quote",
+    body: "The estimate goes out by text with a photo of the failed part and plain-English reasoning. If nobody replies, ZOL sends one nudge, then stops and hands it to a person.",
+    proof: "$742.18 texted · approved by reply in 4 minutes",
+  },
+  {
+    icon: Receipt,
+    step: "04",
+    name: "Invoice and follow-up",
+    body: "When the work is done the customer gets told, with the total. The invoice goes out by text, payment happens at your counter, and the follow-up that brings them back is handled for you.",
+    proof: "Ready notice texted · invoice sent · follow-up scheduled",
+  },
+];
+
 /** RO-4471, newest last so the section reads top-to-bottom as it happened. */
 const recordTimeline = [
   {
@@ -202,33 +246,6 @@ const agents = [
   },
 ];
 
-const compareRows: Array<{ before: string; after: string }> = [
-  {
-    before: "After-hours calls go to voicemail and half never call back",
-    after: "Every call answered, triaged, and booked overnight",
-  },
-  {
-    before: "Estimates wait until someone has a free minute at the counter",
-    after: "Estimate texted the moment the tech finishes the diagnosis",
-  },
-  {
-    before: "Approvals get chased by memory, or not at all",
-    after: "One automatic follow-up, then it escalates to a person",
-  },
-  {
-    before: "Back-ordered parts surface when the car is already on the lift",
-    after: "Vendor delays flagged against the bay schedule in advance",
-  },
-  {
-    before: "Status lives across a whiteboard, three tabs, and a text thread",
-    after: "One board showing what ZOL handled and what still needs you",
-  },
-  {
-    before: "New hires learn the shop's procedures by shadowing",
-    after: "Procedures captured once, then guided step by step",
-  },
-];
-
 /** Mirrors the four surfaces in the (app) rail. */
 const modules = [
   {
@@ -256,6 +273,46 @@ const modules = [
 const integrations = [
   { name: "Tekmetric", body: "Customers, vehicles, and repair orders sync both ways." },
   { name: "Shopmonkey", body: "Same two-way sync, one record on both sides." },
+];
+
+/**
+ * Compared against the category rather than vendor by vendor: every cell below
+ * is a claim about ZOL, not an assertion about a named competitor's feature
+ * set or pricing.
+ */
+const competitors = ["Tekmetric", "Shopmonkey", "Shop-Ware", "Mitchell 1", "AutoLeap"];
+
+const competitorRows: Array<{ capability: string; them: string; zol: string }> = [
+  {
+    capability: "After-hours phone",
+    them: "Voicemail, or a separate answering service",
+    zol: "Built-in AI agent answers, triages, and books",
+  },
+  {
+    capability: "Inbound texts",
+    them: "Answered by a person, when one is free",
+    zol: "Answered unattended in seconds, around the clock",
+  },
+  {
+    capability: "Estimate approvals",
+    them: "Chased manually by the service writer",
+    zol: "Sent, followed up once, then escalated to a person",
+  },
+  {
+    capability: "Parts delays",
+    them: "Surface when someone checks the order",
+    zol: "Flagged against the bay schedule automatically",
+  },
+  {
+    capability: "Getting started",
+    them: "Migrate your shop onto a new system",
+    zol: "Runs on top of the system you already use",
+  },
+  {
+    capability: "Shop procedures",
+    them: "Learned by shadowing a senior tech",
+    zol: "Captured once, then guided step by step",
+  },
 ];
 
 const fadeUp = {
@@ -382,10 +439,10 @@ function Navbar() {
         <div className="flex items-center gap-2">
           <Show when="signed-out">
             <Button size="sm" variant="ghost" asChild>
-              <Link href="/sign-in">Sign In</Link>
+              <Link href={CALENDAR_URL}>My calendar</Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href="/request-access">Request access</Link>
+              <Link href="/request-access">Book a demo</Link>
             </Button>
           </Show>
           <Show when="signed-in">
@@ -429,39 +486,72 @@ const STATUS_DOT: Record<BoardStatus, string> = {
   ready: "bg-zinc-400",
 };
 
-/**
- * The hero shot: the `(app)` board rebuilt as a static, responsive mockup.
- * Narrow screens drop the bay and waiting-on columns rather than scrolling.
- */
-function BoardShot() {
+function BoardChrome() {
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-zinc-200/80 bg-zinc-50/80 px-4 py-3 sm:px-5">
+      <div className="flex min-w-0 items-center gap-3">
+        <LogoMark className="h-7 w-7" />
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-zinc-950">Fifth Street Auto</p>
+          <p className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+            Bakersfield, CA · 6 bays
+          </p>
+        </div>
+      </div>
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-600/30 bg-emerald-50 px-2.5 py-1 font-mono text-[11px] text-emerald-800">
+        <span className="app-led h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        LIVE
+      </span>
+    </div>
+  );
+}
+
+/** Narrow board panel for the hero's right column. */
+function CompactBoard() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 28, scale: 0.98 }}
+      initial={{ opacity: 0, y: 24, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
       className="relative w-full"
     >
       <div className="absolute -inset-6 rounded-[2.5rem] bg-emerald-500/10 blur-3xl" />
-
       <div className="relative overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-premium">
-        {/* Window chrome */}
-        <div className="flex items-center justify-between gap-4 border-b border-zinc-200/80 bg-zinc-50/80 px-4 py-3 sm:px-5">
-          <div className="flex min-w-0 items-center gap-3">
-            <LogoMark className="h-7 w-7" />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-zinc-950">Fifth Street Auto</p>
-              <p className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-                Bakersfield, CA · 6 bays
-              </p>
-            </div>
-          </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-600/30 bg-emerald-50 px-2.5 py-1 font-mono text-[11px] text-emerald-800">
-            <span className="app-led h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            LIVE
-          </span>
-        </div>
+        <BoardChrome />
+        <ul className="divide-y divide-zinc-100">
+          {boardRows.slice(0, 5).map((row) => (
+            <li key={row.ro} className="flex items-start gap-3 px-4 py-3.5 sm:px-5">
+              <span
+                className={cn("mt-2 h-1.5 w-1.5 shrink-0 rounded-full", STATUS_DOT[row.status])}
+                title={row.statusLabel}
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-mono text-[13px] text-zinc-950">{row.ro}</span>
+                  <span className="truncate text-[13px] text-zinc-700">{row.vehicle}</span>
+                </div>
+                <div className="mt-1.5">
+                  <ActorPill byZol={row.byZol}>{row.zolDid}</ActorPill>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+        Sample shop — illustrative data
+      </p>
+    </motion.div>
+  );
+}
 
-        {/* Filter chips */}
+/** Full-width board for the software section. */
+function BoardShot() {
+  return (
+    <div className="relative w-full">
+      <div className="relative overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-premium">
+        <BoardChrome />
+
         <div className="flex gap-2 overflow-x-auto border-b border-zinc-200/80 px-4 py-3 sm:px-5">
           {boardFilters.map((chip) => (
             <span
@@ -474,19 +564,11 @@ function BoardShot() {
               )}
             >
               {chip.label}
-              <span
-                className={cn(
-                  "font-mono text-[10px]",
-                  chip.active ? "text-zinc-400" : "text-zinc-400",
-                )}
-              >
-                {chip.count}
-              </span>
+              <span className="font-mono text-[10px] text-zinc-400">{chip.count}</span>
             </span>
           ))}
         </div>
 
-        {/* Rows */}
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-zinc-200/80">
@@ -546,11 +628,7 @@ function BoardShot() {
           </tbody>
         </table>
       </div>
-
-      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
-        Sample shop — illustrative data
-      </p>
-    </motion.div>
+    </div>
   );
 }
 
@@ -558,47 +636,51 @@ function Hero() {
   return (
     <section className="relative overflow-hidden px-4 pb-12 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pt-40">
       <div className="industrial-grid absolute inset-x-0 top-0 h-[56rem] opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
-      <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-12">
+
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         <motion.div
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mx-auto max-w-4xl text-center"
+          className="text-center lg:text-left"
         >
-          <div className="mx-auto mb-6 inline-flex max-w-[92vw] items-center justify-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-[10px] font-semibold uppercase leading-5 tracking-[0.12em] text-emerald-700 shadow-sm backdrop-blur sm:text-xs sm:tracking-[0.18em]">
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 sm:h-2 sm:w-2" />
-            Now onboarding independent shops
-          </div>
-
-          <h1 className="mx-auto max-w-3xl text-[clamp(2.5rem,7vw,4.25rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-zinc-950">
-            The best AI shop management tool for auto shops.
+          <h1>
+            <span className="block text-sm font-bold uppercase tracking-[0.22em] text-emerald-600 sm:text-base">
+              The best AI
+            </span>
+            <span className="mt-3 block text-[clamp(2.5rem,6.5vw,4.5rem)] font-semibold uppercase leading-[0.95] tracking-[-0.045em] text-zinc-950">
+              Auto repair software
+            </span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl">
+          <p className="mt-5 text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl">
             Don&apos;t let your competitors beat you with AI.
           </p>
 
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-zinc-600 sm:text-lg">
-            ZOL answers the phone after hours, texts estimates, chases approvals, and
-            orders parts on its own. When you walk in, one board shows what it handled
-            overnight and what still needs a person.
-          </p>
+          <ul className="mx-auto mt-8 max-w-md space-y-3 text-left lg:mx-0">
+            {heroPoints.map((point) => (
+              <li key={point} className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600">
+                  <Check className="h-3 w-3 text-white" />
+                </span>
+                <span className="text-base leading-7 text-zinc-700">{point}</span>
+              </li>
+            ))}
+          </ul>
 
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
             <Button size="lg" asChild>
               <Link href="/request-access">
-                Request access <ArrowRight className="h-4 w-4" />
+                Book a demo <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button size="lg" variant="ghost" asChild>
-              <a href="#how-it-works">See how it works</a>
+              <Link href={CALENDAR_URL}>My calendar</Link>
             </Button>
           </div>
         </motion.div>
 
-        <div id="board" className="w-full scroll-mt-28">
-          <BoardShot />
-        </div>
+        <CompactBoard />
       </div>
     </section>
   );
@@ -618,21 +700,56 @@ function StatsStrip() {
           </div>
         ))}
       </div>
+      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+        A day on the sample shop board — illustrative data
+      </p>
+    </AnimatedSection>
+  );
+}
+
+function FlowSection() {
+  return (
+    <AnimatedSection id="how-it-works" className="scroll-mt-24 py-24">
+      <SectionHeading
+        eyebrow="01 — How it works"
+        title="From the missed call to the follow-up."
+        description="One job, start to finish. ZOL runs the parts in green on its own and hands you the rest."
+      />
+
+      <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        {flowSteps.map((step) => (
+          <div
+            key={step.step}
+            className="flex flex-col rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-card"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 ring-1 ring-emerald-600/20">
+                <step.icon className="h-5 w-5 text-emerald-700" />
+              </span>
+              <span className="font-mono text-2xl font-semibold text-zinc-200">{step.step}</span>
+            </div>
+            <h3 className="mt-5 text-lg font-semibold tracking-tight text-zinc-950">{step.name}</h3>
+            <p className="mt-3 flex-1 text-sm leading-7 text-zinc-600">{step.body}</p>
+            <div className="mt-5 rounded-2xl bg-zinc-50 px-4 py-3">
+              <p className="font-mono text-[11px] leading-5 text-zinc-600">{step.proof}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </AnimatedSection>
   );
 }
 
 function RecordSection() {
   return (
-    <AnimatedSection id="how-it-works" className="scroll-mt-24 py-24">
+    <AnimatedSection className="py-24">
       <SectionHeading
-        eyebrow="01 — One record"
+        eyebrow="02 — One record"
         title="One repair order, from the missed call to the lift."
         description="Nothing here was retyped into a second system. This is RO-4471 exactly as it happened — green is what ZOL did unattended, amber is where a person took over."
       />
 
       <div className="mx-auto mt-14 grid max-w-5xl gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        {/* Vehicle card */}
         <div className="h-fit rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-card">
           <Eyebrow>Vehicle</Eyebrow>
           <p className="mt-3 text-lg font-semibold text-zinc-950">2018 Ford F-150 XLT</p>
@@ -663,7 +780,6 @@ function RecordSection() {
           </div>
         </div>
 
-        {/* Timeline */}
         <div className="rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-card">
           <Eyebrow>Timeline</Eyebrow>
           <ol className="mt-5 space-y-0">
@@ -723,7 +839,7 @@ function AgentsSection() {
   return (
     <AnimatedSection className="py-24">
       <SectionHeading
-        eyebrow="02 — The part that runs itself"
+        eyebrow="03 — The part that runs itself"
         title="The work your front desk never gets to."
         description="Not a chatbot bolted onto a calendar. Four jobs ZOL does end to end, and hands back the moment judgment is required."
       />
@@ -754,16 +870,20 @@ function AgentsSection() {
   );
 }
 
-function ModulesSection() {
+function SoftwareSection() {
   return (
-    <AnimatedSection className="py-24">
+    <AnimatedSection id="software" className="scroll-mt-24 py-24">
       <SectionHeading
-        eyebrow="03 — The software"
+        eyebrow="04 — The software"
         title="Run every job from one screen."
         description="Four surfaces over one record. Nothing gets retyped from the board into the ticket, or from the ticket into the parts order."
       />
 
-      <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-14">
+        <BoardShot />
+      </div>
+
+      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {modules.map((item) => (
           <div
             key={item.name}
@@ -789,7 +909,7 @@ function IntegrationsSection() {
       <div className="overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white p-8 shadow-card sm:p-12">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
           <div>
-            <Eyebrow>04 — No rip and replace</Eyebrow>
+            <Eyebrow>05 — No rip and replace</Eyebrow>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
               Keep the system you already run.
             </h2>
@@ -827,33 +947,48 @@ function CompareSection() {
   return (
     <AnimatedSection id="compare" className="scroll-mt-24 py-24">
       <SectionHeading
-        eyebrow="05 — The switch"
-        title="What changes on the first day."
-        description="Same shop, same techs, same labor rate. The difference is how much of the day survives contact with the phone."
+        eyebrow="06 — The switch"
+        title="How ZOL is different."
+        description="Shops today run on Tekmetric, Shopmonkey, Shop-Ware, Mitchell 1, or AutoLeap. Those systems record the work. ZOL does the work nobody has time for — and leaves your existing system in place."
       />
 
-      <div className="mx-auto mt-14 max-w-4xl overflow-hidden rounded-3xl border border-zinc-200/80 bg-white shadow-card">
-        <div className="grid grid-cols-1 border-b border-zinc-200/80 sm:grid-cols-2">
+      <div className="mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-2">
+        {competitors.map((name) => (
+          <span
+            key={name}
+            className="rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-sm font-medium text-zinc-600"
+          >
+            {name}
+          </span>
+        ))}
+      </div>
+
+      <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-3xl border border-zinc-200/80 bg-white shadow-card">
+        <div className="hidden border-b border-zinc-200/80 sm:grid sm:grid-cols-[0.8fr_1fr_1fr]">
+          <div className="px-6 py-4" />
           <div className="px-6 py-4">
-            <Eyebrow>Most shops today</Eyebrow>
+            <Eyebrow>Shop management software</Eyebrow>
           </div>
-          <div className="border-t border-zinc-200/80 bg-emerald-50/40 px-6 py-4 sm:border-l sm:border-t-0">
-            <Eyebrow className="text-emerald-800">With ZOL</Eyebrow>
+          <div className="border-l border-zinc-200/80 bg-emerald-50/40 px-6 py-4">
+            <Eyebrow className="text-emerald-800">With ZOL on top</Eyebrow>
           </div>
         </div>
 
-        {compareRows.map((row) => (
+        {competitorRows.map((row) => (
           <div
-            key={row.before}
-            className="grid grid-cols-1 border-b border-zinc-100 last:border-b-0 sm:grid-cols-2"
+            key={row.capability}
+            className="grid grid-cols-1 border-b border-zinc-100 last:border-b-0 sm:grid-cols-[0.8fr_1fr_1fr]"
           >
-            <div className="flex gap-3 px-6 py-5">
-              <X className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
-              <p className="text-sm leading-6 text-zinc-600">{row.before}</p>
+            <div className="bg-zinc-50/60 px-6 py-4 sm:py-5">
+              <p className="text-sm font-semibold text-zinc-950">{row.capability}</p>
             </div>
-            <div className="flex gap-3 bg-emerald-50/40 px-6 py-5 sm:border-l sm:border-zinc-100">
+            <div className="flex gap-3 px-6 py-4 sm:py-5">
+              <X className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
+              <p className="text-sm leading-6 text-zinc-600">{row.them}</p>
+            </div>
+            <div className="flex gap-3 bg-emerald-50/40 px-6 py-4 sm:border-l sm:border-zinc-100 sm:py-5">
               <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-              <p className="text-sm leading-6 text-zinc-800">{row.after}</p>
+              <p className="text-sm leading-6 text-zinc-800">{row.zol}</p>
             </div>
           </div>
         ))}
@@ -869,7 +1004,7 @@ function VisionSection() {
         <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
         <div className="relative mx-auto max-w-4xl">
           <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-300">
-            06 — Where this goes
+            07 — Where this goes
           </span>
           <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-[2.75rem] lg:leading-[1.05]">
             Every repair teaches the system how the work is actually done.
@@ -937,11 +1072,14 @@ function FinalCta() {
         <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-zinc-600">
           ZOL is onboarding a small number of independent shops.
         </p>
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button size="lg" asChild>
             <Link href="/request-access">
-              Request access <ArrowRight className="h-4 w-4" />
+              Book a demo <ArrowRight className="h-4 w-4" />
             </Link>
+          </Button>
+          <Button size="lg" variant="ghost" asChild>
+            <Link href={CALENDAR_URL}>My calendar</Link>
           </Button>
         </div>
       </div>
@@ -963,6 +1101,9 @@ function Footer() {
           </div>
         </div>
         <div className="flex flex-wrap gap-5 text-sm font-medium text-zinc-600">
+          <Link href="/sign-in" className="hover:text-zinc-950">
+            Sign in
+          </Link>
           <a href="#" className="hover:text-zinc-950">
             Privacy
           </a>
@@ -985,9 +1126,10 @@ export function ZolHomepage() {
       <Navbar />
       <Hero />
       <StatsStrip />
+      <FlowSection />
       <RecordSection />
       <AgentsSection />
-      <ModulesSection />
+      <SoftwareSection />
       <IntegrationsSection />
       <CompareSection />
       <VisionSection />
