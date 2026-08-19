@@ -662,9 +662,11 @@ function Hero() {
     <section className="relative isolate overflow-hidden bg-zinc-950">
       <div className="mx-auto grid max-w-[110rem] items-stretch lg:grid-cols-[1.06fr_0.94fr]">
         <div className="hero-rise px-5 pb-14 pt-28 sm:px-8 sm:pt-32 lg:py-32 lg:pl-[5vw] lg:pr-14">
-          <Kicker className="text-emerald-400">The best AI</Kicker>
+          <p className="font-mono text-base font-bold uppercase tracking-[0.3em] text-emerald-400 sm:text-xl lg:text-[1.4rem]">
+            The best AI
+          </p>
 
-          <h1 className="mt-4 font-display text-[clamp(2.9rem,6.4vw,5.25rem)] font-extrabold uppercase leading-[0.86] tracking-[-0.035em] text-white">
+          <h1 className="hero-glow mt-5 font-display text-[clamp(2.9rem,6.4vw,5.25rem)] font-extrabold uppercase leading-[0.86] tracking-[-0.035em] text-white">
             Auto repair
             <br />
             software
@@ -674,7 +676,7 @@ function Hero() {
             Don&apos;t let your competitors beat you with AI.
           </p>
 
-          <ul className="mt-8 max-w-md border-t border-white/15">
+          <ul className="mt-10 max-w-md border-t border-white/15">
             {heroPoints.map((point) => (
               <li
                 key={point}
@@ -685,14 +687,6 @@ function Hero() {
               </li>
             ))}
           </ul>
-
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button size="lg" variant="accent" asChild>
-              <a href={CALENDAR_URL} target="_blank" rel="noopener noreferrer">
-                Book a demo <ArrowRight className="h-4 w-4" />
-              </a>
-            </Button>
-          </div>
         </div>
 
         {/* Emerald diagonal, then the plate it edges. Straight on small screens. */}

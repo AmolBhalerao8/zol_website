@@ -140,3 +140,11 @@ body {
 .hero-rise-delayed {
   animation: hero-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
 }
+
+/* Emerald cast behind the hero display type. Two stops: a tight halo that
+   reads as a shadow against the dark panel, and a wide one for ambient spill. */
+.hero-glow {
+  text-shadow:
+    0 0 28px rgba(16, 185, 129, 0.45),
+    0 0 78px rgba(16, 185, 129, 0.22);
+}
