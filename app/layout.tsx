@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ZOL | Procedural intelligence for physical work",
+  title: "ZOL | The best AI shop management tool for auto shops",
   description:
-    "ZOL converts real-world repair videos and technical documentation into procedural intelligence that guides technicians today and powers embodied AI tomorrow.",
+    "Don't let your competitors beat you with AI. ZOL is the best AI shop management tool for auto shops - converting real-world repair videos and technical documentation into procedural intelligence that guides technicians today and powers embodied AI tomorrow.",
 };
 
 export default function RootLayout({

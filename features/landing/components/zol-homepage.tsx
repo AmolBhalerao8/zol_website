@@ -542,14 +542,15 @@ function Hero() {
         >
           <div className="mx-auto mb-5 inline-flex max-w-[92vw] items-center justify-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-[10px] font-semibold uppercase leading-5 tracking-[0.12em] text-emerald-700 shadow-sm backdrop-blur sm:mb-6 sm:text-xs sm:tracking-[0.18em]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 sm:h-2 sm:w-2" />
-            Procedural Intelligence Infrastructure
+            AI Shop Management for Auto Shops
           </div>
           <h1 className="mx-auto max-w-4xl text-[clamp(2.5rem,7vw,4rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-zinc-950">
-            Teach AI how the physical world gets fixed.
+            The best AI shop management tool for auto shops.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8">
-            ZOL transforms repair videos, technical manuals, diagrams, and technician
-            knowledge into grounded procedures that can guide people today - and power
+            Don&rsquo;t let your competitors beat you with AI. Be on the forefront of tech and
+            AI: ZOL turns repair videos, technical manuals, diagrams, and technician
+            knowledge into grounded procedures that guide your techs today - and power
             embodied AI tomorrow.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
