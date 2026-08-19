@@ -33,14 +33,6 @@ import { cn } from "@/lib/utils";
  */
 const CALENDAR_URL = "https://calendar.app.google/V8wmHh3ygznruro88";
 
-/**
- * Shop photograph for the hero. Drop a licensed image at `public/hero-shop.jpg`
- * and set this to "/hero-shop.jpg" -- the board panel below is the stand-in
- * until then. Landscape, roughly 3:2, subject weighted to the right so the
- * diagonal does not cut across faces.
- */
-const HERO_IMAGE: string | null = null;
-
 const navLinks = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Software", href: "#software" },
@@ -657,7 +649,7 @@ function BoardShot() {
   );
 }
 
-function Hero() {
+function Hero({ image }: { image: string | null }) {
   return (
     <section className="relative isolate overflow-hidden bg-zinc-950">
       <div className="mx-auto grid max-w-[110rem] items-stretch lg:grid-cols-[1.06fr_0.94fr]">
@@ -696,9 +688,9 @@ function Hero() {
             className="absolute inset-0 bg-emerald-500 lg:[clip-path:polygon(9%_0,100%_0,100%_100%,0_100%)]"
           />
           <div className="absolute inset-0 overflow-hidden bg-zinc-900 lg:[clip-path:polygon(11.5%_0,100%_0,100%_100%,2.5%_100%)]">
-            {HERO_IMAGE ? (
+            {image ? (
               <Image
-                src={HERO_IMAGE}
+                src={image}
                 alt="Technicians and a service writer on the floor of an independent auto shop"
                 fill
                 priority
@@ -1141,11 +1133,11 @@ function Footer() {
   );
 }
 
-export function ZolHomepage() {
+export function ZolHomepage({ heroImage = null }: { heroImage?: string | null }) {
   return (
     <main className="min-h-screen overflow-x-hidden">
       <Navbar />
-      <Hero />
+      <Hero image={heroImage} />
       <StatsStrip />
       <FlowSection />
       <RecordSection />
