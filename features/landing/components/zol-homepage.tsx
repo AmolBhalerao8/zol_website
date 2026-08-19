@@ -17,8 +17,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { BookDemoForm } from "@/features/landing/components/book-demo-form";
 import { ZolProfileMenu } from "@/features/auth/components/zol-profile-menu";
 import { cn } from "@/lib/utils";
 
@@ -538,14 +536,18 @@ function Hero() {
         >
           <div className="mx-auto mb-6 inline-flex max-w-[92vw] items-center justify-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-[10px] font-semibold uppercase leading-5 tracking-[0.12em] text-emerald-700 shadow-sm backdrop-blur sm:text-xs sm:tracking-[0.18em]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 sm:h-2 sm:w-2" />
-            AI shop management for independent auto shops
+            Now onboarding independent shops
           </div>
 
           <h1 className="mx-auto max-w-3xl text-[clamp(2.5rem,7vw,4.25rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-zinc-950">
-            Every call answered. Every estimate out. Before you open.
+            The best AI shop management tool for auto shops.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-zinc-600 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl">
+            Don&apos;t let your competitors beat you with AI.
+          </p>
+
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-zinc-600 sm:text-lg">
             ZOL answers the phone after hours, texts estimates, chases approvals, and
             orders parts on its own. When you walk in, one board shows what it handled
             overnight and what still needs a person.
@@ -824,23 +826,6 @@ function VisionSection() {
   );
 }
 
-function ContactSection() {
-  return (
-    <AnimatedSection id="contact" className="scroll-mt-24 py-24">
-      <div className="mx-auto max-w-3xl">
-        <SectionHeading
-          eyebrow="Get started"
-          title="See it run on your shop's phone."
-          description="Tell us how many bays you run and where your calls go today. We'll walk you through the board on a real repair order."
-        />
-        <Card className="mt-12 p-6 sm:p-8">
-          <BookDemoForm />
-        </Card>
-      </div>
-    </AnimatedSection>
-  );
-}
-
 function FinalCta() {
   return (
     <AnimatedSection className="pb-24">
@@ -852,14 +837,11 @@ function FinalCta() {
         <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-zinc-600">
           ZOL is onboarding a small number of independent shops.
         </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <div className="mt-8 flex justify-center">
           <Button size="lg" asChild>
             <Link href="/request-access">
               Request access <ArrowRight className="h-4 w-4" />
             </Link>
-          </Button>
-          <Button size="lg" variant="ghost" asChild>
-            <a href="#contact">Book a walkthrough</a>
           </Button>
         </div>
       </div>
@@ -887,9 +869,9 @@ function Footer() {
           <a href="#" className="hover:text-zinc-950">
             Terms
           </a>
-          <a href="#contact" className="hover:text-zinc-950">
+          <Link href="/request-access" className="hover:text-zinc-950">
             Contact
-          </a>
+          </Link>
         </div>
       </div>
       <div className="mx-auto mt-8 max-w-7xl text-sm text-zinc-400">&copy; 2026 ZOL</div>
@@ -907,7 +889,6 @@ export function ZolHomepage() {
       <AgentsSection />
       <CompareSection />
       <VisionSection />
-      <ContactSection />
       <FinalCta />
       <Footer />
     </main>
