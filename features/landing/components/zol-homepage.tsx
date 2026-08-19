@@ -2,23 +2,16 @@
 
 import { Show } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
   CalendarRange,
-  Check,
   ClipboardList,
-  FileSearch,
-  FileText,
   LayoutGrid,
   MessageSquareText,
   Package,
   PhoneCall,
-  Receipt,
-  Sparkles,
-  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -26,11 +19,12 @@ import { ZolProfileMenu } from "@/features/auth/components/zol-profile-menu";
 import { cn } from "@/lib/utils";
 
 /**
- * Product-first landing page. The board, repair-order timeline, and numbers
- * below mirror the sample dataset in `lib/mock` so the marketing surface and
- * the `(app)` surface tell the same story. Strings are inlined rather than
- * imported because `lib/mock` derives timestamps at module load, which would
- * not survive hydration in a client component.
+ * Product-first landing page, set as a shop work order: Archivo for display,
+ * JetBrains Mono for anything that would be printed on a ticket (RO numbers,
+ * plates, VINs, times), Inter for prose. Board data mirrors `lib/mock` so the
+ * marketing surface and the `(app)` surface tell the same story, but the
+ * strings are inlined -- `lib/mock` derives timestamps at module load, which
+ * would not survive hydration in a client component.
  */
 
 /** TODO: swap for the real Cal.com / Calendly link. */
@@ -153,39 +147,46 @@ const boardStats = [
   { label: "Avg text reply", value: "8s", hint: "ZOL, unattended" },
 ];
 
-/** The four stages of a job, in the order a customer experiences them. */
+/**
+ * A real sequence with real clock times, which is the only place on this page
+ * where numbered markers carry information.
+ */
 const flowSteps = [
   {
-    icon: PhoneCall,
     step: "01",
+    time: "9:41 PM",
     name: "The call",
-    body: "The phone rings at 9:41 at night and ZOL picks up. It captures the complaint, the vehicle, and how the customer wants to be reached — then books the slot. Missed calls get transcribed and called back.",
-    proof: "2m18s · after hours · complaint, VIN, and callback captured",
+    body: "The phone rings four hours after close and ZOL picks up. It takes the complaint, the vehicle, and how the customer wants to be reached, then books the slot. Missed calls get transcribed and called back.",
+    proof: "2m18s · complaint, VIN, and callback captured",
+    byZol: true,
   },
   {
-    icon: FileSearch,
     step: "02",
+    time: "7:12 AM",
     name: "Diagnosis",
-    body: "The call is transcribed and triaged onto a repair order before anyone opens the shop. When the tech finishes the scan, the codes and findings attach to the same record.",
-    proof: "P0455 evap leak · smoke test found the purge valve stuck open",
+    body: "The call is already a repair order before anyone unlocks the door. When the tech finishes the scan, the codes and findings attach to that same record.",
+    proof: "P0455 · smoke test found the purge valve stuck open",
+    byZol: false,
   },
   {
-    icon: FileText,
     step: "03",
+    time: "8:30 AM",
     name: "The quote",
-    body: "The estimate goes out by text with a photo of the failed part and plain-English reasoning. If nobody replies, ZOL sends one nudge, then stops and hands it to a person.",
+    body: "The estimate goes out by text with a photo of the failed part and the reasoning in plain English. If nobody replies, ZOL nudges once, then stops and hands it to a person.",
     proof: "$742.18 texted · approved by reply in 4 minutes",
+    byZol: true,
   },
   {
-    icon: Receipt,
     step: "04",
+    time: "4:20 PM",
     name: "Invoice and follow-up",
-    body: "When the work is done the customer gets told, with the total. The invoice goes out by text, payment happens at your counter, and the follow-up that brings them back is handled for you.",
+    body: "The customer gets told the car is done, with the total. The invoice goes out by text, payment happens at your counter, and the follow-up that brings them back is handled for you.",
     proof: "Ready notice texted · invoice sent · follow-up scheduled",
+    byZol: true,
   },
 ];
 
-/** RO-4471, newest last so the section reads top-to-bottom as it happened. */
+/** RO-4471, oldest first so the section reads top-to-bottom as it happened. */
 const recordTimeline = [
   {
     when: "Mon 9:41p",
@@ -234,13 +235,13 @@ const agents = [
   },
   {
     icon: ClipboardList,
-    title: "It sends estimates and chases approvals",
-    body: "The estimate goes out by text with a photo of the failed part and plain-English reasoning. If nobody replies, ZOL sends one nudge — then stops and flags it for a person.",
+    title: "It chases approvals",
+    body: "The estimate goes out with a photo of the failed part and plain-English reasoning. If nobody replies, ZOL sends one nudge — then stops and flags it for a person.",
     proof: "No reply after 20h — one nudge sent, then paused",
   },
   {
     icon: Package,
-    title: "It orders parts and catches the delays",
+    title: "It catches parts delays",
     body: "Parts get ordered against the approved estimate. When a vendor pushes an ETA, ZOL surfaces the bay conflict before the car is stuck on a lift.",
     proof: "Vendor moved ETA to Thursday — bay 4 conflict flagged",
   },
@@ -251,22 +252,22 @@ const modules = [
   {
     icon: LayoutGrid,
     name: "Board",
-    body: "Every open repair order on one screen — the bay it is in, what ZOL handled overnight, and whether it is waiting on a tech, a customer, or a part.",
+    body: "Every open repair order, the bay it is in, and who it is waiting on.",
   },
   {
     icon: ClipboardList,
     name: "Repair orders",
-    body: "Labor lines, parts, tech notes, and the full timeline on a single record. Totals build against your labor rate as the job is written.",
+    body: "Labor, parts, notes, and the full timeline on one record.",
   },
   {
     icon: CalendarRange,
     name: "Schedule",
-    body: "Bays and appointments across the week, so a vendor pushing an ETA shows up as a conflict before the car is on a lift.",
+    body: "Bays across the week, with vendor delays shown as conflicts.",
   },
   {
     icon: Package,
     name: "Parts",
-    body: "Purchase orders and back-orders in one list, each flagged against the job it is about to delay.",
+    body: "Purchase orders and back-orders, flagged against the job they delay.",
   },
 ];
 
@@ -277,8 +278,8 @@ const integrations = [
 
 /**
  * Compared against the category rather than vendor by vendor: every cell below
- * is a claim about ZOL, not an assertion about a named competitor's feature
- * set or pricing.
+ * is a claim about ZOL, not an assertion about a named competitor's feature set
+ * or pricing.
  */
 const competitors = ["Tekmetric", "Shopmonkey", "Shop-Ware", "Mitchell 1", "AutoLeap"];
 
@@ -315,11 +316,6 @@ const competitorRows: Array<{ capability: string; them: string; zol: string }> =
   },
 ];
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 22 },
-  visible: { opacity: 1, y: 0 },
-};
-
 function AnimatedSection({
   children,
   className,
@@ -330,25 +326,21 @@ function AnimatedSection({
   id?: string;
 }) {
   return (
-    <motion.section
+    <section
       id={id}
-      variants={fadeUp}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.55, ease: "easeOut" }}
-      className={cn("mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8", className)}
+      className={cn("mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 lg:py-28", className)}
     >
       {children}
-    </motion.section>
+    </section>
   );
 }
 
-function Eyebrow({ children, className }: { children: React.ReactNode; className?: string }) {
+/** Uppercase mono label. The page's utility voice. */
+function Kicker({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <span
       className={cn(
-        "font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500",
+        "font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500",
         className,
       )}
     >
@@ -357,27 +349,31 @@ function Eyebrow({ children, className }: { children: React.ReactNode; className
   );
 }
 
-function SectionHeading({
-  eyebrow,
+/**
+ * Section headers are set as a ledger entry: rule, mono label, display title on
+ * the left, and the explanation held to a narrow measure on the right.
+ */
+function SectionHead({
+  kicker,
   title,
   description,
-  align = "center",
 }: {
-  eyebrow?: string;
+  kicker: string;
   title: string;
   description?: string;
-  align?: "center" | "left";
 }) {
   return (
-    <div className={cn("max-w-3xl", align === "center" ? "mx-auto text-center" : "text-left")}>
-      {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl lg:text-[2.75rem] lg:leading-[1.05]">
-        {title}
-      </h2>
-      {description ? (
-        <p className="mt-5 text-base leading-8 text-zinc-600 sm:text-lg">{description}</p>
-      ) : null}
-    </div>
+    <header className="rule border-t pt-6">
+      <Kicker>{kicker}</Kicker>
+      <div className="mt-5 grid gap-x-12 gap-y-5 lg:grid-cols-[1.15fr_1fr] lg:items-end">
+        <h2 className="whitespace-pre-line font-display text-[clamp(2rem,4.4vw,3.25rem)] font-extrabold uppercase leading-[0.92] tracking-[-0.03em] text-zinc-950">
+          {title}
+        </h2>
+        {description ? (
+          <p className="max-w-xl text-[15px] leading-7 text-zinc-600 lg:pb-2">{description}</p>
+        ) : null}
+      </div>
+    </header>
   );
 }
 
@@ -390,10 +386,7 @@ function LogoMark({ className }: { className?: string }) {
       height={80}
       priority
       sizes="40px"
-      className={cn(
-        "h-10 w-10 rounded-full object-cover shadow-sm ring-1 ring-black/5",
-        className,
-      )}
+      className={cn("h-9 w-9 rounded-full object-cover ring-1 ring-black/5", className)}
       aria-hidden="true"
     />
   );
@@ -410,26 +403,28 @@ function Navbar() {
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6">
+    <header className="fixed inset-x-0 top-0 z-50">
       <nav
         className={cn(
-          "mx-auto flex max-w-7xl items-center justify-between rounded-full border px-4 py-3 transition-all duration-300 sm:px-5",
+          "flex items-center justify-between border-b px-5 py-3.5 transition-colors duration-300 sm:px-8",
           scrolled
-            ? "border-zinc-200/80 bg-white/84 shadow-card backdrop-blur-xl"
-            : "border-transparent bg-white/50 backdrop-blur-sm",
+            ? "border-zinc-950/10 bg-[#f7f4ee]/90 backdrop-blur-xl"
+            : "border-transparent bg-transparent",
         )}
       >
-        <a href="#" className="flex items-center gap-3" aria-label="ZOL home">
+        <a href="#" className="flex items-center gap-2.5" aria-label="ZOL home">
           <LogoMark />
-          <span className="text-lg font-bold tracking-tight text-zinc-950">ZOL</span>
+          <span className="font-display text-xl font-extrabold uppercase tracking-[-0.02em] text-zinc-950">
+            ZOL
+          </span>
         </a>
 
-        <div className="hidden items-center gap-1 rounded-full bg-zinc-100/80 p-1 lg:flex">
+        <div className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="rounded-full px-4 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-white hover:text-zinc-950"
+              className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-500 transition-colors hover:text-zinc-950"
             >
               {link.label}
             </a>
@@ -457,170 +452,179 @@ function Navbar() {
   );
 }
 
-/** Emerald == ZOL acted on its own. Amber == a person is the blocker. */
-function ActorPill({ children, byZol }: { children: React.ReactNode; byZol: boolean }) {
+/**
+ * The page's signature mark. A filled square reads as a status lamp on a shop
+ * panel; emerald means ZOL acted unattended, amber means a person is the
+ * blocker. Same contract as the `(app)` surface.
+ */
+function ActorMark({ byZol }: { byZol: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("mt-[5px] h-2 w-2 shrink-0", byZol ? "bg-emerald-600" : "bg-amber-600")}
+    />
+  );
+}
+
+function ActorTag({ children, byZol }: { children: React.ReactNode; byZol: boolean }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] leading-4",
-        byZol
-          ? "border-emerald-600/30 bg-emerald-50 text-emerald-800"
-          : "border-amber-600/30 bg-amber-50 text-amber-800",
+        "inline-flex items-center gap-2 font-mono text-[11px] leading-4",
+        byZol ? "text-emerald-800" : "text-amber-800",
       )}
     >
       <span
-        className={cn(
-          "h-1.5 w-1.5 shrink-0 rounded-full",
-          byZol ? "bg-emerald-500" : "bg-amber-500",
-        )}
+        aria-hidden="true"
+        className={cn("h-2 w-2 shrink-0", byZol ? "bg-emerald-600" : "bg-amber-600")}
       />
       {children}
     </span>
   );
 }
 
-const STATUS_DOT: Record<BoardStatus, string> = {
-  "in-bay": "bg-emerald-500",
-  "waiting-customer": "bg-amber-500",
-  "waiting-parts": "bg-amber-500",
+const STATUS_MARK: Record<BoardStatus, string> = {
+  "in-bay": "bg-emerald-600",
+  "waiting-customer": "bg-amber-600",
+  "waiting-parts": "bg-amber-600",
   ready: "bg-zinc-400",
 };
 
 function BoardChrome() {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-zinc-200/80 bg-zinc-50/80 px-4 py-3 sm:px-5">
-      <div className="flex min-w-0 items-center gap-3">
-        <LogoMark className="h-7 w-7" />
+    <div className="flex items-center justify-between gap-4 border-b border-zinc-950/10 bg-white px-4 py-3 sm:px-5">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <LogoMark className="h-6 w-6" />
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-zinc-950">Fifth Street Auto</p>
-          <p className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+          <p className="truncate text-[13px] font-semibold text-zinc-950">Fifth Street Auto</p>
+          <p className="truncate font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
             Bakersfield, CA · 6 bays
           </p>
         </div>
       </div>
-      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-600/30 bg-emerald-50 px-2.5 py-1 font-mono text-[11px] text-emerald-800">
-        <span className="app-led h-1.5 w-1.5 rounded-full bg-emerald-500" />
-        LIVE
+      <span className="inline-flex shrink-0 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-800">
+        <span aria-hidden="true" className="app-led h-2 w-2 bg-emerald-600" />
+        Live
       </span>
     </div>
   );
 }
 
-/** Narrow board panel for the hero's right column. */
+/** Narrow board panel for the hero. Bleeds past the grid on large screens. */
 function CompactBoard() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
-      className="relative w-full"
-    >
-      <div className="absolute -inset-6 rounded-[2.5rem] bg-emerald-500/10 blur-3xl" />
-      <div className="relative overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-premium">
+    <div className="hero-rise-delayed relative w-full">
+      <div className="overflow-hidden rounded-xl border border-zinc-950/10 bg-white shadow-premium">
         <BoardChrome />
-        <ul className="divide-y divide-zinc-100">
+        <ul>
           {boardRows.slice(0, 5).map((row) => (
-            <li key={row.ro} className="flex items-start gap-3 px-4 py-3.5 sm:px-5">
+            <li
+              key={row.ro}
+              className="flex items-start gap-3 border-b border-zinc-950/[0.07] px-4 py-3 last:border-b-0 sm:px-5"
+            >
               <span
-                className={cn("mt-2 h-1.5 w-1.5 shrink-0 rounded-full", STATUS_DOT[row.status])}
-                title={row.statusLabel}
+                aria-hidden="true"
+                className={cn("mt-[7px] h-2 w-2 shrink-0", STATUS_MARK[row.status])}
               />
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-mono text-[13px] text-zinc-950">{row.ro}</span>
+                <div className="flex items-baseline gap-2.5">
+                  <span className="tnum font-mono text-[12px] text-zinc-950">{row.ro}</span>
                   <span className="truncate text-[13px] text-zinc-700">{row.vehicle}</span>
                 </div>
-                <div className="mt-1.5">
-                  <ActorPill byZol={row.byZol}>{row.zolDid}</ActorPill>
-                </div>
+                <p
+                  className={cn(
+                    "mt-1 font-mono text-[11px]",
+                    row.byZol ? "text-emerald-800" : "text-amber-800",
+                  )}
+                >
+                  {row.zolDid}
+                </p>
               </div>
             </li>
           ))}
         </ul>
       </div>
-      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
         Sample shop — illustrative data
       </p>
-    </motion.div>
+    </div>
   );
 }
 
-/** Full-width board for the software section. */
+/** Full board for the software section. */
 function BoardShot() {
   return (
-    <div className="relative w-full">
-      <div className="relative overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-premium">
-        <BoardChrome />
+    <div className="overflow-hidden rounded-xl border border-zinc-950/10 bg-white shadow-card">
+      <BoardChrome />
 
-        <div className="flex gap-2 overflow-x-auto border-b border-zinc-200/80 px-4 py-3 sm:px-5">
-          {boardFilters.map((chip) => (
-            <span
-              key={chip.label}
-              className={cn(
-                "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium",
-                chip.active
-                  ? "border-zinc-950 bg-zinc-950 text-white"
-                  : "border-zinc-200 bg-white text-zinc-600",
-              )}
-            >
-              {chip.label}
-              <span className="font-mono text-[10px] text-zinc-400">{chip.count}</span>
-            </span>
-          ))}
-        </div>
+      <div className="flex gap-5 overflow-x-auto border-b border-zinc-950/10 px-4 py-3 sm:px-5">
+        {boardFilters.map((chip) => (
+          <span
+            key={chip.label}
+            className={cn(
+              "inline-flex shrink-0 items-baseline gap-1.5 whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em]",
+              chip.active
+                ? "border-b-2 border-zinc-950 pb-0.5 text-zinc-950"
+                : "pb-0.5 text-zinc-400",
+            )}
+          >
+            {chip.label}
+            <span className="tnum text-[10px] text-zinc-400">{chip.count}</span>
+          </span>
+        ))}
+      </div>
 
+      <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="border-b border-zinc-200/80">
-              <th className="px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500 sm:px-5">
-                RO
-              </th>
-              <th className="hidden px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500 lg:table-cell">
-                Bay
-              </th>
-              <th className="px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-                Vehicle
-              </th>
-              <th className="hidden px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500 sm:table-cell">
-                Job
-              </th>
-              <th className="px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-                ZOL did
-              </th>
-              <th className="hidden px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500 lg:table-cell">
-                Waiting on
-              </th>
+            <tr className="border-b border-zinc-950/10">
+              {["RO", "Bay", "Vehicle", "Job", "ZOL did", "Waiting on"].map((head, index) => (
+                <th
+                  key={head}
+                  className={cn(
+                    "whitespace-nowrap px-4 py-2.5 font-mono text-[10px] font-normal uppercase tracking-[0.16em] text-zinc-400 sm:px-5",
+                    index === 1 && "hidden lg:table-cell",
+                    index === 3 && "hidden sm:table-cell",
+                    index === 5 && "hidden lg:table-cell",
+                  )}
+                >
+                  {head}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {boardRows.map((row) => (
-              <tr key={row.ro} className="border-b border-zinc-100 last:border-b-0">
+              <tr key={row.ro} className="border-b border-zinc-950/[0.07] last:border-b-0">
                 <td className="whitespace-nowrap px-4 py-3.5 align-top sm:px-5">
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-start gap-2.5">
                     <span
-                      className={cn("h-1.5 w-1.5 shrink-0 rounded-full", STATUS_DOT[row.status])}
+                      aria-hidden="true"
+                      className={cn("mt-[5px] h-2 w-2 shrink-0", STATUS_MARK[row.status])}
                       title={row.statusLabel}
                     />
-                    <span className="font-mono text-sm text-zinc-950">{row.ro}</span>
+                    <span className="tnum font-mono text-[13px] text-zinc-950">{row.ro}</span>
                   </span>
                 </td>
-                <td className="hidden whitespace-nowrap px-4 py-3.5 align-top font-mono text-sm text-zinc-600 lg:table-cell">
+                <td className="hidden whitespace-nowrap px-4 py-3.5 align-top font-mono text-[13px] text-zinc-500 lg:table-cell">
                   {row.bay}
                 </td>
                 <td className="px-4 py-3.5 align-top">
-                  <span className="block text-sm text-zinc-800">{row.vehicle}</span>
+                  <span className="block whitespace-nowrap text-[13px] text-zinc-800">
+                    {row.vehicle}
+                  </span>
                   <span className="mt-0.5 block font-mono text-[11px] text-zinc-500">
                     {row.plate}
                   </span>
                   <span className="mt-0.5 block text-xs text-zinc-500 sm:hidden">{row.job}</span>
                 </td>
-                <td className="hidden px-4 py-3.5 align-top text-sm text-zinc-700 sm:table-cell">
+                <td className="hidden whitespace-nowrap px-4 py-3.5 align-top text-[13px] text-zinc-600 sm:table-cell">
                   {row.job}
                 </td>
-                <td className="px-4 py-3.5 align-top">
-                  <ActorPill byZol={row.byZol}>{row.zolDid}</ActorPill>
+                <td className="whitespace-nowrap px-4 py-3.5 align-top">
+                  <ActorTag byZol={row.byZol}>{row.zolDid}</ActorTag>
                 </td>
-                <td className="hidden whitespace-nowrap px-4 py-3.5 align-top text-sm text-zinc-600 lg:table-cell">
+                <td className="hidden whitespace-nowrap px-4 py-3.5 align-top text-[13px] text-zinc-500 lg:table-cell">
                   {row.waitingOn}
                 </td>
               </tr>
@@ -634,41 +638,36 @@ function BoardShot() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden px-4 pb-12 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pt-40">
-      <div className="industrial-grid absolute inset-x-0 top-0 h-[56rem] opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+    <section className="relative overflow-hidden pb-16 pt-28 sm:pt-32 lg:pb-24 lg:pt-40">
+      <div className="industrial-grid absolute inset-x-0 top-0 h-[44rem] opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-        <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center lg:text-left"
-        >
-          <h1>
-            <span className="block text-sm font-bold uppercase tracking-[0.22em] text-emerald-600 sm:text-base">
-              The best AI
-            </span>
-            <span className="mt-3 block text-[clamp(2.5rem,6.5vw,4.5rem)] font-semibold uppercase leading-[0.95] tracking-[-0.045em] text-zinc-950">
-              Auto repair software
-            </span>
+      <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12">
+        <div className="hero-rise">
+          <Kicker className="text-emerald-700">The best AI</Kicker>
+
+          <h1 className="mt-4 font-display text-[clamp(2.9rem,7.4vw,5.5rem)] font-extrabold uppercase leading-[0.86] tracking-[-0.035em] text-zinc-950">
+            Auto repair
+            <br />
+            software
           </h1>
 
-          <p className="mt-5 text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl">
+          <p className="mt-6 max-w-md text-lg leading-8 text-zinc-700">
             Don&apos;t let your competitors beat you with AI.
           </p>
 
-          <ul className="mx-auto mt-8 max-w-md space-y-3 text-left lg:mx-0">
+          <ul className="rule mt-8 max-w-md border-t">
             {heroPoints.map((point) => (
-              <li key={point} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600">
-                  <Check className="h-3 w-3 text-white" />
-                </span>
-                <span className="text-base leading-7 text-zinc-700">{point}</span>
+              <li
+                key={point}
+                className="rule flex items-start gap-3 border-b py-3 text-[15px] leading-6 text-zinc-700"
+              >
+                <span aria-hidden="true" className="mt-[7px] h-2 w-2 shrink-0 bg-emerald-600" />
+                {point}
               </li>
             ))}
           </ul>
 
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Button size="lg" asChild>
               <Link href="/request-access">
                 Book a demo <ArrowRight className="h-4 w-4" />
@@ -678,9 +677,12 @@ function Hero() {
               <Link href={CALENDAR_URL}>My calendar</Link>
             </Button>
           </div>
-        </motion.div>
+        </div>
 
-        <CompactBoard />
+        {/* Bleeds past the container: a board is a working surface that keeps going. */}
+        <div className="lg:-mr-[10vw] xl:-mr-[14vw]">
+          <CompactBoard />
+        </div>
       </div>
     </section>
   );
@@ -688,72 +690,87 @@ function Hero() {
 
 function StatsStrip() {
   return (
-    <AnimatedSection className="py-12">
-      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-zinc-200/80 bg-zinc-200/80 shadow-card lg:grid-cols-5">
+    <AnimatedSection className="py-10 lg:py-12">
+      <div className="rule grid grid-cols-2 border-t sm:grid-cols-3 lg:grid-cols-5">
         {boardStats.map((stat) => (
-          <div key={stat.label} className="bg-white p-5">
-            <Eyebrow>{stat.label}</Eyebrow>
-            <p className="mt-3 font-mono text-3xl font-semibold tracking-tight text-zinc-950">
+          <div key={stat.label} className="rule border-b border-r px-5 py-6 last:border-r-0">
+            <Kicker className="text-[10px]">{stat.label}</Kicker>
+            <p className="tnum mt-3 font-display text-4xl font-extrabold tracking-[-0.03em] text-zinc-950">
               {stat.value}
             </p>
             <p className="mt-1 text-xs leading-5 text-zinc-500">{stat.hint}</p>
           </div>
         ))}
       </div>
-      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
         A day on the sample shop board — illustrative data
       </p>
     </AnimatedSection>
   );
 }
 
+/**
+ * The job as a ledger. This is the one sequence on the page, so it is the one
+ * place numbered markers and clock times earn their keep.
+ */
 function FlowSection() {
   return (
-    <AnimatedSection id="how-it-works" className="scroll-mt-24 py-24">
-      <SectionHeading
-        eyebrow="01 — How it works"
-        title="From the missed call to the follow-up."
-        description="One job, start to finish. ZOL runs the parts in green on its own and hands you the rest."
+    <AnimatedSection id="how-it-works" className="scroll-mt-20">
+      <SectionHead
+        kicker="How it works"
+        title={"From the missed call\nto the follow-up"}
+        description="One job, start to finish, on a Tuesday. ZOL runs the green lines unattended and hands you the rest."
       />
 
-      <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <ol className="mt-14">
         {flowSteps.map((step) => (
-          <div
+          <li
             key={step.step}
-            className="flex flex-col rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-card"
+            className="rule grid gap-x-10 gap-y-4 border-b py-8 md:grid-cols-[8rem_minmax(0,1fr)_15rem] lg:py-10"
           >
-            <div className="flex items-center justify-between">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 ring-1 ring-emerald-600/20">
-                <step.icon className="h-5 w-5 text-emerald-700" />
+            <div className="flex items-baseline gap-4 md:block">
+              <span className="tnum font-mono text-[11px] tracking-[0.16em] text-zinc-400">
+                {step.step}
               </span>
-              <span className="font-mono text-2xl font-semibold text-zinc-200">{step.step}</span>
+              <span className="tnum font-mono text-[13px] text-zinc-950 md:mt-2 md:block">
+                {step.time}
+              </span>
             </div>
-            <h3 className="mt-5 text-lg font-semibold tracking-tight text-zinc-950">{step.name}</h3>
-            <p className="mt-3 flex-1 text-sm leading-7 text-zinc-600">{step.body}</p>
-            <div className="mt-5 rounded-2xl bg-zinc-50 px-4 py-3">
-              <p className="font-mono text-[11px] leading-5 text-zinc-600">{step.proof}</p>
+
+            <div>
+              <h3 className="font-display text-2xl font-bold uppercase tracking-[-0.02em] text-zinc-950 sm:text-[1.75rem]">
+                {step.name}
+              </h3>
+              <p className="mt-3 max-w-xl text-[15px] leading-7 text-zinc-600">{step.body}</p>
             </div>
-          </div>
+
+            <div className="md:pt-1.5">
+              <ActorTag byZol={step.byZol}>{step.byZol ? "ZOL" : "Your tech"}</ActorTag>
+              <p className="mt-2 font-mono text-[11px] leading-5 text-zinc-500">{step.proof}</p>
+            </div>
+          </li>
         ))}
-      </div>
+      </ol>
     </AnimatedSection>
   );
 }
 
 function RecordSection() {
   return (
-    <AnimatedSection className="py-24">
-      <SectionHeading
-        eyebrow="02 — One record"
-        title="One repair order, from the missed call to the lift."
-        description="Nothing here was retyped into a second system. This is RO-4471 exactly as it happened — green is what ZOL did unattended, amber is where a person took over."
+    <AnimatedSection>
+      <SectionHead
+        kicker="One record"
+        title={"Everything on\none ticket"}
+        description="Nothing here was retyped into a second system. This is RO-4471 as it happened — emerald is what ZOL did unattended, amber is where a person took over."
       />
 
-      <div className="mx-auto mt-14 grid max-w-5xl gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="h-fit rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-card">
-          <Eyebrow>Vehicle</Eyebrow>
-          <p className="mt-3 text-lg font-semibold text-zinc-950">2018 Ford F-150 XLT</p>
-          <dl className="mt-5 space-y-3 text-sm">
+      <div className="mt-14 grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <div className="rule h-fit border-t pt-6">
+          <Kicker>Vehicle</Kicker>
+          <p className="mt-4 font-display text-2xl font-bold uppercase tracking-[-0.02em] text-zinc-950">
+            2018 Ford F-150 XLT
+          </p>
+          <dl className="mt-6">
             {[
               ["Plate", "8XKR241"],
               ["VIN", "1FTEW1EP4JKD82910"],
@@ -761,70 +778,52 @@ function RecordSection() {
               ["Job", "Front brakes + rotors"],
               ["Bay", "2"],
             ].map(([label, value]) => (
-              <div key={label} className="flex items-baseline justify-between gap-4">
-                <dt className="text-zinc-500">{label}</dt>
-                <dd className="text-right font-mono text-[13px] text-zinc-900">{value}</dd>
+              <div key={label} className="rule flex items-baseline justify-between gap-4 border-b py-2.5">
+                <dt className="text-sm text-zinc-500">{label}</dt>
+                <dd className="tnum text-right font-mono text-[12px] text-zinc-900">{value}</dd>
               </div>
             ))}
           </dl>
-          <div className="mt-5 rounded-2xl bg-zinc-50 p-4">
-            <Eyebrow>Tech note</Eyebrow>
-            <p className="mt-2 text-sm leading-6 text-zinc-700">
-              Pedal pulse above 45 mph. Rotors measured below spec at 26.1mm. Rears
-              still have ~40%.
-            </p>
-          </div>
-          <div className="mt-5 flex items-baseline justify-between border-t border-zinc-200 pt-4">
+
+          <p className="mt-6 text-sm leading-6 text-zinc-600">
+            Pedal pulse above 45 mph. Rotors measured below spec at 26.1mm. Rears still
+            have ~40%.
+          </p>
+
+          <div className="rule mt-6 flex items-baseline justify-between border-t pt-4">
             <span className="text-sm text-zinc-500">Approved total</span>
-            <span className="font-mono text-xl font-semibold text-zinc-950">$742.18</span>
+            <span className="tnum font-display text-2xl font-extrabold tracking-[-0.02em] text-zinc-950">
+              $742.18
+            </span>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-card">
-          <Eyebrow>Timeline</Eyebrow>
-          <ol className="mt-5 space-y-0">
-            {recordTimeline.map((event, index) => {
+        <div className="rule border-t pt-6">
+          <Kicker>Timeline</Kicker>
+          <ol className="mt-5">
+            {recordTimeline.map((event) => {
               const byZol = event.actor === "zol";
-              const isLast = index === recordTimeline.length - 1;
 
               return (
-                <li key={event.label} className="relative flex gap-4 pb-6 last:pb-0">
-                  {!isLast ? (
-                    <span
-                      aria-hidden="true"
-                      className="absolute left-[11px] top-6 h-full w-px bg-zinc-200"
-                    />
-                  ) : null}
-                  <span
-                    className={cn(
-                      "relative z-10 mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-white ring-1",
-                      byZol
-                        ? "bg-emerald-50 ring-emerald-600/30"
-                        : "bg-amber-50 ring-amber-600/30",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "h-2 w-2 rounded-full",
-                        byZol ? "bg-emerald-500" : "bg-amber-500",
-                      )}
-                    />
-                  </span>
+                <li key={event.label} className="rule flex gap-4 border-b py-4 sm:gap-6">
+                  <ActorMark byZol={byZol} />
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <p className="text-sm font-semibold text-zinc-950">{event.label}</p>
-                      <span className="font-mono text-[11px] text-zinc-400">{event.when}</span>
-                      <span
-                        className={cn(
-                          "font-mono text-[10px] uppercase tracking-[0.14em]",
-                          byZol ? "text-emerald-700" : "text-amber-700",
-                        )}
-                      >
-                        {byZol ? "ZOL" : "Person"}
+                    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                      <p className="text-[15px] font-semibold text-zinc-950">{event.label}</p>
+                      <span className="tnum font-mono text-[11px] text-zinc-400">
+                        {event.when}
                       </span>
                     </div>
                     <p className="mt-1 text-sm leading-6 text-zinc-600">{event.detail}</p>
                   </div>
+                  <span
+                    className={cn(
+                      "hidden shrink-0 font-mono text-[10px] uppercase tracking-[0.16em] sm:block",
+                      byZol ? "text-emerald-700" : "text-amber-700",
+                    )}
+                  >
+                    {byZol ? "ZOL" : "Person"}
+                  </span>
                 </li>
               );
             })}
@@ -837,32 +836,22 @@ function RecordSection() {
 
 function AgentsSection() {
   return (
-    <AnimatedSection className="py-24">
-      <SectionHeading
-        eyebrow="03 — The part that runs itself"
-        title="The work your front desk never gets to."
+    <AnimatedSection>
+      <SectionHead
+        kicker="Runs itself"
+        title={"The work your front\ndesk never gets to"}
         description="Not a chatbot bolted onto a calendar. Four jobs ZOL does end to end, and hands back the moment judgment is required."
       />
 
-      <div className="mt-14 grid gap-5 md:grid-cols-2">
+      <div className="rule mt-14 grid border-t sm:grid-cols-2">
         {agents.map((agent) => (
-          <div
-            key={agent.title}
-            className="flex flex-col rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-card"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 ring-1 ring-emerald-600/20">
-              <agent.icon className="h-5 w-5 text-emerald-700" />
-            </span>
-            <h3 className="mt-5 text-lg font-semibold tracking-tight text-zinc-950">
+          <div key={agent.title} className="rule border-b px-0 py-8 sm:odd:border-r sm:odd:pr-10 sm:even:pl-10">
+            <agent.icon aria-hidden="true" className="h-5 w-5 text-emerald-700" />
+            <h3 className="mt-5 font-display text-xl font-bold uppercase tracking-[-0.02em] text-zinc-950">
               {agent.title}
             </h3>
-            <p className="mt-3 flex-1 text-sm leading-7 text-zinc-600">{agent.body}</p>
-            <div className="mt-5 rounded-2xl bg-zinc-50 px-4 py-3">
-              <Eyebrow>From the board</Eyebrow>
-              <p className="mt-1.5 font-mono text-[12px] leading-5 text-zinc-700">
-                {agent.proof}
-              </p>
-            </div>
+            <p className="mt-3 max-w-lg text-[15px] leading-7 text-zinc-600">{agent.body}</p>
+            <p className="mt-4 font-mono text-[11px] leading-5 text-zinc-500">{agent.proof}</p>
           </div>
         ))}
       </div>
@@ -872,10 +861,10 @@ function AgentsSection() {
 
 function SoftwareSection() {
   return (
-    <AnimatedSection id="software" className="scroll-mt-24 py-24">
-      <SectionHeading
-        eyebrow="04 — The software"
-        title="Run every job from one screen."
+    <AnimatedSection id="software" className="scroll-mt-20">
+      <SectionHead
+        kicker="The software"
+        title={"Run every job\nfrom one screen"}
         description="Four surfaces over one record. Nothing gets retyped from the board into the ticket, or from the ticket into the parts order."
       />
 
@@ -883,19 +872,14 @@ function SoftwareSection() {
         <BoardShot />
       </div>
 
-      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="rule mt-12 grid border-t sm:grid-cols-2 lg:grid-cols-4">
         {modules.map((item) => (
-          <div
-            key={item.name}
-            className="rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-card"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-950">
-              <item.icon className="h-5 w-5 text-white" />
-            </span>
-            <h3 className="mt-5 text-base font-semibold tracking-tight text-zinc-950">
+          <div key={item.name} className="rule border-b py-6 lg:border-r lg:px-6 lg:last:border-r-0 lg:first:pl-0">
+            <item.icon aria-hidden="true" className="h-5 w-5 text-zinc-950" />
+            <h3 className="mt-4 font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-950">
               {item.name}
             </h3>
-            <p className="mt-2.5 text-sm leading-7 text-zinc-600">{item.body}</p>
+            <p className="mt-2 text-sm leading-6 text-zinc-600">{item.body}</p>
           </div>
         ))}
       </div>
@@ -905,38 +889,36 @@ function SoftwareSection() {
 
 function IntegrationsSection() {
   return (
-    <AnimatedSection className="py-24">
-      <div className="overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white p-8 shadow-card sm:p-12">
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-          <div>
-            <Eyebrow>05 — No rip and replace</Eyebrow>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
-              Keep the system you already run.
-            </h2>
-            <p className="mt-5 text-base leading-8 text-zinc-600">
-              ZOL sits on top of your shop management software instead of replacing it.
-              Customers, vehicles, and repair orders stay in sync, so your writers keep
-              working where they already work while ZOL takes the phone and the follow-up.
-            </p>
-          </div>
+    <AnimatedSection>
+      <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+        <div className="rule border-t pt-6">
+          <Kicker>No rip and replace</Kicker>
+          <h2 className="mt-5 font-display text-[clamp(2rem,4.4vw,3.25rem)] font-extrabold uppercase leading-[0.92] tracking-[-0.03em] text-zinc-950">
+            Keep the system
+            <br />
+            you already run
+          </h2>
+          <p className="mt-6 max-w-xl text-[15px] leading-7 text-zinc-600">
+            ZOL sits on top of your shop management software instead of replacing it.
+            Customers, vehicles, and repair orders stay in sync, so your writers keep
+            working where they already work while ZOL takes the phone and the follow-up.
+          </p>
+        </div>
 
-          <div className="space-y-3">
-            {integrations.map((item) => (
-              <div
-                key={item.name}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-zinc-200 bg-zinc-50/60 px-5 py-4"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-zinc-950">{item.name}</p>
-                  <p className="mt-0.5 text-sm leading-6 text-zinc-600">{item.body}</p>
-                </div>
-                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-2.5 py-1 font-mono text-[11px] text-zinc-600">
-                  <Check className="h-3 w-3" />
-                  Two-way sync
-                </span>
+        <div className="rule border-t pt-6 lg:pt-16">
+          {integrations.map((item) => (
+            <div key={item.name} className="rule flex items-start justify-between gap-6 border-b py-5">
+              <div className="min-w-0">
+                <p className="font-display text-lg font-bold uppercase tracking-[-0.01em] text-zinc-950">
+                  {item.name}
+                </p>
+                <p className="mt-1 text-sm leading-6 text-zinc-600">{item.body}</p>
               </div>
-            ))}
-          </div>
+              <span className="shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                Two-way sync
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </AnimatedSection>
@@ -945,51 +927,44 @@ function IntegrationsSection() {
 
 function CompareSection() {
   return (
-    <AnimatedSection id="compare" className="scroll-mt-24 py-24">
-      <SectionHeading
-        eyebrow="06 — The switch"
-        title="How ZOL is different."
-        description="Shops today run on Tekmetric, Shopmonkey, Shop-Ware, Mitchell 1, or AutoLeap. Those systems record the work. ZOL does the work nobody has time for — and leaves your existing system in place."
+    <AnimatedSection id="compare" className="scroll-mt-20">
+      <SectionHead
+        kicker="The switch"
+        title={"How ZOL\nis different"}
+        description="Shops run on Tekmetric, Shopmonkey, Shop-Ware, Mitchell 1, or AutoLeap. Those systems record the work. ZOL does the work nobody has time for, and leaves your system in place."
       />
 
-      <div className="mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-2">
+      <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2">
         {competitors.map((name) => (
           <span
             key={name}
-            className="rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-sm font-medium text-zinc-600"
+            className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400"
           >
             {name}
           </span>
         ))}
       </div>
 
-      <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-3xl border border-zinc-200/80 bg-white shadow-card">
-        <div className="hidden border-b border-zinc-200/80 sm:grid sm:grid-cols-[0.8fr_1fr_1fr]">
-          <div className="px-6 py-4" />
-          <div className="px-6 py-4">
-            <Eyebrow>Shop management software</Eyebrow>
-          </div>
-          <div className="border-l border-zinc-200/80 bg-emerald-50/40 px-6 py-4">
-            <Eyebrow className="text-emerald-800">With ZOL on top</Eyebrow>
-          </div>
+      <div className="rule mt-8 border-t">
+        <div className="hidden grid-cols-[10rem_minmax(0,1fr)_minmax(0,1fr)] gap-x-10 py-3 sm:grid">
+          <span />
+          <Kicker className="text-[10px]">Shop management software</Kicker>
+          <Kicker className="text-[10px] text-emerald-800">With ZOL on top</Kicker>
         </div>
 
         {competitorRows.map((row) => (
           <div
             key={row.capability}
-            className="grid grid-cols-1 border-b border-zinc-100 last:border-b-0 sm:grid-cols-[0.8fr_1fr_1fr]"
+            className="rule grid gap-x-10 gap-y-2 border-t py-5 sm:grid-cols-[10rem_minmax(0,1fr)_minmax(0,1fr)]"
           >
-            <div className="bg-zinc-50/60 px-6 py-4 sm:py-5">
-              <p className="text-sm font-semibold text-zinc-950">{row.capability}</p>
-            </div>
-            <div className="flex gap-3 px-6 py-4 sm:py-5">
-              <X className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
-              <p className="text-sm leading-6 text-zinc-600">{row.them}</p>
-            </div>
-            <div className="flex gap-3 bg-emerald-50/40 px-6 py-4 sm:border-l sm:border-zinc-100 sm:py-5">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-              <p className="text-sm leading-6 text-zinc-800">{row.zol}</p>
-            </div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-950">
+              {row.capability}
+            </p>
+            <p className="text-[15px] leading-7 text-zinc-500">{row.them}</p>
+            <p className="flex gap-3 text-[15px] leading-7 text-zinc-900">
+              <span aria-hidden="true" className="mt-[9px] h-2 w-2 shrink-0 bg-emerald-600" />
+              {row.zol}
+            </p>
           </div>
         ))}
       </div>
@@ -999,61 +974,66 @@ function CompareSection() {
 
 function VisionSection() {
   return (
-    <AnimatedSection id="vision" className="scroll-mt-24 py-24">
-      <div className="relative overflow-hidden rounded-[2rem] bg-zinc-950 px-6 py-16 shadow-premium sm:px-12 lg:py-20">
-        <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
-        <div className="relative mx-auto max-w-4xl">
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-300">
-            07 — Where this goes
-          </span>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-[2.75rem] lg:leading-[1.05]">
-            Every repair teaches the system how the work is actually done.
-          </h2>
-          <p className="mt-6 text-base leading-8 text-zinc-300 sm:text-lg">
-            Running the front desk is how ZOL earns its place in the shop. What it
-            builds underneath is the harder thing: a structured record of real repair
-            procedures — the steps, the order they happen in, the state a part is in
-            before and after, and what goes wrong when a step is skipped.
-          </p>
-          <p className="mt-5 text-base leading-8 text-zinc-300 sm:text-lg">
-            That record is what turns into step-by-step guidance for a new tech today.
-            It is also the training data physical AI needs to do this work tomorrow.
-            No amount of text on the internet substitutes for it.
-          </p>
+    <AnimatedSection id="vision" className="scroll-mt-20">
+      <div className="relative overflow-hidden rounded-xl bg-zinc-950 px-6 py-16 sm:px-12 lg:px-16 lg:py-24">
+        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-emerald-500/15 blur-3xl" />
+        <div className="relative">
+          <Kicker className="text-emerald-400">Where this goes</Kicker>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-              <Eyebrow className="text-zinc-400">Today</Eyebrow>
-              <ul className="mt-4 space-y-2.5">
-                {[
+          <h2 className="mt-5 max-w-4xl font-display text-[clamp(2rem,4.4vw,3.25rem)] font-extrabold uppercase leading-[0.92] tracking-[-0.03em] text-white">
+            Every repair teaches the system how the work is done
+          </h2>
+
+          <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:gap-16">
+            <p className="text-[15px] leading-8 text-zinc-400">
+              Running the front desk is how ZOL earns its place in the shop. What it
+              builds underneath is the harder thing: a structured record of real repair
+              procedures — the steps, the order they happen in, the state a part is in
+              before and after, and what goes wrong when a step is skipped.
+            </p>
+            <p className="text-[15px] leading-8 text-zinc-400">
+              That record is what turns into step-by-step guidance for a new tech today.
+              It is also the training data physical AI needs to do this work tomorrow.
+              No amount of text on the internet substitutes for it.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:gap-16">
+            {[
+              {
+                label: "Today",
+                items: [
                   "Guided procedures for new techs",
                   "Visual step verification",
                   "Remote expert assistance",
                   "Quality-control documentation",
-                ].map((item) => (
-                  <li key={item} className="flex gap-2.5 text-sm leading-6 text-zinc-300">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-              <Eyebrow className="text-zinc-400">Tomorrow</Eyebrow>
-              <ul className="mt-4 space-y-2.5">
-                {[
+                ],
+              },
+              {
+                label: "Tomorrow",
+                items: [
                   "Embodied-AI training data",
                   "Robot task planning",
                   "Procedural benchmarks",
                   "Human-to-robot skill transfer",
-                ].map((item) => (
-                  <li key={item} className="flex gap-2.5 text-sm leading-6 text-zinc-300">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                ],
+              },
+            ].map((column) => (
+              <div key={column.label} className="border-t border-white/15 pt-5">
+                <Kicker className="text-zinc-500">{column.label}</Kicker>
+                <ul className="mt-4">
+                  {column.items.map((item) => (
+                    <li
+                      key={item}
+                      className="flex gap-3 border-b border-white/10 py-3 text-sm leading-6 text-zinc-300"
+                    >
+                      <span aria-hidden="true" className="mt-[7px] h-2 w-2 shrink-0 bg-emerald-500" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -1064,15 +1044,14 @@ function VisionSection() {
 function FinalCta() {
   return (
     <AnimatedSection className="pb-24">
-      <div className="relative overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white px-6 py-16 text-center shadow-card sm:px-10">
-        <Sparkles className="mx-auto mb-5 h-7 w-7 text-emerald-600" />
-        <h2 className="mx-auto max-w-2xl text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
-          The phone rings whether or not anyone is there to answer it.
+      <div className="rule border-t pt-14">
+        <h2 className="max-w-3xl font-display text-[clamp(2rem,4.8vw,3.5rem)] font-extrabold uppercase leading-[0.92] tracking-[-0.03em] text-zinc-950">
+          The phone rings whether anyone is there to answer it
         </h2>
-        <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-zinc-600">
+        <p className="mt-6 max-w-md text-[15px] leading-7 text-zinc-600">
           ZOL is onboarding a small number of independent shops.
         </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <div className="mt-9 flex flex-col gap-3 sm:flex-row">
           <Button size="lg" asChild>
             <Link href="/request-access">
               Book a demo <ArrowRight className="h-4 w-4" />
@@ -1089,40 +1068,44 @@ function FinalCta() {
 
 function Footer() {
   return (
-    <footer className="border-t border-zinc-200 bg-white px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <LogoMark />
-          <div>
-            <p className="text-lg font-bold tracking-tight text-zinc-950">ZOL</p>
-            <p className="mt-1 text-sm text-zinc-500">
-              AI shop management for independent auto shops
-            </p>
-          </div>
+    <footer className="border-t border-zinc-950/10 px-5 py-10 sm:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2.5">
+          <LogoMark className="h-7 w-7" />
+          <span className="font-display text-lg font-extrabold uppercase tracking-[-0.02em] text-zinc-950">
+            ZOL
+          </span>
+          <span className="ml-2 text-sm text-zinc-500">
+            AI shop management for independent auto shops
+          </span>
         </div>
-        <div className="flex flex-wrap gap-5 text-sm font-medium text-zinc-600">
-          <Link href="/sign-in" className="hover:text-zinc-950">
-            Sign in
-          </Link>
-          <a href="#" className="hover:text-zinc-950">
-            Privacy
-          </a>
-          <a href="#" className="hover:text-zinc-950">
-            Terms
-          </a>
-          <Link href="/request-access" className="hover:text-zinc-950">
-            Contact
-          </Link>
+        <div className="flex flex-wrap gap-x-8 gap-y-2">
+          {[
+            { label: "Sign in", href: "/sign-in" },
+            { label: "Privacy", href: "#" },
+            { label: "Terms", href: "#" },
+            { label: "Contact", href: "/request-access" },
+          ].map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-500 transition-colors hover:text-zinc-950"
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
       </div>
-      <div className="mx-auto mt-8 max-w-7xl text-sm text-zinc-400">&copy; 2026 ZOL</div>
+      <div className="mx-auto mt-8 max-w-7xl font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
+        &copy; 2026 ZOL
+      </div>
     </footer>
   );
 }
 
 export function ZolHomepage() {
   return (
-    <main className="min-h-screen overflow-hidden">
+    <main className="min-h-screen overflow-x-hidden">
       <Navbar />
       <Hero />
       <StatsStrip />

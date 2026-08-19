@@ -33,6 +33,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
+        display: ["var(--font-archivo)", "var(--font-inter)", "ui-sans-serif"],
+        mono: ["var(--font-jetbrains)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       boxShadow: {
         premium: "0 24px 80px -36px rgba(15, 23, 42, 0.35)",
