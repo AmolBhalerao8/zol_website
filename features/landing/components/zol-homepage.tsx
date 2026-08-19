@@ -27,8 +27,11 @@ import { cn } from "@/lib/utils";
  * would not survive hydration in a client component.
  */
 
-/** TODO: swap for the real Cal.com / Calendly link. */
-const CALENDAR_URL = "/request-access";
+/**
+ * Google Appointment Schedule. Every "Book a demo" on the page points here --
+ * the /request-access form has no working backend, so nothing routes to it.
+ */
+const CALENDAR_URL = "https://calendar.app.google/V8wmHh3ygznruro88";
 
 /**
  * Shop photograph for the hero. Drop a licensed image at `public/hero-shop.jpg`
@@ -452,16 +455,10 @@ function Navbar() {
 
         <div className="flex items-center gap-2">
           <Show when="signed-out">
-            <Button
-              size="sm"
-              variant="ghost"
-              className={onDark ? "text-zinc-200 hover:bg-white/10 hover:text-white" : undefined}
-              asChild
-            >
-              <Link href={CALENDAR_URL}>My calendar</Link>
-            </Button>
             <Button size="sm" variant={onDark ? "accent" : "default"} asChild>
-              <Link href="/request-access">Book a demo</Link>
+              <a href={CALENDAR_URL} target="_blank" rel="noopener noreferrer">
+                Book a demo
+              </a>
             </Button>
           </Show>
           <Show when="signed-in">
@@ -691,12 +688,9 @@ function Hero() {
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Button size="lg" variant="accent" asChild>
-              <Link href="/request-access">
+              <a href={CALENDAR_URL} target="_blank" rel="noopener noreferrer">
                 Book a demo <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="secondary" asChild>
-              <Link href={CALENDAR_URL}>My calendar</Link>
+              </a>
             </Button>
           </div>
         </div>
@@ -1094,12 +1088,9 @@ function FinalCta() {
         </p>
         <div className="mt-9 flex flex-col gap-3 sm:flex-row">
           <Button size="lg" asChild>
-            <Link href="/request-access">
+            <a href={CALENDAR_URL} target="_blank" rel="noopener noreferrer">
               Book a demo <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button size="lg" variant="ghost" asChild>
-            <Link href={CALENDAR_URL}>My calendar</Link>
+            </a>
           </Button>
         </div>
       </div>
@@ -1122,19 +1113,31 @@ function Footer() {
         </div>
         <div className="flex flex-wrap gap-x-8 gap-y-2">
           {[
-            { label: "Sign in", href: "/sign-in" },
-            { label: "Privacy", href: "#" },
-            { label: "Terms", href: "#" },
-            { label: "Contact", href: "/request-access" },
-          ].map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-500 transition-colors hover:text-zinc-950"
-            >
-              {link.label}
-            </Link>
-          ))}
+            { label: "Sign in", href: "/sign-in", external: false },
+            { label: "Privacy", href: "#", external: false },
+            { label: "Terms", href: "#", external: false },
+            { label: "Book a demo", href: CALENDAR_URL, external: true },
+          ].map((link) =>
+            link.external ? (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-500 transition-colors hover:text-zinc-950"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-500 transition-colors hover:text-zinc-950"
+              >
+                {link.label}
+              </Link>
+            ),
+          )}
         </div>
       </div>
       <div className="mx-auto mt-8 max-w-7xl font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
